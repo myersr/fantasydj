@@ -1,0 +1,13 @@
+<ion-view view-title="login">
+    <ion-content>
+        <h1>Login</h1>
+        <div class="list">
+            <label class="item item-input item-stacked-label">
+                <input placeholder="Username" ng-model="newUser.username">
+            </label>
+            <label class="item item-input item-stacked-label">
+                <input placeholder="Password" ng-model="newUser.password">
+            </label>
+            <ion-input ng-click="createUser(newUser)">Click Me</ion-input>
+    </ion-content>
+</ion-view>

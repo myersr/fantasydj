@@ -8,10 +8,16 @@ angular.module('starter.controllers', [])
       // listen for the $ionicView.enter event:
       //$scope.$on('$ionicView.enter', function(e) {
       //});
+      var appId = "85D3AA52-808B-FC81-FF8F-16455B72F700";
+      var jsSecretKey = "0EE87A4C-79D9-40CF-FFAF-2D77BE200000";
+      var versionNum = "v1";
+      Backendless.initApp(appId, jsSecretKey, versionNum);
+
+
       $scope.menuOptions = [
-        {name: 'Search', class: 'item-dark'},
-        {name: 'Browse', class: 'item-dark'},
-        {name: 'Playlists', class: 'item-dark'}];
+        {name: 'Search', link:'search', class: 'item-dark'},
+        {name: 'Browse', link: 'browse', class: 'item-dark'},
+        {name: 'Playlists', link: 'playlists', class: 'item-dark'}];
 
       var activeMenu = "Playlists";
       $scope.toggle = function(name){
@@ -24,7 +30,6 @@ angular.module('starter.controllers', [])
         if (activeMenu === name){
           className = 'item-royal';
         }
-
 
         return className;
     };
@@ -79,5 +84,10 @@ angular.module('starter.controllers', [])
 
     })
 
-    .controller('PlaylistCtrl', function($scope, $stateParams) {
+    .controller('login', function($scope, $stateParams) {
+      $scope.createUser = function(newuser){
+        console.log(newuser.username)
+        //Backendless.UserService.register( user, asyncCallback );
+
+      }
     });

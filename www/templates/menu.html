@@ -18,10 +18,10 @@
         </ion-header-bar>
         <ion-content>
             <ion-list>
-                <ion-item class="item-dark" menu-close ng-click="login()">
+                <ion-item class="item-dark" menu-close href="#/login">
                     Login
                 </ion-item>
-                <ion-item ng-repeat="menu in menuOptions" ng-class="className(menu.name)" ng-click="toggle(menu.name)" menu-close href="#/app/{{ menu.name }}">
+                <ion-item ng-repeat="menu in menuOptions" ng-class="className(menu.name)" ng-click="toggle(menu.name)" menu-close href="#/app/{{ menu.link }}">
                     {{ menu.name }}
                 </ion-item>
                 <!--<ion-item id="menu-search" class="item-dark" ng-click="toggle("menu-search")" menu-close href="#/app/search">
