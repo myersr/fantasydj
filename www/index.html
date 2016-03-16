@@ -11,10 +11,16 @@
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
-    <!-- backendless reference -->
-    <script src="http://api.backendless.com/sdk/js/latest/backendless.min.js"></script>
-    <!-- ionic/angularjs js -->
+
+        <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    <script src="lib/angular-spotify/dist/angular-spotify.min.js"></script>
+    <script src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
+      <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/1.1.4/angularfire.min.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
@@ -25,6 +31,6 @@
 </head>
 
 <body ng-app="starter">
-<ion-nav-view></ion-nav-view>
+<ion-nav-view id="indexNavView"></ion-nav-view>
 </body>
 </html>

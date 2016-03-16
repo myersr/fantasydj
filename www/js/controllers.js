@@ -1,33 +1,82 @@
 angular.module('starter.controllers', [])
 
-    .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+    .controller('AppCtrl', function($scope,$rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location, Spotify, authenticationFact) {
 
       // With the new view caching in Ionic, Controllers are only called
       // when they are recreated or on app start, instead of every page change.
       // To listen for when this page is active (for example, to refresh data),
       // listen for the $ionicView.enter event:
+      var currentState;
+      $rootScope.$on('$stateChangeStart',
+        function(event, toState, toParams, fromState, fromParams){
+          currentState = toState.data.link;
+          $log.log(currentState)
+
+          // do something
+        })
       //$scope.$on('$ionicView.enter', function(e) {
       //});
-      var appId = "85D3AA52-808B-FC81-FF8F-16455B72F700";
-      var jsSecretKey = "0EE87A4C-79D9-40CF-FFAF-2D77BE200000";
-      var versionNum = "v1";
-      Backendless.initApp(appId, jsSecretKey, versionNum);
+      //var showLoading = function() {
+      //  $ionicLoading.show({
+      //    template: '<i class="ion-loading-c"></i>',
+      //    noBackdrop: true
+      //  });
+      //}
+      //
+      //var hideLoading = function() {
+      //  $ionicLoading.hide();
+      //}
 
+      // set loading to true first time while we retrieve songs from server.
+      //showLoading();
+
+      //$log.log(logtoken)
+        //.then(function(){
+        //  if(logtoken.getToken() === false){
+        //    hideLoading();
+        //  }else {
+        //    $log.log("token true/null")
+        //  }
+        //});
+
+
+      Spotify.getAlbum('0sNOF9WDwhWunNAHPD3Baj').then(function (data) {
+        console.log(data);
+      });
+
+
+      $scope.performLogin = function(){
+        authenticationFact.login()
+        //https://accounts.spotify.com/authorize
+
+
+        //Spotify.login();
+        //var test = $http.get("https://accounts.spotify.com/authorize?client_id=" + client_id + "&response_type=code&redirect_uri="+
+        //  encodeURIComponent(redirect_uri) +"&scopes="+encodeURIComponent(scopes_api)).success(function (res) {
+        //  return res;
+        //});
+      }
+
+      Spotify.getCurrentUser().then(function (data) {
+        console.log(data);
+      });
+      $scope.accountItems = [
+
+      ]
 
       $scope.menuOptions = [
-        {name: 'Search', link:'search', class: 'item-dark'},
-        {name: 'Browse', link: 'browse', class: 'item-dark'},
-        {name: 'Playlists', link: 'playlists', class: 'item-dark'}];
+        {name: 'Search', link:'#/app/search', class: 'item-dark'},
+        {name: 'Browse', link: '#/app/browse', class: 'item-dark'},
+        {name: 'Account', link: '#/app/account', class: 'item-dark'},
+        {name: 'Playlists', link: '#/app/playlists', class: 'item-dark'}];
 
-      var activeMenu = "Playlists";
-      $scope.toggle = function(name){
-        activeMenu = name;
-      }
+
+
 
       $scope.className = function(name){
         var className = 'item-dark';
 
-        if (activeMenu === name){
+        if (currentState === name){
           className = 'item-royal';
         }
 
@@ -60,11 +109,62 @@ angular.module('starter.controllers', [])
       $scope.doLogin = function() {
         console.log('Doing login', $scope.loginData);
 
-        // Simulate a login delay. Remove this and replace with your login
-        // code if using a login system
-        $timeout(function() {
-          $scope.closeLogin();
-        }, 1000);
+
+
+          function login(callback) {
+            function getLoginURL($scope) {
+              return 'https://accounts.spotify.com/authorize?client_id=' + CLIENT_ID +
+                '&redirect_uri=' + encodeURIComponent(redirect_uri) +
+                '&scope=' + encodeURIComponent(scopes.join(' ')) +
+                '&response_type=token';
+            }
+
+            var url = getLoginURL([
+              'user-read-email'
+            ]);
+
+            var width = 450,
+              height = 730,
+              left = (screen.width / 2) - (width / 2),
+              top = (screen.height / 2) - (height / 2);
+
+            window.addEventListener("message", function(event) {
+              var hash = JSON.parse(event.data);
+              if (hash.type == 'access_token') {
+                callback(hash.access_token);
+              }
+            }, false);
+
+            var w = window.open(url,
+              'Spotify',
+              'menubar=no,location=no,resizable=no,scrollbars=no,status=no, width=' + width + ', height=' + height + ', top=' + top + ', left=' + left
+            );
+
+          }
+
+          function getUserData(accessToken) {
+            return $.ajax({
+              url: 'https://api.spotify.com/v1/me',
+              headers: {
+                'Authorization': 'Bearer ' + accessToken
+              }
+            });
+          }
+
+          var templateSource = document.getElementById('result-template').innerHTML,
+            template = Handlebars.compile(templateSource),
+            resultsPlaceholder = document.getElementById('result'),
+            loginButton = document.getElementById('btn-login');
+
+          loginButton.addEventListener('click', function() {
+            login(function(accessToken) {
+              getUserData(accessToken)
+                .then(function(response) {
+                  loginButton.style.display = 'none';
+                  resultsPlaceholder.innerHTML = template(response);
+                });
+            });
+          });
       };
     })
 
@@ -84,10 +184,63 @@ angular.module('starter.controllers', [])
 
     })
 
-    .controller('login', function($scope, $stateParams) {
+    .controller('login', function($scope, $stateParams, $ionicModal, $timeout,$log, Spotify, $ionicPlatform, $ionicPopup, $ionicLoading, $q){ //$cordovaOauth, ) {
+
+      $scope.performLogin = function(){
+        Spotify.login();
+
+      }
+
+
+      //Called after login to update
+      $scope.updateInfo = function() {
+        Spotify.getCurrentUser().then(function (data) {
+          $scope.getUserPlaylists(data.id);
+        }, function(error) {
+          $scope.performLogin();
+        });
+      };
+
+      $ionicPlatform.ready(function() {
+      var storedToken = window.localStorage.getItem('spotify-token');
+      if (storedToken !== null) {
+        Spotify.setAuthToken(storedToken);
+        $scope.updateInfo();
+      } else {
+        $scope.performLogin();
+      }
+    });
+
+
       $scope.createUser = function(newuser){
         console.log(newuser.username)
-        //Backendless.UserService.register( user, asyncCallback );
+        Backendless.UserService.register(user, asyncCallback);
 
       }
     });
+
+
+//http://10.31.23.184:8100
+//$timeout(function() {
+//      // $timeout to allow animation to complete
+//      $scope.currentSong = Recommendations.queue[0];
+////    }, 250);
+//function asyncGreet(name) {
+//  // perform some asynchronous operation, resolve or reject the promise when appropriate.
+//  return $q(function(resolve, reject) {
+//    setTimeout(function() {
+//      if (okToGreet(name)) {
+//        resolve('Hello, ' + name + '!');
+//      } else {
+//        reject('Greeting ' + name + ' is not allowed.');
+//      }
+//    }, 1000);
+//  });
+//}
+//
+//var promise = asyncGreet('Robin Hood');
+//promise.then(function(greeting) {
+//  alert('Success: ' + greeting);
+//}, function(reason) {
+//  alert('Failed: ' + reason);
+//});
