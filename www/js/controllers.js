@@ -1,19 +1,52 @@
 angular.module('starter.controllers', [])
 
-    .controller('AppCtrl', function($scope,$rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location, Spotify, authenticationFact) {
+    .controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location,$state, Spotify, authenticationFact) {
 
       // With the new view caching in Ionic, Controllers are only called
       // when they are recreated or on app start, instead of every page change.
       // To listen for when this page is active (for example, to refresh data),
       // listen for the $ionicView.enter event:
-      var currentState;
-      $rootScope.$on('$stateChangeStart',
-        function(event, toState, toParams, fromState, fromParams){
-          currentState = toState.data.link;
-          $log.log(currentState)
 
-          // do something
-        })
+      var currentState;
+      $scope.$on('$ionicView.enter', function() {
+        // Code you want executed every time view is opened
+        currentState = $state.current.data.link;
+        var test = $location.absUrl()
+        if( test.search("code") > 0)
+        {
+          $log.log("code found")
+          var value = test.split("code=")
+          var valueMinusExtra = value[1].split("&")
+          if(valueMinusExtra.length > 1){
+            $log.log("error returned in url")
+          }else{
+            var finalCode = valueMinusExtra[0].split("#")
+            authenticationFact.getToken(finalCode[0])
+            $log.log("final",finalCode[0])
+          }
+          $log.log("value",value)
+        }
+        if( test.search("error") > 0)
+        {
+          $log.log("error")
+        }
+
+        //$log.log(test)
+        //$log.log(currentState)
+      })
+      //$ionicView.enter(
+      //  function(event, toState, toParams, fromState, fromParams) {
+      //    currentState = toState.data.link;
+      //    $log.log(currentState)
+      //  }
+      //)
+      //$rootScope.$on('$stateChangeStart',
+      //  function(event, toState, toParams, fromState, fromParams){
+      //    currentState = toState.data.link;
+      //    $log.log(currentState)
+      //
+      //    // do something
+      //  })
       //$scope.$on('$ionicView.enter', function(e) {
       //});
       //var showLoading = function() {
@@ -40,13 +73,18 @@ angular.module('starter.controllers', [])
         //});
 
 
-      Spotify.getAlbum('0sNOF9WDwhWunNAHPD3Baj').then(function (data) {
+      /*Spotify.getAlbum('0sNOF9WDwhWunNAHPD3Baj').then(function (data) {
         console.log(data);
-      });
+      })*/;
 
 
       $scope.performLogin = function(){
         authenticationFact.login()
+
+
+
+        $log.log($location.absUrl())
+
         //https://accounts.spotify.com/authorize
 
 
@@ -110,79 +148,38 @@ angular.module('starter.controllers', [])
         console.log('Doing login', $scope.loginData);
 
 
+      }
 
-          function login(callback) {
-            function getLoginURL($scope) {
-              return 'https://accounts.spotify.com/authorize?client_id=' + CLIENT_ID +
-                '&redirect_uri=' + encodeURIComponent(redirect_uri) +
-                '&scope=' + encodeURIComponent(scopes.join(' ')) +
-                '&response_type=token';
-            }
-
-            var url = getLoginURL([
-              'user-read-email'
-            ]);
-
-            var width = 450,
-              height = 730,
-              left = (screen.width / 2) - (width / 2),
-              top = (screen.height / 2) - (height / 2);
-
-            window.addEventListener("message", function(event) {
-              var hash = JSON.parse(event.data);
-              if (hash.type == 'access_token') {
-                callback(hash.access_token);
-              }
-            }, false);
-
-            var w = window.open(url,
-              'Spotify',
-              'menubar=no,location=no,resizable=no,scrollbars=no,status=no, width=' + width + ', height=' + height + ', top=' + top + ', left=' + left
-            );
-
-          }
-
-          function getUserData(accessToken) {
-            return $.ajax({
-              url: 'https://api.spotify.com/v1/me',
-              headers: {
-                'Authorization': 'Bearer ' + accessToken
-              }
-            });
-          }
-
-          var templateSource = document.getElementById('result-template').innerHTML,
-            template = Handlebars.compile(templateSource),
-            resultsPlaceholder = document.getElementById('result'),
-            loginButton = document.getElementById('btn-login');
-
-          loginButton.addEventListener('click', function() {
-            login(function(accessToken) {
-              getUserData(accessToken)
-                .then(function(response) {
-                  loginButton.style.display = 'none';
-                  resultsPlaceholder.innerHTML = template(response);
-                });
-            });
-          });
-      };
     })
 
-    .controller('PlaylistsCtrl', function($scope) {
-      $scope.playlists = [
-        { title: 'Reggae', id: 1 },
-        { title: 'Chill', id: 2 },
-        { title: 'Dubstep', id: 3 },
-        { title: 'Indie', id: 4 },
-        { title: 'Rap', id: 5 },
-        { title: 'Cowbell', id: 6 }
-      ];
+    .controller('PlaylistsCtrl', function($scope, playlistsFact) {
+      //$scope.playlists = [
+      //  { title: 'Reggae', id: 1 },
+      //  { title: 'Chill', id: 2 },
+      //  { title: 'Dubstep', id: 3 },
+      //  { title: 'Indie', id: 4 },
+      //  { title: 'Rap', id: 5 },
+      //  { title: 'Cowbell', id: 6 }
+      //];
       $scope.isDownloadActive = false;
 
+      $scope.playlist = playlistsFact.getPlaylist();
+
 
 
 
     })
+  .controller('PlaylistCtrl', function($scope, $stateParams, $log, playlistsFact) {
+    $scope.isDownloadActive = false;
+    $scope.song = playlistsFact.getSong($stateParams.playlistId);
+    $log.log($scope.song)
+    //$scope.song = $scope.songs[0]
+
+
+
+
+
+  })
 
     .controller('login', function($scope, $stateParams, $ionicModal, $timeout,$log, Spotify, $ionicPlatform, $ionicPopup, $ionicLoading, $q){ //$cordovaOauth, ) {
 

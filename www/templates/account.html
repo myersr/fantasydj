@@ -1,8 +1,5 @@
 <ion-view view-title="Playlists">
      <head>
-          <meta charset="utf-8">
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <title></title>
           <script>
               window.onload = function () {
                   var hash = window.location.hash;
@@ -10,6 +7,7 @@
                       // login failure
                       window.close();
                   } else if (hash) {
+                      console.log("Hit")
                       // login success
                       var token = window.location.hash.split('&')[0].split('=')[1];
                       localStorage.setItem('spotify-token', token);
@@ -19,22 +17,6 @@
       </head>
   <ion-content>
     <ion-list>
-      <!--<img src="{{images.0.url}}">
-      <p>User Name</p>
-      <p>{{id}}</p>
-      <p>Display Name</p>
-      <p>{{display_name}}</p>
-      <p>Country</p>
-      <p>{{country}}</p>
-      <p>Followers</p>
-      <p>{{followers.total}}</p>
-      <p>Profile</p>
-      <p><a href="{{external_urls.spotify}}" target="_blank">{{external_urls.spotify}}</a></p>
-      <p>Email</p>
-      <p>{{email}}</p>
-      <p>Product</p>
-      <p>{{product}}</p> -->
-
     </ion-list>
       <ion-list>
            <a class="button button-block button-royal" id="reg" type="submit" ng-click="performLogin()" >
