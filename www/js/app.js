@@ -6,14 +6,14 @@
 // 'starter.controllers' is found in controllers.js
 var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
-var redirect_uri = 'http://localhost:8100/#/app/account'; // Your redirect uri
+var redirect_uri = 'http://localhost:8100/#/app/account#'; // Your redirect uri
 var scopes_api = 'user-read-private playlist-read-private playlist-modify-private playlist-modify-public Access-Control-Allow-Origin'
 var token;
 var refreshToken;
 var expire;
 
 
-angular.module('starter', ['ionic', 'starter.controllers','spotify', 'ngCordova','ngCordovaOauth','firebase'])
+angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify','ngCordovaOauth','firebase'])
 
   .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
@@ -34,13 +34,23 @@ angular.module('starter', ['ionic', 'starter.controllers','spotify', 'ngCordova'
   .config(function (SpotifyProvider) {
     SpotifyProvider.setClientId(client_id);
     SpotifyProvider.setRedirectUri(redirect_uri);
-    SpotifyProvider.setScope('user-read-private playlist-read-private playlist-modify-private playlist-modify-public');
+    SpotifyProvider.setScope(scopes_api);
     // If you already have an auth token
-    SpotifyProvider.setAuthToken(client_secret);
+    //SpotifyProvider.setAuthToken(client_secret);
   })
+  //['spotifyProvider', function (spotifyProvider) {
+  //  spotifyProvider.setConfig({
+  //    clientId: client_id,
+  //    responseType: 'token',
+  //    redirectUri: redirect_uri,
+  //    state: true,
+  //    scope: scopes_api,
+  //    showDialog: false
+  //  })
+  //}])
   .factory('authenticationFact',['$http', '$log', '$q', '$window', function($http,$log, $q,$window){
     var authenticationFact = {};
-    var url ="https://accounts.spotify.com/authorize?client_id=" + client_id + "&response_type=code&redirect_uri="+
+    var url ="https://accounts.spotify.com/authorize?client_id=" + encodeURIComponent(client_id) + "&response_type=token&redirect_uri="+
                   encodeURIComponent(redirect_uri) +"&scopes="+encodeURIComponent(scopes_api)
 
 
@@ -52,42 +62,7 @@ angular.module('starter', ['ionic', 'starter.controllers','spotify', 'ngCordova'
 
     };
     authenticationFact.getToken = function(finalCode){
-      var authOptions = {
-        url: 'https://accounts.spotify.com/api/token',
-        form: {
-          code: finalCode,
-          redirect_uri: redirect_uri,
-          grant_type: 'authorization_code'
-        },
-        headers: {
-          'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
-        },
-        json: true
-      };
 
-      $http.post(authOptions, function(error, response, body) {
-        if (!error && response.statusCode === 200) {
-
-          var access_token = body.access_token,
-            refresh_token = body.refresh_token;
-
-          var options = {
-            url: 'https://api.spotify.com/v1/me',
-            headers: { 'Authorization': 'Bearer ' + access_token },
-            json: true
-          };
-      //$http({
-      //  url: 'https://accounts.spotify.com/api/token',
-      //  method: "POST",
-      //  data: JSON.stringify({grant_type: "authorization_code", code: finalCode, redirect_uri :redirect_uri}),
-      //  headers: {'Authorization': btoa(client_id +':'+client_secret)}
-      //});
-      //$log.log(JSON.stringify({grant_type: "authorization_code", code: finalCode, redirect_uri :redirect_uri}))
-      //var data = $.param({
-      //  json: JSON.stringify({
-      //    grant_type: authorization_code
-      //  })
-      //});
 
     }
 
@@ -142,6 +117,11 @@ angular.module('starter', ['ionic', 'starter.controllers','spotify', 'ngCordova'
 
   .config(function($stateProvider, $urlRouterProvider,$locationProvider) {
     $stateProvider
+      .state('test',{
+        url:'/',
+        templateUrl: 'index.html',
+        controller: 'AppCtrl'
+      })
 
       .state('app', {
         url: '/app',
@@ -222,6 +202,6 @@ angular.module('starter', ['ionic', 'starter.controllers','spotify', 'ngCordova'
         }
       });
     // if none of the above states are matched, use this as the fallback
-    $urlRouterProvider.otherwise('/app/playlists');
-    //$locationProvider.html5Mode(true).hashPrefix('!');
+    $urlRouterProvider.otherwise('#/app/playlists');
+    //$locationProvider.html5Mode(true);
   });

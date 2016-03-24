@@ -11,42 +11,9 @@ angular.module('starter.controllers', [])
       $scope.$on('$ionicView.enter', function() {
         // Code you want executed every time view is opened
         currentState = $state.current.data.link;
-        var test = $location.absUrl()
-        if( test.search("code") > 0)
-        {
-          $log.log("code found")
-          var value = test.split("code=")
-          var valueMinusExtra = value[1].split("&")
-          if(valueMinusExtra.length > 1){
-            $log.log("error returned in url")
-          }else{
-            var finalCode = valueMinusExtra[0].split("#")
-            authenticationFact.getToken(finalCode[0])
-            $log.log("final",finalCode[0])
-          }
-          $log.log("value",value)
-        }
-        if( test.search("error") > 0)
-        {
-          $log.log("error")
-        }
-
-        //$log.log(test)
-        //$log.log(currentState)
+        var token = localStorage.getItem('spotify-token')
+        $log.log("token", token)
       })
-      //$ionicView.enter(
-      //  function(event, toState, toParams, fromState, fromParams) {
-      //    currentState = toState.data.link;
-      //    $log.log(currentState)
-      //  }
-      //)
-      //$rootScope.$on('$stateChangeStart',
-      //  function(event, toState, toParams, fromState, fromParams){
-      //    currentState = toState.data.link;
-      //    $log.log(currentState)
-      //
-      //    // do something
-      //  })
       //$scope.$on('$ionicView.enter', function(e) {
       //});
       //var showLoading = function() {
@@ -80,27 +47,12 @@ angular.module('starter.controllers', [])
 
       $scope.performLogin = function(){
         authenticationFact.login()
-
-
-
-        $log.log($location.absUrl())
-
         //https://accounts.spotify.com/authorize
-
-
-        //Spotify.login();
-        //var test = $http.get("https://accounts.spotify.com/authorize?client_id=" + client_id + "&response_type=code&redirect_uri="+
-        //  encodeURIComponent(redirect_uri) +"&scopes="+encodeURIComponent(scopes_api)).success(function (res) {
-        //  return res;
-        //});
       }
 
       Spotify.getCurrentUser().then(function (data) {
         console.log(data);
       });
-      $scope.accountItems = [
-
-      ]
 
       $scope.menuOptions = [
         {name: 'Search', link:'#/app/search', class: 'item-dark'},
@@ -120,35 +72,6 @@ angular.module('starter.controllers', [])
 
         return className;
     };
-
-
-
-      // Form data for the login modal
-      $scope.loginData = {};
-
-      // Create the login modal that we will use later
-      $ionicModal.fromTemplateUrl('templates/login.html', {
-        scope: $scope
-      }).then(function(modal) {
-        $scope.modal = modal;
-      });
-
-      // Triggered in the login modal to close it
-      $scope.closeLogin = function() {
-        $scope.modal.hide();
-      };
-
-      // Open the login modal
-      $scope.login = function() {
-        $scope.modal.show();
-      };
-
-      // Perform the login action when the user submits the login form
-      $scope.doLogin = function() {
-        console.log('Doing login', $scope.loginData);
-
-
-      }
 
     })
 

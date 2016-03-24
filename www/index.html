@@ -1,9 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <base href="/"/>
     <meta charset="utf-8">
+    <base href="/">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <script>
+        window.onload = function () {
+            var hash = window.location.hash;
+            if (window.location.search.substring(1).indexOf("error") !== -1) {
+                // login failure
+                window.close();
+            } else if (hash) {
+                // login success
+                var token = window.location.hash.split('&')[0].split('=')[1];
+                localStorage.setItem('spotify-token', token);
+                window.location.assign("http://localhost:8100/#/app/playlists")
+            }
+        }
+    </script>
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -16,6 +30,7 @@
         <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    <!-- angular spotify -->
     <script src="lib/angular-spotify/dist/angular-spotify.min.js"></script>
     <script src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
       <!-- Firebase -->
@@ -32,6 +47,7 @@
 </head>
 
 <body ng-app="starter">
+
 <ion-nav-view id="indexNavView"></ion-nav-view>
 </body>
 </html>
