@@ -7,6 +7,6 @@ plugins/
 resources/
 www/lib
 .idea/
-.tmp
+*.tmp
 npm-debug.log
 
