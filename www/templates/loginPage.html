@@ -1,0 +1,24 @@
+<ion-view view-title="NewOrder">
+  <ion-content>
+  <div id="orderPage">
+      <div class="list">
+        <label class="item item-input item-stacked-label">
+          <span class="input-label" >Email</span>
+          <input type="text" ng-model="nUser.email" placeholder="john@doe.com">
+        </label>
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Password</span>
+          <input type="password" ng-model="nUser.password">
+        </label>
+      </div>
+      <a class="button button-block button-balanced" id="log" type="submit" ng-click="login(nUser)">
+        Login >
+      </a>
+      <a class="button button-block button-royal" id="reg" type="submit" ng-click="performLogin()" >
+        Register >
+        </a>
+            <a class="button button-block button-active" id="reg" type="submit" ng-click="autoLog()" > Login as Dummy > </a>
+
+    </div>
+  </ion-content>
+</ion-view>

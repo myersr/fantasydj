@@ -11,17 +11,13 @@
         </ion-nav-bar>
         <ion-nav-view name="menuContent"></ion-nav-view>
     </ion-side-menu-content>
-
     <ion-side-menu side="left">
         <ion-header-bar class="bar-dark">
             <h1 class="title">Left</h1>
         </ion-header-bar>
         <ion-content>
             <ion-list>
-                <ion-item class="item-dark" menu-close ng-click="login()">
-                    Login
-                </ion-item>
-                <ion-item ng-repeat="menu in menuOptions" ng-class="className(menu.name)" ng-click="toggle(menu.name)" menu-close href="#/app/{{ menu.name }}">
+                <ion-item ng-repeat="menu in menuOptions" ng-class="className(menu.name)" ng-click="toggle(menu.name)" menu-close href="{{ menu.link }}">
                     {{ menu.name }}
                 </ion-item>
                 <!--<ion-item id="menu-search" class="item-dark" ng-click="toggle("menu-search")" menu-close href="#/app/search">
