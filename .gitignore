@@ -5,7 +5,6 @@ node_modules/
 platforms/
 plugins/
 resources/
-www/lib/
 .idea/
 *.tmp
 npm-debug.log
