@@ -12,37 +12,14 @@ angular.module('starter.controllers', [])
         // Code you want executed every time view is opened
         currentState = $state.current.data.link;
         var token = localStorage.getItem('spotify-token')
-        $log.log("token", token)
+        if(!authenticationFact.isAuthorized()){
+          $log.log("inside token length")
+          authenticationFact.setToken(token)
+        }
+
+
       })
-      //$scope.$on('$ionicView.enter', function(e) {
-      //});
-      //var showLoading = function() {
-      //  $ionicLoading.show({
-      //    template: '<i class="ion-loading-c"></i>',
-      //    noBackdrop: true
-      //  });
-      //}
-      //
-      //var hideLoading = function() {
-      //  $ionicLoading.hide();
-      //}
 
-      // set loading to true first time while we retrieve songs from server.
-      //showLoading();
-
-      //$log.log(logtoken)
-        //.then(function(){
-        //  if(logtoken.getToken() === false){
-        //    hideLoading();
-        //  }else {
-        //    $log.log("token true/null")
-        //  }
-        //});
-
-
-      /*Spotify.getAlbum('0sNOF9WDwhWunNAHPD3Baj').then(function (data) {
-        console.log(data);
-      })*/;
 
 
       $scope.performLogin = function(){

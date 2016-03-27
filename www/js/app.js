@@ -9,8 +9,7 @@ var client_secret ='9b25b58435784d3cb34c048879e77aeb';
 var redirect_uri = 'http://localhost:8100/#/app/account#'; // Your redirect uri
 var scopes_api = 'user-read-private playlist-read-private playlist-modify-private playlist-modify-public Access-Control-Allow-Origin'
 var token;
-var refreshToken;
-var expire;
+var set = false;
 
 
 angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify','ngCordovaOauth','firebase'])
@@ -35,6 +34,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     SpotifyProvider.setClientId(client_id);
     SpotifyProvider.setRedirectUri(redirect_uri);
     SpotifyProvider.setScope(scopes_api);
+
     // If you already have an auth token
     //SpotifyProvider.setAuthToken(client_secret);
   })
@@ -52,19 +52,57 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     var authenticationFact = {};
     var url ="https://accounts.spotify.com/authorize?client_id=" + encodeURIComponent(client_id) + "&response_type=token&redirect_uri="+
                   encodeURIComponent(redirect_uri) +"&scopes="+encodeURIComponent(scopes_api)
+    var data;
+    var authorized;
 
 
-        //window.location = url;
+    authenticationFact.setToken = function(authToken){
+      //SpotifyProvider.setAuthToken(authToken)
+      $http({
+        url: "https://api.spotify.com/v1/me",
+        method: "Get",
+        headers: {
+                    'Authorization': 'Bearer ' + authToken
+                  }
+      }).then(function (res){
+        data = res.data;
+        authorized = true;
+
+      })
+      console.log("hit")
+    }
+
+    authenticationFact.isAuthorized = function (){
+      if(authorized === true){
+        return true;
+      }else {
+        return false;
+      }
+    }
 
     authenticationFact.login = function () {
       return $window.location = url;
       $log.log($location.absUrl())
 
     };
-    authenticationFact.getToken = function(finalCode){
+    //authenticationFact.getToken = function(finalCode){
+    //  $http({
+    //    url: "https://api.spotify.com/v1/me",
+    //    method: "Get",
+    //    headers: {
+    //                'Authorization': 'Bearer ' + finalCode
+    //              }
+    //  }).then(function (res){
+    //    $log.log(res)
+    //  })
+    //  $http.get("https://api.spotify.com/v1/me")
+    //.then(function(response) {
+    //    $scope.content = response.data;
+    //    $scope.statuscode = response.status;
+    //    $scope.statustext = response.statustext;
+    //});
 
-
-    }
+    //}
 
     authenticationFact.getData = function() {
       var test = $http.get(urlBase + client_id + "&response_type=code&redirect_uri="+
@@ -79,6 +117,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
       return authenticationFact;
   }])
+
+
+
+
+
+
 
   .factory('playlistsFact',['$log', function($log){
     var playlistsFact = []
