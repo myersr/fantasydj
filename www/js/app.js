@@ -55,9 +55,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     var data;
     var authorized;
 
-
     authenticationFact.setToken = function(authToken){
-      //SpotifyProvider.setAuthToken(authToken)
       $http({
         url: "https://api.spotify.com/v1/me",
         method: "Get",
@@ -67,9 +65,22 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       }).then(function (res){
         data = res.data;
         authorized = true;
+        $log.log(data)
 
       })
-      console.log("hit")
+    }
+    authenticationFact.getToken = function(){
+      var token = localStorage.getItem('spotify-token');
+      return token;
+    }
+    authenticationFact.hasToken = function(){
+      var token = authenticationFact.getToken();
+      if(token === 'undefined')
+      {
+        return false;
+      }else {
+        return true;
+      }
     }
 
     authenticationFact.isAuthorized = function (){
@@ -85,31 +96,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       $log.log($location.absUrl())
 
     };
-    //authenticationFact.getToken = function(finalCode){
-    //  $http({
-    //    url: "https://api.spotify.com/v1/me",
-    //    method: "Get",
-    //    headers: {
-    //                'Authorization': 'Bearer ' + finalCode
-    //              }
-    //  }).then(function (res){
-    //    $log.log(res)
-    //  })
-    //  $http.get("https://api.spotify.com/v1/me")
-    //.then(function(response) {
-    //    $scope.content = response.data;
-    //    $scope.statuscode = response.status;
-    //    $scope.statustext = response.statustext;
-    //});
 
-    //}
 
     authenticationFact.getData = function() {
-      var test = $http.get(urlBase + client_id + "&response_type=code&redirect_uri="+
-                  encodeURIComponent(redirect_uri) +"&scopes="+encodeURIComponent(scopes_api)).success(function (res) {
-        return res;
-      });
-      $log.log(test);
+      return data;
     }
 
     authenticationFact.spotifyLogin = function(){
@@ -172,6 +162,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         abstract: true,
         templateUrl: 'templates/menu.html',
         controller: 'AppCtrl',
+        onEnter: function($state, $log, authenticationFact){
+          if(!authenticationFact.hasToken()){
+            $state.go('login')
+          }
+        },
         data:{
           link:'App'
         }

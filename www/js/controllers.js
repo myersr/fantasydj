@@ -6,26 +6,40 @@ angular.module('starter.controllers', [])
       // when they are recreated or on app start, instead of every page change.
       // To listen for when this page is active (for example, to refresh data),
       // listen for the $ionicView.enter event:
+      var showLoading = function() {
+        $ionicLoading.show({
+          template: '<i class="ion-loading-c"></i>',
+          noBackdrop: true
+        });
+      }
+
+      var hideLoading = function() {
+        $ionicLoading.hide();
+      }
 
       var currentState;
       $scope.$on('$ionicView.enter', function() {
         // Code you want executed every time view is opened
         currentState = $state.current.data.link;
-        var token = localStorage.getItem('spotify-token')
-        if(!authenticationFact.isAuthorized()){
-          $log.log("inside token length")
-          authenticationFact.setToken(token)
-        }
 
+        if(!authenticationFact.isAuthorized() && authenticationFact.hasToken()){
+          showLoading();
+          $log.log("inside token length")
+          var token = authenticationFact.getToken()
+          authenticationFact.setToken(token)
+          $log.log($scope.accountInfo)
+          hideLoading()
+        }else{
+          $log.log("good to go")
+        }
+        $scope.accountInfo = authenticationFact.getData();
+        console.log($scope.accountInfo.images[0]);
 
       })
 
 
 
-      $scope.performLogin = function(){
-        authenticationFact.login()
-        //https://accounts.spotify.com/authorize
-      }
+
 
       Spotify.getCurrentUser().then(function (data) {
         console.log(data);
@@ -81,39 +95,15 @@ angular.module('starter.controllers', [])
 
   })
 
-    .controller('login', function($scope, $stateParams, $ionicModal, $timeout,$log, Spotify, $ionicPlatform, $ionicPopup, $ionicLoading, $q){ //$cordovaOauth, ) {
+    .controller('login', function($scope, $stateParams, $ionicModal, $timeout,$log, Spotify, $ionicPlatform, $ionicPopup, $ionicLoading, $q, authenticationFact){
 
       $scope.performLogin = function(){
-        Spotify.login();
-
+        authenticationFact.login()
+        //https://accounts.spotify.com/authorize
       }
 
 
-      //Called after login to update
-      $scope.updateInfo = function() {
-        Spotify.getCurrentUser().then(function (data) {
-          $scope.getUserPlaylists(data.id);
-        }, function(error) {
-          $scope.performLogin();
-        });
-      };
 
-      $ionicPlatform.ready(function() {
-      var storedToken = window.localStorage.getItem('spotify-token');
-      if (storedToken !== null) {
-        Spotify.setAuthToken(storedToken);
-        $scope.updateInfo();
-      } else {
-        $scope.performLogin();
-      }
-    });
-
-
-      $scope.createUser = function(newuser){
-        console.log(newuser.username)
-        Backendless.UserService.register(user, asyncCallback);
-
-      }
     });
 
 

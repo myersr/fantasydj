@@ -1,6 +1,13 @@
 <ion-view view-title="Account">
   <ion-content>
     <ion-list>
+        <ion-item>
+            {{ accountInfo.display_name }}
+        </ion-item>
+        <div>
+            <img width="150" src="{{ accountInfo.images[0].url }}" >
+        </div>
+
     </ion-list>
       <ion-list>
            <a class="button button-block button-royal" id="reg" type="submit" ng-click="performLogin()" >
