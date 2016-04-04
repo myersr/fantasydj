@@ -22,7 +22,7 @@ angular.module('starter.controllers', [])
         // Code you want executed every time view is opened
         currentState = $state.current.data.link;
 
-        if(!authenticationFact.isAuthorized() && authenticationFact.hasToken()){
+        if(!authenticationFact.isAuthorized() || !authenticationFact.hasToken()){
           showLoading();
           $log.log("inside token length")
           var token = authenticationFact.getToken()
@@ -95,7 +95,8 @@ angular.module('starter.controllers', [])
 
   })
 
-    .controller('login', function($scope, $stateParams, $ionicModal, $timeout,$log, Spotify, $ionicPlatform, $ionicPopup, $ionicLoading, $q, authenticationFact){
+    .controller('login', function($scope, $stateParams, $log, $firebaseArray, $ionicPlatform, $ionicPopup, authenticationFact){
+      $scope.platform = ionic.Platform.platform();
 
       $scope.performLogin = function(){
         authenticationFact.login()

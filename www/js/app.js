@@ -8,6 +8,8 @@ var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
 var redirect_uri = 'http://localhost:8100/#/app/account#'; // Your redirect uri
 var scopes_api = 'user-read-private playlist-read-private playlist-modify-private playlist-modify-public Access-Control-Allow-Origin'
+var ref = new Firebase("https://fantasydj.firebaseio.com")
+var firebase_secret = 'NQcYGN8O7OUtovRdkjMgt5t75Sj8vMnkGMtKNj3C'
 var token;
 var set = false;
 
@@ -55,6 +57,14 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     var data;
     var authorized;
 
+    function authDataCallback(authData) {
+      if (authData) {
+        console.log("User " + authData.uid + " is logged in with " + authData.provider);
+      } else {
+        console.log("User is logged out");
+      }
+    }
+
     authenticationFact.setToken = function(authToken){
       $http({
         url: "https://api.spotify.com/v1/me",
@@ -65,6 +75,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       }).then(function (res){
         data = res.data;
         authorized = true;
+        ref.onAuth(authDataCallback)
         $log.log(data)
 
       })
