@@ -8,9 +8,10 @@ var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
 var redirect_uri = 'http://localhost:8100/#/app/account#'; // Your redirect uri
 var scopes_api = 'user-read-private playlist-read-private playlist-modify-private playlist-modify-public Access-Control-Allow-Origin'
+var ref = new Firebase("https://fantasydj.firebaseio.com")
+var firebase_secret = 'NQcYGN8O7OUtovRdkjMgt5t75Sj8vMnkGMtKNj3C'
 var token;
-var refreshToken;
-var expire;
+var set = false;
 
 
 angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify','ngCordovaOauth','firebase'])
@@ -35,6 +36,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     SpotifyProvider.setClientId(client_id);
     SpotifyProvider.setRedirectUri(redirect_uri);
     SpotifyProvider.setScope(scopes_api);
+
     // If you already have an auth token
     //SpotifyProvider.setAuthToken(client_secret);
   })
@@ -52,26 +54,63 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     var authenticationFact = {};
     var url ="https://accounts.spotify.com/authorize?client_id=" + encodeURIComponent(client_id) + "&response_type=token&redirect_uri="+
                   encodeURIComponent(redirect_uri) +"&scopes="+encodeURIComponent(scopes_api)
+    var data;
+    var authorized;
 
+    function authDataCallback(authData) {
+      if (authData) {
+        console.log("User " + authData.uid + " is logged in with " + authData.provider);
+      } else {
+        console.log("User is logged out");
+      }
+    }
 
-        //window.location = url;
+    authenticationFact.setToken = function(authToken){
+      $http({
+        url: "https://api.spotify.com/v1/me",
+        method: "Get",
+        headers: {
+                    'Authorization': 'Bearer ' + authToken
+                  }
+      }).then(function (res){
+        data = res.data;
+        authorized = true;
+        ref.onAuth(authDataCallback)
+        $log.log(data)
+
+      })
+    }
+    authenticationFact.getToken = function(){
+      var token = localStorage.getItem('spotify-token');
+      return token;
+    }
+    authenticationFact.hasToken = function(){
+      var token = authenticationFact.getToken();
+      if(token === 'undefined')
+      {
+        return false;
+      }else {
+        return true;
+      }
+    }
+
+    authenticationFact.isAuthorized = function (){
+      if(authorized === true){
+        return true;
+      }else {
+        return false;
+      }
+    }
 
     authenticationFact.login = function () {
       return $window.location = url;
       $log.log($location.absUrl())
 
     };
-    authenticationFact.getToken = function(finalCode){
 
-
-    }
 
     authenticationFact.getData = function() {
-      var test = $http.get(urlBase + client_id + "&response_type=code&redirect_uri="+
-                  encodeURIComponent(redirect_uri) +"&scopes="+encodeURIComponent(scopes_api)).success(function (res) {
-        return res;
-      });
-      $log.log(test);
+      return data;
     }
 
     authenticationFact.spotifyLogin = function(){
@@ -79,6 +118,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
       return authenticationFact;
   }])
+
+
+
+
+
+
 
   .factory('playlistsFact',['$log', function($log){
     var playlistsFact = []
@@ -128,6 +173,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         abstract: true,
         templateUrl: 'templates/menu.html',
         controller: 'AppCtrl',
+        onEnter: function($state, $log, authenticationFact){
+          if(!authenticationFact.hasToken()){
+            $state.go('login')
+          }
+        },
         data:{
           link:'App'
         }

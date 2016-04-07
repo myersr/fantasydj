@@ -1,4 +1,4 @@
-<ion-view view-title="NewOrder">
+<ion-view view-title="NewOrder" ng-class="{'loginAndroid' : platform == 'android', 'loginBrowser' : platform != 'android'}">
   <ion-content>
   <div id="orderPage">
       <div class="list">
@@ -11,14 +11,9 @@
           <input type="password" ng-model="nUser.password">
         </label>
       </div>
-      <a class="button button-block button-balanced" id="log" type="submit" ng-click="login(nUser)">
-        Login >
-      </a>
-      <a class="button button-block button-royal" id="reg" type="submit" ng-click="performLogin()" >
-        Register >
+      <a ng-class="{ 'bar bar-footer' : platform == 'android', 'button button-large button-balanced' : platform != 'android' }" type="submit" ng-click="performLogin()" >
+        Login With Spotify
         </a>
-            <a class="button button-block button-active" id="reg" type="submit" ng-click="autoLog()" > Login as Dummy > </a>
-
     </div>
   </ion-content>
 </ion-view>
