@@ -2,9 +2,9 @@
     <base href="/app/playlists">
   <ion-content>
     <ion-list can-swipe="true">
-      <ion-item class="item-thumbnail-left" ng-repeat="song in playlist" ng-href="#/app/playlist/{{song.id}}">
-          <img ng-src="{{song.image_small}}">
-          <h2>{{song.title}}</h2>
+      <ion-item class="item-thumbnail-left" ng-repeat="playlist in playlists" ng-href="#/app/playlist/{{song.id}}">
+          <img ng-src="{{playlist.name}}">
+          <h2>{{playlist.href}}</h2>
           <ion-option-button class="button-positive"
                        ng-click="share()">
       Share
