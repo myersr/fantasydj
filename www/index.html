@@ -4,12 +4,13 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <script>
+    <div ng-controller='indexController' ng-init='load()'></div>
+    <!--<script>
         window.onload = function () {
             var hash = window.location.hash;
             if (window.location.search.substring(1).indexOf("error") !== -1) {
                 // login failure
-                window.close();
+                window.location.assign("http://localhost:8100/#/login");
             } else if (hash) {
                 // login success
                 var token = window.location.hash.split('&')[0].split('=')[1];
@@ -17,7 +18,7 @@
                 window.location.assign("http://localhost:8100/#/app/playlists")
             }
         }
-    </script>
+    </script>-->
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
