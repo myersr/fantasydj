@@ -136,6 +136,8 @@ angular.module('starter.controllers', [])
 
 
 
+    .controller('login', function($scope, $stateParams, $ionicModal, $timeout,$log, Spotify, $ionicPlatform, $ionicPopup, $ionicLoading, $q){ //$cordovaOauth, ) {
+
 
     $scope.className = function(name){
       var className = 'item-dark';
