@@ -221,7 +221,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             var promise2 = playlistsFact.getPlaylistsData();
               promise2.then(function(response){
                 $log.log("Promise resolved: ",response)
-                $rootScope.$apply()
+                //$rootScope.$apply()
                 $state.go("app.playlists", {}, { reload: true })
               })
           }
@@ -247,7 +247,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         url: '/account',
         views: {
           'menuContent': {
-            templateUrl: 'templates/account.html'
+            templateUrl: 'templates/account.html',
+            controller: 'AccountCtrl'
           }
         },
         data:{

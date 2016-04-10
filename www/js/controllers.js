@@ -124,10 +124,6 @@ angular.module('starter.controllers', [])
 
 
 
-    Spotify.getCurrentUser().then(function (data) {
-      console.log(data);
-    });
-
     $scope.menuOptions = [
       {name: 'Search', link:'#/app/search', class: 'item-dark'},
       {name: 'Browse', link: '#/app/browse', class: 'item-dark'},
@@ -189,7 +185,7 @@ angular.module('starter.controllers', [])
 
 
 
-  });
+  })
 
 
 //http://10.31.23.184:8100
@@ -216,3 +212,19 @@ angular.module('starter.controllers', [])
 //}, function(reason) {
 //  alert('Failed: ' + reason);
 //});
+
+.controller('AccountCtrl', function($scope,$log, authenticationFact) {
+
+
+    if(authenticationFact.isAuthorized())
+    {
+      //var defer = $q.defer();
+      $log.log("ACCOUNT CALL")
+      //var tken = authenticationFact.getToken()
+      //authenticationFact.queryData(tken)
+      $scope.accountInfo = authenticationFact.getData();
+      console.log("accountInfo:",$scope.accountInfo);
+    }
+
+
+  });
