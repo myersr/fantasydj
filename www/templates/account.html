@@ -1,22 +1,13 @@
-<ion-view view-title="Playlists">
-     <head>
-          <script>
-              window.onload = function () {
-                  var hash = window.location.hash;
-                  if (window.location.search.substring(1).indexOf("error") !== -1) {
-                      // login failure
-                      window.close();
-                  } else if (hash) {
-                      console.log("Hit")
-                      // login success
-                      var token = window.location.hash.split('&')[0].split('=')[1];
-                      localStorage.setItem('spotify-token', token);
-                  }
-              }
-          </script>
-      </head>
+<ion-view view-title="Account">
   <ion-content>
     <ion-list>
+        <ion-item>
+            {{ accountInfo.display_name }}
+        </ion-item>
+        <div>
+            <img width="150" src="{{ accountInfo.images[0].url }}" >
+        </div>
+
     </ion-list>
       <ion-list>
            <a class="button button-block button-royal" id="reg" type="submit" ng-click="performLogin()" >

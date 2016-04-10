@@ -1,1 +1,12 @@
 /* Empty. Add your own CSS if you like */
+.loginAndroid {
+  background: url('../img/loginBackground.jpg') no-repeat center;
+  background-size:100% 100%;
+}
+.loginBrowser {
+  background: url('../img/desktopBack.jpg') no-repeat center;
+  background-size:100% 100%;
+}
+
+
+
