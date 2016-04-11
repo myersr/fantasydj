@@ -83,7 +83,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           authorized = true;
           //ref.onAuth(authDataCallback)
           //$log.log("data: ",data)
-          $log.log("After Call Success", data)
+          //$log.log("After Call Success", data)
           resolve("promise resolved in queryData")
           //return data;
           //return defer.promise;
@@ -143,11 +143,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
 
-
-
   .factory('playlistsFact',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
     var playlistsFact = []
     var playlists = []
+    var userData = authenticationFact.getData();
 
     playlistsFact.areFetched = function(){
       if(playlists.length != 0){
@@ -157,11 +156,14 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         return false;
       }
     }
+    playlistsFact.getPlaylists = function(){
+      return playlists;
+    }
 
     playlistsFact.getPlaylistsData = function(){
       return $q(function(resolve, reject) {
         //$log.log("Before Call")
-        var userData = authenticationFact.getData();
+        userData = authenticationFact.getData();
         //$log.log("userData: ", userData)
         $http({
           url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists",
@@ -170,6 +172,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             'Authorization': 'Bearer ' + token
           }
         }).then(function successCallback(res) {
+          //$log.log("pre assign", res.data)
           playlists = res.data.items
           $log.log("playlistsfetched",playlists)
           resolve("playlists fetched")
@@ -184,6 +187,47 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         //https://api.spotify.com/v1/users/{user_id}/playlists
       });
     }
+
+    var getLinkbyId = function(playlistId) {
+      for (var i = 0; i < playlists.length; i++) {
+        if (playlists[i].id == playlistId) {
+          return playlists[i].href
+        }
+      }
+    }
+
+    playlistsFact.getPlaylistData = function(playlistId){
+      return $q(function(resolve, reject) {
+        var playlistLink = getLinkbyId(playlistId)
+        $log.log("after For loop: ", playlistLink)
+        //var userData = authenticationFact.getData();
+        //$log.log("userData: ", userData)
+        $http({
+          url: playlistLink,//"GET https://api.spotify.com/v1/users/"+ userData.id +"/playlists/"+ playlistId + "/playlists",
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          //need to create dictionary with keys so that we can loop through quickly possibly
+          playlists = res.data;
+          $log.log("playlist",playlists)
+          resolve("playlist selected fetched")
+
+        }, function errorCallback(response) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          $log.log("Call Error single Playlist: ",response)
+          reject("error in getPlaylistsData")
+        })
+        //return playlists;
+        //https://api.spotify.com/v1/users/{user_id}/playlists
+      });
+    }
+    playlistsFact.getPlaylist = function(playlistId){
+
+    }
+
     playlistsFact.getSong = function(index){
       return songs[index];
     }
@@ -215,29 +259,32 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         templateUrl: 'templates/menu.html',
         controller: 'AppCtrl',
         onEnter: function($state, $log, authenticationFact, $ionicLoading,playlistsFact){
-
-          //$log.log("yo", playlistsFact.areFetched())
-          if(!playlistsFact.areFetched()){
-            var promise2 = playlistsFact.getPlaylistsData();
-              promise2.then(function(response){
-                $log.log("Promise resolved: ",response)
-                $rootScope.$apply()
-                $state.go("app.playlists", {}, { reload: true })
-              })
-          }
-
-          //  else{
-          //    if(!authenticationFact.isAuthorized() || !authenticationFact.hasToken()){
-          //      $log.log("inside token length")
-          //      var token = authenticationFact.getToken()
-          //      authenticationFact.setToken(token)
-          //
-          //
-          //}else{
-          //  $log.log("good to go")
-          //}
-          //  }
+         if(!authenticationFact.isAuthorized())
+           $state.go("login")
         },
+        //
+        //  //$log.log("yo", playlistsFact.areFetched())
+        //  if(!playlistsFact.areFetched()){
+        //    var playlistPromise = playlistsFact.getPlaylistsData();
+        //      playlistPromise.then(function(response){
+        //        $log.log("Promise resolved: ",response)
+        //        $rootScope.$apply()
+        //        $state.go("app.playlists", {}, { reload: true })
+        //      })
+        //  }
+        //
+        //  //  else{
+        //  //    if(!authenticationFact.isAuthorized() || !authenticationFact.hasToken()){
+        //  //      $log.log("inside token length")
+        //  //      var token = authenticationFact.getToken()
+        //  //      authenticationFact.setToken(token)
+        //  //
+        //  //
+        //  //}else{
+        //  //  $log.log("good to go")
+        //  //}
+        //  //  }
+        //},
         data:{
           link:'App'
         }
@@ -279,14 +326,14 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
       .state('app.playlists', {
         url: '/playlists',
-        controller: 'PlaylistsCtrl',
-        onEnter: function($state, $log, authenticationFact){
-          //$log.log("hitting playlists", $state.current)
-
-        },
+        //onEnter: function($state, $log, authenticationFact){
+        //  $log.log("hitting playlists", $state.current)
+        //
+        //},
         views: {
           'menuContent': {
-            templateUrl: 'templates/playlists.html'
+            templateUrl: 'templates/playlists.html',
+            controller: 'PlaylistsCtrl',
           }
         },
         data:{

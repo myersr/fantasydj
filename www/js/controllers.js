@@ -49,6 +49,7 @@ angular.module('starter.controllers', [])
           // login failure
           window.location.assign("http://localhost:8100/#/login");
         }
+        //$state.go("app.playlists");
       }
     }
   })
@@ -69,7 +70,7 @@ angular.module('starter.controllers', [])
       $ionicLoading.hide();
     }
 
-    var currentState;// = $state.current.data.link;;
+    var currentState = 'Playlists';// = $state.current.data.link;;
     //$log.log("current State: ",currentState);
     //$log.log("controller Data log: ", authenticationFact.getData())
     //event.preventDefault(); //This will cancel the transition
@@ -79,8 +80,6 @@ angular.module('starter.controllers', [])
     $rootScope.$on('$stateChangeSuccess',
       function(event, toState, toParams, fromState, fromParams, options){
         currentState = toState.data['link'];
-        $log.log("Changed")
-
 
       })
     //$rootScope.$on("ionicView.beforeEnter", function(){
@@ -98,13 +97,6 @@ angular.module('starter.controllers', [])
     //  console.log($scope.accountInfo.images[0]);
     //}
 
-
-
-
-
-
-
-
     //$scope.$on('$stateChangeStart', function($q) {
     //  // Code you want executed every time view is opened
     //  currentState = $state.current.data.link;
@@ -120,13 +112,6 @@ angular.module('starter.controllers', [])
     //
     //})
 
-
-
-
-
-    Spotify.getCurrentUser().then(function (data) {
-      console.log(data);
-    });
 
     $scope.menuOptions = [
       {name: 'Search', link:'#/app/search', class: 'item-dark'},
@@ -149,35 +134,72 @@ angular.module('starter.controllers', [])
 
   })
 
-  .controller('PlaylistsCtrl', function($scope, playlistsFact) {
-    //$scope.playlists = [
-    //  { title: 'Reggae', id: 1 },
-    //  { title: 'Chill', id: 2 },
-    //  { title: 'Dubstep', id: 3 },
-    //  { title: 'Indie', id: 4 },
-    //  { title: 'Rap', id: 5 },
-    //  { title: 'Cowbell', id: 6 }
-    //];
-    //$scope.isDownloadActive = false;
+  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, playlistsFact) {
+    showLoading = function() {
+      $ionicLoading.show({
+        template: '<i class="ion-loading-c"> Loading Playlists </i>',
+        noBackdrop: false
+      });
+    }
 
-    $scope.playlists = playlistsFact.getPlaylistsData();
-    $log.log("Playlists List: ", playlists[0].name);
+    hideLoading = function() {
+      $ionicLoading.hide();
+    }
+    $scope.playlists;// = playlistsFact.getPlaylistsData();
 
+    $scope.load =  function() {
+      showLoading();
+      //$log.log("yo", playlistsFact.areFetched())
+      if (!playlistsFact.areFetched()) {
+        var playlistPromise = playlistsFact.getPlaylistsData();
+        playlistPromise.then(function (response) {
+          //$log.log("Promise resolved: ", response)
+          $scope.playlists = playlistsFact.getPlaylists();
+          //$log.log("playlists after call: ", $scope.playlists)
+          //$log.log("Playlists List: ", $scope.playlists[0].name);
+          hideLoading();
+          //$state.go("app.playlists", {}, {reload: true})
+        })
+      } else {
+        hideLoading();
+        $state.go("login")
+      }
+    }
 
-
+    $scope.choosePlaylist = function(playlistId){
+      $log.log(playlistId);
+    }
 
   })
-  //.controller('PlaylistCtrl', function($scope, $stateParams, $log, playlistsFact) {
-  //  $scope.isDownloadActive = false;
-  //  $scope.playlists = playlistsFact.getPlaylists();
-  //  $log.log($scope.playlists)
-  //  //$scope.song = $scope.songs[0]
-  //
-  //
-  //
-  //
-  //
-  //})
+
+  .controller('PlaylistCtrl', function($scope, $stateParams, $log, playlistsFact) {
+    showLoading = function() {
+      $ionicLoading.show({
+        template: '<i class="ion-loading-c"> Loading Playlists </i>',
+        noBackdrop: false
+      });
+    }
+
+    hideLoading = function() {
+      $ionicLoading.hide();
+    }
+    $scope.playlist;
+
+    $scope.load = function(){
+      var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId);
+      playlistPromise.then(function (response) {
+        $log.log("Response in controller: ",response)
+
+        //$log.log("Promise resolved: ", response)
+        //$scope.playlists = playlistsFact.getPlaylist($stateParams.playlistId);
+        //$log.log("playlists after call: ", $scope.playlists)
+        //$log.log("Playlists List: ", $scope.playlists[0].name);
+        //hideLoading();
+        //$state.go("app.playlists", {}, {reload: true})
+      })
+    }
+
+  })
 
   .controller('login', function($scope, $stateParams, $log, $firebaseArray, $ionicPlatform, $ionicPopup, authenticationFact){
     $scope.platform = ionic.Platform.platform();
@@ -190,6 +212,7 @@ angular.module('starter.controllers', [])
 
 
   });
+
 
 
 //http://10.31.23.184:8100

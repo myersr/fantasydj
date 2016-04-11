@@ -1,5 +1,5 @@
 <ion-view view-title="{{ song.title }}">
-  <ion-content>
+  <ion-content ng-init="load()">
       <div class="list card">
           <div class="item item-avatar">
               <img ng-src="{{ song.image_small }}">
