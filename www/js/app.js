@@ -140,7 +140,66 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   }])
 
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//                                        Factory for search :: Thomas Brower
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
+
+
+  .factory('searchFact',['$log', '$http','$q', function($log, $http, $q){
+    var searchFact = []
+    var searchResults = []
+
+    searchFact.areFetched = function(){
+      if(searchResults.length != 0){
+        //$log.log("true", playlists)
+        return true;
+      }else {
+        return false;
+      }
+    }
+
+    searchFact.getSearchResults = function(searchInput){
+      return $q(function(resolve, reject) {
+
+        $http({
+          url: "https://api.spotify.com/v1/search?q="+ encodeURIComponent(searchInput) + "&type=artist,album,playlist,track",
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          searchResults = res.data
+          $log.log("searchfetched", searchResults)
+          resolve(searchResults)
+
+        }, function errorCallback(response) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          $log.log("Call Error Search: ",response)
+          reject("400 error in getSearchData")
+        })
+        //return playlists;
+        //https://api.spotify.com/v1/users/{user_id}/playlists
+      });
+    }
+    // searchFact.getSong = function(index){
+    //   return songs[index];
+   // }
+
+    return searchFact;
+  }])
+
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
@@ -221,7 +280,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             var promise2 = playlistsFact.getPlaylistsData();
               promise2.then(function(response){
                 $log.log("Promise resolved: ",response)
-                $rootScope.$apply()
+                //$rootScope.$apply()
                 $state.go("app.playlists", {}, { reload: true })
               })
           }
@@ -258,12 +317,26 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         url: '/search',
         views: {
           'menuContent': {
-            templateUrl: 'templates/search.html'
+            templateUrl: 'templates/search.html',
+            controller: 'searchCtrl'
+
           }
         },
         data:{
           link:'Search'
         }
+      })
+
+      .state('app.info', {
+        url: '/search/info/:id',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/cardView.html'
+        }
+      },
+      data: {
+        link:'Card'
+      }
       })
 
       .state('app.browse', {
