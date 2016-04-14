@@ -112,13 +112,11 @@ angular.module('starter.controllers', [])
     //
     //})
 
-
     $scope.menuOptions = [
       {name: 'Search', link:'#/app/search', class: 'item-dark'},
       {name: 'Browse', link: '#/app/browse', class: 'item-dark'},
       {name: 'Account', link: '#/app/account', class: 'item-dark'},
       {name: 'Playlists', link: '#/app/playlists', class: 'item-dark'}];
-
 
 
 
@@ -213,6 +211,71 @@ angular.module('starter.controllers', [])
     }
 
   })
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//                                                      Search Ctrl             Written by Thomas Brower
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  .controller('searchCtrl', function($scope, $log, $ionicLoading, $ionicPlatform, $q, searchFact){
+    $scope.platform = ionic.Platform.platform();
+
+    $scope.isArtist = false;
+    $scope.isTrack = false;
+    $scope.isAlbum = false;
+
+    $scope.performSearch = function(searchInput){
+    // assign somehting to be displayed (promise)
+    // use ionic loading to wait while its being assigned
+      $scope.showLoading();
+
+      var promise = searchFact.getSearchResults(searchInput);
+      promise.then(function(response){
+        $log.log(response)
+        $scope.returnDataArtists = response.artists.items;
+        if($scope.returnDataArtists.length > 0)
+        {
+          $scope.isArtist = true;
+        }
+
+        $scope.returnDataTracks = response.tracks.items;
+        if($scope.returnDataTracks.length > 0)
+        {
+          $scope.isTrack = true;
+        }
+
+        $scope.returnDataAlbum = response.albums.items;
+        if($scope.returnDataAlbum.length > 0)
+        {
+          $scope.isAlbum = true;
+          //$log.log($scope.returnDataAlbum);
+        }
+
+        $scope.hideLoading();
+        //window.location.reload();
+        })
+   }
+})
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+  //.controller('PlaylistCtrl', function($scope, $stateParams, $log, playlistsFact) {
+  //  $scope.isDownloadActive = false;
+  //  $scope.playlists = playlistsFact.getPlaylists();
+  //  $log.log($scope.playlists)
+  //  //$scope.song = $scope.songs[0]
+  //
+  //
+  //
+  //
+  //
+  //})
 
   .controller('login', function($scope, $stateParams, $log, $firebaseArray, $ionicPlatform, $ionicPopup, authenticationFact){
     $scope.platform = ionic.Platform.platform();

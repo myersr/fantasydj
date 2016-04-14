@@ -4,6 +4,11 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
+/*
+Roy Myers
+All the various static id's
+Will be moved and hidden in development
+ */
 var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
 var redirect_uri = 'http://localhost:8100/#/app/account#'; // Your redirect uri
@@ -32,6 +37,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     });
   })
 
+  /*
+  sets the spotify client codes
+   */
   .config(function (SpotifyProvider) {
     SpotifyProvider.setClientId(client_id);
     SpotifyProvider.setRedirectUri(redirect_uri);
@@ -52,6 +60,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   //}])
 
 
+  /*
+  Authentication Factory
+  Written by Roy Myers
+  Performs the various authentication through spotify developers api
+  Used promises in the form of $q and http requests
+   */
   .factory('authenticationFact',['$http', '$log', '$q', '$window', function($http,$log, $q,$window){
     var authenticationFact = {};
     var url ="https://accounts.spotify.com/authorize?client_id=" + encodeURIComponent(client_id) + "&response_type=token&redirect_uri="+
@@ -140,9 +154,70 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   }])
 
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//                                        Factory for search :: Thomas Brower
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  .factory('searchFact',['$log', '$http','$q', function($log, $http, $q){
+    var searchFact = []
+    var searchResults = []
+
+    searchFact.areFetched = function(){
+      if(searchResults.length != 0){
+        //$log.log("true", playlists)
+        return true;
+      }else {
+        return false;
+      }
+    }
+
+    searchFact.getSearchResults = function(searchInput){
+      return $q(function(resolve, reject) {
+
+        $http({
+          url: "https://api.spotify.com/v1/search?q="+ encodeURIComponent(searchInput) + "&type=artist,album,playlist,track",
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          searchResults = res.data
+          $log.log("searchfetched", searchResults)
+          resolve(searchResults)
+
+        }, function errorCallback(response) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          $log.log("Call Error Search: ",response)
+          reject("400 error in getSearchData")
+        })
+        //return playlists;
+        //https://api.spotify.com/v1/users/{user_id}/playlists
+      });
+    }
+    // searchFact.getSong = function(index){
+    //   return songs[index];
+   // }
+
+    return searchFact;
+  }])
 
 
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  /*
+  playlistsFact written by Roy Myer
+  Returns the playlists of a user
+  get Call
+  using $q as promises
+   */
   .factory('playlistsFact',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
     var playlistsFact = []
     var playlists = []
@@ -188,6 +263,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       });
     }
 
+    /*
+    getLinkbyId function
+    Written by Roy Myers
+    Loops through an array and returns an item of a list
+    that matches the id input.
+     */
     var getLinkbyId = function(playlistId) {
       for (var i = 0; i < playlists.length; i++) {
         if (playlists[i].id == playlistId) {
@@ -195,6 +276,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       }
     }
+    /*
+   playlistFact written by Roy Myer
+   Returns the playlist data of a playlist by playlist id
+   get Call
+   using $q as promises
+    */
 
     playlistsFact.getPlaylistData = function(playlistId){
       return $q(function(resolve, reject) {
@@ -259,8 +346,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         templateUrl: 'templates/menu.html',
         controller: 'AppCtrl',
         onEnter: function($state, $log, authenticationFact, $ionicLoading,playlistsFact){
-         if(!authenticationFact.isAuthorized())
+         if(!authenticationFact.isAuthorized()){
            $state.go("login")
+         }
         },
         //
         //  //$log.log("yo", playlistsFact.areFetched())
@@ -305,12 +393,26 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         url: '/search',
         views: {
           'menuContent': {
-            templateUrl: 'templates/search.html'
+            templateUrl: 'templates/search.html',
+            controller: 'searchCtrl'
+
           }
         },
         data:{
           link:'Search'
         }
+      })
+
+      .state('app.info', {
+        url: '/search/info/:id',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/cardView.html'
+        }
+      },
+      data: {
+        link:'Card'
+      }
       })
 
       .state('app.browse', {

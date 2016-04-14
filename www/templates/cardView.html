@@ -1,0 +1,29 @@
+<ion-view view-title="item name: {{item.name}}">
+<ion-content>
+
+<div class="list card">
+
+  <div class="item item-avatar">
+    <img ng-src="{{item.images[1].url}}" ng-show="platform != 'android'">
+    <img ng-src="{{item.images[0].url}}" ng-show="platform == 'android'">
+    <h2>item name: {{item.name}}</h2>
+    <p>Content Type: {{item.type}}</p>
+    <p>Popularity: {{item.popularity}}</p>
+  </div>
+
+  <div class="item item-image">
+    <img ng-src="{{item.images[1].url}}" ng-show="platform != 'android'">
+    <img ng-src="{{item.images[0].url}}" ng-show="platform == 'android'"> 
+  </div>
+
+  <a class="item item-icon-left assertive" href="#">
+    <i class="icon ion-music-note"></i>
+    Start listening!
+  </a>
+
+</div>
+
+
+
+</ion-content>
+</ion-view>
