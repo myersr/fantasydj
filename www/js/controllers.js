@@ -173,6 +173,8 @@ angular.module('starter.controllers', [])
   })
 
   .controller('PlaylistCtrl', function($scope, $stateParams, $log, playlistsFact) {
+    $scope.audio = new Audio();
+
     showLoading = function() {
       $ionicLoading.show({
         template: '<i class="ion-loading-c"> Loading Playlists </i>',
@@ -185,11 +187,22 @@ angular.module('starter.controllers', [])
     }
     $scope.playlist;
 
+    $scope.playTrack = function(trackInfo) {
+      $scope.audio.src = trackInfo.track.preview_url;
+      $scope.audio.play();
+    };
+    $scope.play = function() {
+      if ($scope.audio.src) {
+        $scope.audio.play();
+      }
+    };
+
     $scope.load = function(){
       var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId);
       playlistPromise.then(function (response) {
         $log.log("Response in controller: ",response)
-
+        $scope.playlist = response;
+        $log.log(response.tracks.items[0].track.album.images[2].url)
         //$log.log("Promise resolved: ", response)
         //$scope.playlists = playlistsFact.getPlaylist($stateParams.playlistId);
         //$log.log("playlists after call: ", $scope.playlists)

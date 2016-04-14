@@ -1,21 +1,17 @@
 <ion-view view-title="{{ song.title }}">
   <ion-content ng-init="load()">
-      <div class="list card">
-          <div class="item item-avatar">
-              <img ng-src="{{ song.image_small }}">
-              <h2>{{ song.title }}</h2>
-              <p>{{ song.artist }}</p>
-          </div>
-
-          <div class="item item-image">
-              <img ng-src="{{ song.image_large }}" >
-          </div>
-
-          <a class="item item-icon-left assertive" href="#">
-              <i class="icon ion-music-note"></i>
-              Start listening
+      <div class="item item-avatar">
+          <img ng-src="{{ playlist.images[0].url }}">
+          <h2>{{ playlist.name }}</h2>
+          <p><a href="{{ playlist.external_urls.spotify }}">Open in Spotify</a></p>
+      </div>
+      <div class="list" ng-repeat="song in playlist.tracks.items" ng-click="playTrack(song)">
+          <a class="item item-thumbnail-left">
+              <img ng-src="{{ song.track.album.images[1].url }}">
+              <h2>{{ song.track.name }}</h2>
+              <p>{{ song.track.artists[0].name }}</p>
+              <p>{{ song.track.album.name }}</p>
           </a>
-
       </div>
 
 

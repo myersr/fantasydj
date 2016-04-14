@@ -210,9 +210,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }).then(function successCallback(res) {
           //need to create dictionary with keys so that we can loop through quickly possibly
-          playlists = res.data;
-          $log.log("playlist",playlists)
-          resolve("playlist selected fetched")
+          playlistData = res.data;
+          //$log.log("playlist",playlistData)
+          resolve(playlistData)
 
         }, function errorCallback(response) {
           // called asynchronously if an error occurs
