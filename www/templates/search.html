@@ -3,12 +3,7 @@
   <ion-content>
 
 
-<!-- <label class="item item-input">
-  <i class="icon ion-search placeholder-icon"></i>
-  <input type="search" placeholder="Search" ng-model="searchInput" ng-click="performSearch(searchInput)">
 
-
-</label> -->
 <div class="list">
 
   <div class="item item-input-inset">
@@ -23,11 +18,13 @@
 </div>
 
 
-<!-- change over to the new look located in branch TomFDJ -->
+<div class="list">
 
-<button ng-show="isTrack" class="button button-full button-balanced">
-  Tracks
-</button>
+  <div ng-show="isTrack" class="item item-divider">
+   Tracks
+  </div>
+
+
 <ion-list can-swipe="true">
   <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataTracks|limitTo:3" ng-href="#/app/search/info/{{item.id}}">
       <img ng-src="{{item.album.images[1].url}}" ng-show="platform != 'android'">
@@ -40,11 +37,22 @@
 
   </ion-item>
 
-</ion-list>  
+</ion-list> 
 
-<button ng-show="isArtist" class="button button-full button-balanced">
-  Artists
+<button ng-show="isTrack" class="button button-full button-balanced" ng-href="#/app/search/tracks/{{item.id}}">
+  See all tracks
 </button>
+
+</div>
+ 
+
+<div class="list">
+
+  <div ng-show="isArtist" class="item item-divider">
+    Artists
+  </div>
+
+
 <ion-list can-swipe="true">
       <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataArtists|limitTo:3" ng-href="#/app/search/info/{{item.id}}">
           <img ng-src="{{item.images[1].url}}" ng-show="platform != 'android'">
@@ -58,10 +66,20 @@
       </ion-item>
 
     </ion-list>
-
-<button ng-show="isAlbum" class="button button-full button-balanced">
-  Albums
+<button ng-show="isArtist" class="button button-full button-balanced" ng-href="#/app/search/artist/{{item.id}}">
+  See all artists
 </button>
+
+</div>
+
+
+<div class="list">
+
+  <div ng-show="isAlbum" class="item item-divider">
+	Albums
+  </div>
+
+
 <ion-list can-swipe="true">
 
       <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataAlbum|limitTo:3" ng-href="#/app/search/info/{{item.id}}">
@@ -76,6 +94,11 @@
       </ion-item>
 
     </ion-list> 
+<button ng-show="isAlbum" class="button button-full button-balanced" ng-href="#/app/search/album/{{item.id}}">
+  See all albums
+</button>
+
+</div>
 
 
 
