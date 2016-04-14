@@ -112,6 +112,7 @@ angular.module('starter.controllers', [])
     //
     //})
 
+
     $scope.menuOptions = [
       {name: 'Search', link:'#/app/search', class: 'item-dark'},
       {name: 'Browse', link: '#/app/browse', class: 'item-dark'},
@@ -132,7 +133,7 @@ angular.module('starter.controllers', [])
 
   })
 
-  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, playlistsFact) {
+  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, playlistsFact) {
     showLoading = function() {
       $ionicLoading.show({
         template: '<i class="ion-loading-c"> Loading Playlists </i>',
@@ -157,6 +158,13 @@ angular.module('starter.controllers', [])
           //$log.log("Playlists List: ", $scope.playlists[0].name);
           hideLoading();
           //$state.go("app.playlists", {}, {reload: true})
+        }, function(reason) {
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+          //console.log( "error message - " + err.message );
+          //console.log( "error code - " + err.statusCode );
         })
       } else {
         hideLoading();
@@ -170,12 +178,12 @@ angular.module('starter.controllers', [])
 
   })
 
-  .controller('PlaylistCtrl', function($scope, $stateParams, $log, playlistsFact) {
+  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $ionicPopup, playlistsFact) {
     $scope.audio = new Audio();
 
     showLoading = function() {
       $ionicLoading.show({
-        template: '<i class="ion-loading-c"> Loading Playlists </i>',
+        template: '<i class="ion-loading-c"> Grabbing Playlist </i>',
         noBackdrop: false
       });
     }
@@ -196,24 +204,34 @@ angular.module('starter.controllers', [])
     };
 
     $scope.load = function(){
+      showLoading();
       var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId);
       playlistPromise.then(function (response) {
         $log.log("Response in controller: ",response)
         $scope.playlist = response;
-        $log.log(response.tracks.items[0].track.album.images[2].url)
+        $log.log(response.tracks.items[0].track.album.images[2].url);
+        hideLoading();
         //$log.log("Promise resolved: ", response)
         //$scope.playlists = playlistsFact.getPlaylist($stateParams.playlistId);
         //$log.log("playlists after call: ", $scope.playlists)
         //$log.log("Playlists List: ", $scope.playlists[0].name);
         //hideLoading();
         //$state.go("app.playlists", {}, {reload: true})
+      }, function(reason) {
+        hideLoading();
+        $ionicPopup.alert({
+          title: 'reason',
+          content: reason
+        })
+        //console.log( "error message - " + err.message );
+        //console.log( "error code - " + err.statusCode );
       })
     }
 
   })
 
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //                                                      Search Ctrl             Written by Thomas Brower
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -287,7 +305,7 @@ angular.module('starter.controllers', [])
 
 
 
-  });
+  })
 
 
 
@@ -315,3 +333,19 @@ angular.module('starter.controllers', [])
 //}, function(reason) {
 //  alert('Failed: ' + reason);
 //});
+
+.controller('AccountCtrl', function($scope,$log, authenticationFact) {
+
+
+    if(authenticationFact.isAuthorized())
+    {
+      //var defer = $q.defer();
+      $log.log("ACCOUNT CALL")
+      //var tken = authenticationFact.getToken()
+      //authenticationFact.queryData(tken)
+      $scope.accountInfo = authenticationFact.getData();
+      console.log("accountInfo:",$scope.accountInfo);
+    }
+
+
+  });

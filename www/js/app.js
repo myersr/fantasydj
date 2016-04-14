@@ -256,7 +256,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           // called asynchronously if an error occurs
           // or server returns response with an error status.
           $log.log("Call Error Playlists: ",response)
-          reject("400 error in getPlaylistsData")
+          reject(response)
         })
         //return playlists;
         //https://api.spotify.com/v1/users/{user_id}/playlists
@@ -277,7 +277,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       }
     }
     /*
-   playlistFact written by Roy Myer
+   playlistFact written by Roy Myers
    Returns the playlist data of a playlist by playlist id
    get Call
    using $q as promises
@@ -305,7 +305,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           // called asynchronously if an error occurs
           // or server returns response with an error status.
           $log.log("Call Error single Playlist: ",response)
-          reject("error in getPlaylistsData")
+          reject(response)//"Sorry, we have encountered an error grabbing your playlist.")
         })
         //return playlists;
         //https://api.spotify.com/v1/users/{user_id}/playlists
@@ -382,7 +382,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         url: '/account',
         views: {
           'menuContent': {
-            templateUrl: 'templates/account.html'
+            templateUrl: 'templates/account.html',
+            controller: 'AccountCtrl'
           }
         },
         data:{
