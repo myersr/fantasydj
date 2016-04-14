@@ -39,9 +39,11 @@
 
 </ion-list> 
 
-<button ng-show="isTrack" class="button button-full button-balanced" ng-href="#/app/search/tracks/{{item.id}}">
+<a>
+<button ng-show="isTrack" class="button button-full button-balanced" href="#/app/search/tracks">
   See all tracks
 </button>
+</a>
 
 </div>
  
@@ -66,7 +68,7 @@
       </ion-item>
 
     </ion-list>
-<button ng-show="isArtist" class="button button-full button-balanced" ng-href="#/app/search/artist/{{item.id}}">
+<button ng-show="isArtist" class="button button-full button-balanced" ng-href="#/app/search/artist">
   See all artists
 </button>
 
@@ -94,7 +96,7 @@
       </ion-item>
 
     </ion-list> 
-<button ng-show="isAlbum" class="button button-full button-balanced" ng-href="#/app/search/album/{{item.id}}">
+<button ng-show="isAlbum" class="button button-full button-balanced" ng-href="#/app/search/album">
   See all albums
 </button>
 

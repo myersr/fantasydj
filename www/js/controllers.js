@@ -207,7 +207,7 @@ angular.module('starter.controllers', [])
       showLoading();
       var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId);
       playlistPromise.then(function (response) {
-        $log.log("Response in controller: ",response)
+        $log.log("Response i controller: ",response)
         $scope.playlist = response;
         $log.log(response.tracks.items[0].track.album.images[2].url);
         hideLoading();
@@ -275,7 +275,11 @@ angular.module('starter.controllers', [])
         //window.location.reload();
         })
    }
+
+
 })
+
+
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

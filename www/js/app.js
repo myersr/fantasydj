@@ -408,11 +408,55 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         url: '/search/info/:id',
         views:{
         'menuContent':{
-          templateUrl: 'templates/cardView.html'
+          templateUrl: 'templates/cardView.html',
+          controller: 'searchCtrl'
+
         }
       },
       data: {
         link:'Card'
+      }
+      })
+
+
+      .state('app.artist', {
+        url: '/search/artist/:id',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/artistdetail.html',
+          controller: 'searchCtrl'
+        }
+      },
+      data: {
+        link:'Artist'
+      }
+      })
+
+      .state('app.tracks', {
+        url: '/search/tracks/:id',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/tracklist.html',
+          controller: 'searchCtrl'
+
+        }
+      },
+      data: {
+        link:'TrackList'
+      }
+      })      
+
+      .state('app.album', {
+        url: '/search/album/:id',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/albumdetail.html',
+          controller: 'searchCtrl'
+
+        }
+      },
+      data: {
+        link:'Album'
       }
       })
 

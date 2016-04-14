@@ -1,0 +1,19 @@
+<ion-view view-title="Artist Details" ng-init="loadArtist()">
+  <ion-content>
+
+  	<ion-list can-swipe="true">
+  <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataArtist">
+      <img ng-src="{{item.album.images[1].url}}" ng-show="platform != 'android'">
+      <img ng-src="{{item.album.images[0].url}}" ng-show="platform == 'android'">
+
+      <h2>{{item.name}}</h2>
+      <h2>Content Type: {{item.type}}</h2>
+      <h2>Popularity: {{item.popularity}}</h2>
+
+  </ion-item>
+
+</ion-list>  
+
+
+</ion-content>
+</ion-view>
