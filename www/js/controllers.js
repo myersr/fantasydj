@@ -17,6 +17,7 @@ angular.module('starter.controllers', [])
 
       window.onload = function () {
         var hash = window.location.hash;
+        hash = hash.toString();
         //$log.log("hash",hash)
         if(!hash){
           $state.go('app.playlists')
