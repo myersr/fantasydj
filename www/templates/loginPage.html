@@ -1,4 +1,4 @@
-<ion-view view-title="NewOrder" ng-class="{'loginAndroid' : platform == 'android', 'loginBrowser' : platform != 'android'}">
+<ion-view view-title="Login" ng-class="{'loginAndroid' : platform == 'android', 'loginBrowser' : platform != 'android'}">
   <ion-content>
   <div id="orderPage">
       <div class="list">
@@ -15,5 +15,18 @@
         Login With Spotify
         </a>
     </div>
+      <button class="button button-energized" ng-click="testLogin()">
+  login with cordova Oauth
+</button>
+       <button class="button button-energized" ng-click="printURI()">
+  First Token: {{ token }}
+</button>
+     <!-- </button>
+       <button class="button button-energized">
+  Second Token: {{ secToken }}
+</button>-->
+
+      <div><p>playlists</p></div>
+
   </ion-content>
 </ion-view>

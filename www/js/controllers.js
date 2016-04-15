@@ -1,6 +1,7 @@
 angular.module('starter.controllers', [])
 
   .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, playlistsFact){
+    //$log.log(window.location.origin)
     $scope.showLoading = function() {
       $ionicLoading.show({
         template: '<i class="ion-loading-c">Fetching User Account</i>',
@@ -54,7 +55,7 @@ angular.module('starter.controllers', [])
     }
   })
 
-  .controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location,$state, Spotify, authenticationFact) {
+  .controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location,$state, authenticationFact) {
 
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
@@ -294,14 +295,57 @@ angular.module('starter.controllers', [])
   //
   //
   //})
-
-  .controller('login', function($scope, $stateParams, $log, $firebaseArray, $ionicPlatform, $ionicPopup, authenticationFact){
+//$firebaseArray
+  .controller('login', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, authenticationFact){
     $scope.platform = ionic.Platform.platform();
+    $scope.printURI = function(){
+      var ure = window.location.origin;
+      $ionicPopup.alert({
+        title: 'uri',
+        content:ure.toString()
+      })
+    }
 
     $scope.performLogin = function(){
       authenticationFact.login()
       //https://accounts.spotify.com/authorize
     }
+    var scopes = ['user-read-private',' user-read-email',' playlist-read-private',' playlist-modify-private',' playlist-modify-public ','playlist-read-collaborative']
+    $scope.token;
+    $scope.secToken = window.localStorage.getItem('spotify-token');
+    $scope.testLogin = function() {
+      $cordovaOauth.spotify('be9a8fc1e71c45edb1cbf4d69759d6d3', scopes).then(function(result) {
+        window.localStorage.setItem('spotify-token', result.access_token);
+        //Spotify.setAuthToken(result.access_token);
+        $scope.token = result.access_token;
+        $scope.secToken = window.localStorage.getItem('spotify-token')
+        Spotify.setAuthToken(result.access_token);
+        $scope.Test();
+      }, function(error) {
+        $ionicPopup.alert({
+          title: 'function error',
+          content: error
+        })
+        console.log("Error -> " + error);
+      }).catch(function(error){
+         $ionicPopup.alert({
+          title: 'Catch Statment',
+          content: error
+        })
+      });;
+    };
+    $scope.Test = function(){
+      Spotify.getCurrentUser().then(function (data) {
+        $scope.getUserPlaylists(data.id);
+      });
+    };
+    $scope.getUserPlaylists = function(userid) {
+      Spotify.getUserPlaylists(userid).then(function (data) {
+        $scope.playlists = data.items;
+        console.log($scope.playlists)
+      });
+    };
+
 
 
 

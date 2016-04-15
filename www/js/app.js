@@ -11,17 +11,17 @@ Will be moved and hidden in development
  */
 var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
-var redirect_uri = 'http://localhost:8100/#/app/account#'; // Your redirect uri
+var redirect_uri = 'http://localhost:8100/'; // Your redirect uri
 var scopes_api = 'user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public playlist-read-collaborative'
-var ref = new Firebase("https://fantasydj.firebaseio.com")
+//var ref = new Firebase("https://fantasydj.firebaseio.com")
 var firebase_secret = 'NQcYGN8O7OUtovRdkjMgt5t75Sj8vMnkGMtKNj3C'
 var token;
 var set = false;
 
 
-angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify','ngCordovaOauth','firebase'])
+angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordovaOauth','spotify'])
 
-  .run(function($ionicPlatform) {
+  .run(function($ionicPlatform, $timeout, $state) {
     $ionicPlatform.ready(function() {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -35,19 +35,22 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         StatusBar.styleDefault();
       }
     });
+    //$timeout(function() {
+    //  $state.go('app.playlists');
+    //}, 5000);
   })
 
   /*
   sets the spotify client codes
    */
-  .config(function (SpotifyProvider) {
-    SpotifyProvider.setClientId(client_id);
-    SpotifyProvider.setRedirectUri(redirect_uri);
-    SpotifyProvider.setScope(scopes_api);
-
-    // If you already have an auth token
-    //SpotifyProvider.setAuthToken(client_secret);
-  })
+  //.config(function (SpotifyProvider) {
+  //  SpotifyProvider.setClientId(client_id);
+  //  SpotifyProvider.setRedirectUri(redirect_uri);
+  //  SpotifyProvider.setScope(scopes_api);
+  //
+  //  // If you already have an auth token
+  //  //SpotifyProvider.setAuthToken(client_secret);
+  //})
   //['spotifyProvider', function (spotifyProvider) {
   //  spotifyProvider.setConfig({
   //    clientId: client_id,
@@ -58,7 +61,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   //    showDialog: false
   //  })
   //}])
-
 
   /*
   Authentication Factory
@@ -72,7 +74,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
                   encodeURIComponent(redirect_uri) +"&scope="+encodeURIComponent(scopes_api)//+"&show_dialog=true"
     var data;
     var authorized;
-
+    $log.log(url)
     //function authDataCallback(authData) {
     //  if (authData) {
     //    console.log("User " + authData.uid + " is logged in with " + authData.provider);
@@ -138,7 +140,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
     authenticationFact.login = function () {
       return $window.location = url;
-      $log.log($location.absUrl())
+      //$log.log($location.absUrl())
 
     };
 
@@ -148,7 +150,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
     authenticationFact.spotifyLogin = function(){
-       return Spotify.login();
+       //return Spotify.login();
     }
       return authenticationFact;
   }])
@@ -186,7 +188,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }).then(function successCallback(res) {
           searchResults = res.data
-          $log.log("searchfetched", searchResults)
+          //$log.log("searchfetched", searchResults)
           resolve(searchResults)
 
         }, function errorCallback(response) {
@@ -249,7 +251,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }).then(function successCallback(res) {
           //$log.log("pre assign", res.data)
           playlists = res.data.items
-          $log.log("playlistsfetched",playlists)
+          //$log.log("playlistsfetched",playlists)
           resolve("playlists fetched")
 
         }, function errorCallback(response) {
@@ -286,7 +288,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     playlistsFact.getPlaylistData = function(playlistId){
       return $q(function(resolve, reject) {
         var playlistLink = getLinkbyId(playlistId)
-        $log.log("after For loop: ", playlistLink)
         //var userData = authenticationFact.getData();
         //$log.log("userData: ", userData)
         $http({
@@ -350,29 +351,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
            $state.go("login")
          }
         },
-        //
-        //  //$log.log("yo", playlistsFact.areFetched())
-        //  if(!playlistsFact.areFetched()){
-        //    var playlistPromise = playlistsFact.getPlaylistsData();
-        //      playlistPromise.then(function(response){
-        //        $log.log("Promise resolved: ",response)
-        //        $rootScope.$apply()
-        //        $state.go("app.playlists", {}, { reload: true })
-        //      })
-        //  }
-        //
-        //  //  else{
-        //  //    if(!authenticationFact.isAuthorized() || !authenticationFact.hasToken()){
-        //  //      $log.log("inside token length")
-        //  //      var token = authenticationFact.getToken()
-        //  //      authenticationFact.setToken(token)
-        //  //
-        //  //
-        //  //}else{
-        //  //  $log.log("good to go")
-        //  //}
-        //  //  }
-        //},
         data:{
           link:'App'
         }
@@ -429,10 +407,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
       .state('app.playlists', {
         url: '/playlists',
-        //onEnter: function($state, $log, authenticationFact){
-        //  $log.log("hitting playlists", $state.current)
-        //
-        //},
         views: {
           'menuContent': {
             templateUrl: 'templates/playlists.html',
@@ -459,5 +433,5 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     //$urlRouterProvider.when('/access_token','/app/playlists')
     // if none of the above states are matched, use this as the fallback
     //$urlRouterProvider.otherwise('/app/playlists')//'#/app/playlists');
-    //$locationProvider.html5Mode(true);
+    //$locationProvider.html5Mode(false);
   });
