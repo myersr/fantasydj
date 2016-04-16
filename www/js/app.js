@@ -345,7 +345,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         userData = authenticationFact.getData();
         //$log.log("userData: ", userData)
         $http({
-          url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists" + -H + ,
+          url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists" ,
           method: "post",
           headers: {
             'Authorization': 'Bearer ' + token
