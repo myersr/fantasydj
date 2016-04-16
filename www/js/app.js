@@ -158,6 +158,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   /*
    Author: Roy Myers
    firebaseFact
+   performs multiple functions using firebaseio backend
    */
   .factory('firebaseFact',['$http', '$log', '$q', '$window', 'authenticationFact', function($http,$log, $q,$window, authenticationFact){
     var firebaseFact = [];
@@ -266,6 +267,13 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Written by:  Thomas Brower   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
+  /*
+  Author: Roy Myers
+  spotifyFact -
+  Uses the Spotify Api to perform multiple functions.
+  Also stores instances of user data.
+   */
   .factory('spotifyFact',['$log', '$http','$q', function($log, $http, $q){
     var spotifyFact = []
     var searchValue = []
@@ -463,9 +471,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
   /*
-  playlistsFact written by Roy Myer
-  Returns the playlists of a user
-  get Call
+  Author Roy Myers
+  playlistsFact -
+  Returns users playlist from spotify
+
   using $q as promises
    */
   .factory('playlistsFact',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
@@ -590,7 +599,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }
 
-      })      
+      })
 
       .state('login', {
         url: '/login',
@@ -684,7 +693,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       data: {
         link:'AlbumCard'
       }
-      })            
+      })
 
 
       .state('app.more', {
@@ -712,6 +721,21 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           link:'Browse'
         }
       })
+      /*
+      Author: Roy Myers
+      join league controller
+       */
+      .state('app.join', {
+        url:'league/join',
+        views:{
+          'menuContent': {
+            templateURl: 'templates/joinLeague',
+            controller: 'joinCtrl'
+          }
+        }
+
+      })
+
       .state('app.playlists', {
         url: '/playlists',
         //onEnter: function($state, $log, authenticationFact){
@@ -741,7 +765,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         data: {
           link: 'myLeagues'
         }
-      })      
+      })
 
       .state('app.playlist', {
         url: '/playlist/:playlistId',

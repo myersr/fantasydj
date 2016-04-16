@@ -1,5 +1,12 @@
 angular.module('starter.controllers', [])
 
+/*
+   Author: Roy Myers
+   indexController
+   indexController -
+   The index app/ is the callback uri from spotify. on that page we parse the auth token and store all the user data.
+   If the user is in our database, we continue to playlists, if now we go to confirmation.
+   */
   .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, firebaseFact){
     //$log.log(window.location.origin)
     $scope.showLoading = function() {
@@ -74,6 +81,85 @@ angular.module('starter.controllers', [])
     }
   })
 
+  /*
+   Author: Roy Myers
+   loginCtrl
+   loginCtrl -
+   returns the url for spotify authentication
+   */
+  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, authenticationFact){
+
+    $scope.platform = ionic.Platform.platform();
+    $scope.printURI = function(){
+      var ure = window.location.origin;
+      $ionicPopup.alert({
+        title: 'uri',
+        content:ure.toString()
+      })
+    }
+
+    $scope.performLogin = function(){
+      authenticationFact.login()
+      //https://accounts.spotify.com/authorize
+    }
+  })
+
+
+
+  /*
+   Author: Roy Myers
+   confirmationCtrl
+   confirmationCtrl -
+   If a user logs in for the first time we confirm the details and add them to our database.
+   */
+  .controller('confirmationCtrl', function($scope,$log,$state, $ionicLoading, authenticationFact, firebaseFact) {
+    $scope.platform = ionic.Platform.platform();
+    showLoading = function() {
+      $ionicLoading.show({
+        template: '<i class="ion-loading-c"> Registering User </i>',
+        noBackdrop: false
+      });
+    }
+
+    hideLoading = function() {
+      $ionicLoading.hide();
+    }
+    $scope.load = function () {
+      if (authenticationFact.isAuthorized()) {
+        //var defer = $q.defer();
+        $log.log("ACCOUNT CALL")
+        //var tken = authenticationFact.getToken()
+        //authenticationFact.queryData(tken)
+        $scope.accountInfo = authenticationFact.getData();
+        console.log("accountInfo:", $scope.accountInfo);
+      } else{
+        $state.go("login");
+      }
+    }
+    $scope.confirm = function(){
+      showLoading();
+      var regPromise = firebaseFact.registerUser()
+      regPromise.then(function(response){
+        $log.log("Registered User")
+        hideLoading();
+        $state.go("app.playlists")
+      })
+    }
+    $scope.deny = function(){
+      authenticationFact.clearData();
+      $state.go('login')
+    }
+
+
+  })
+
+
+  /*
+   Author: Roy Myers
+   AppCtrl
+   PlaylistCtrl -
+   grabs and lists all songs in a playlist
+   */
   .controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location,$state, authenticationFact) {
 
     // With the new view caching in Ionic, Controllers are only called
@@ -125,6 +211,12 @@ angular.module('starter.controllers', [])
 
   })
 
+  /*
+  Author: Roy Myers
+  findPlaylists
+  PlaylistsCtrl -
+  grabs and lists all playlists for a spotify user
+   */
   .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, playlistsFact) {
     showLoading = function() {
       $ionicLoading.show({
@@ -170,6 +262,12 @@ angular.module('starter.controllers', [])
 
   })
 
+  /*
+   Author: Roy Myers
+   findPlaylist
+   PlaylistCtrl -
+   grabs and lists all songs in a playlist
+   */
   .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $ionicPopup, playlistsFact) {
     $scope.audio = new Audio();
 
@@ -230,11 +328,37 @@ angular.module('starter.controllers', [])
 
   })
 
+  /*
+   Author: Daniel Harper
+   findPlaylist
+   AccountCtrl -
+   grabs and lists all songs in a playlist
+   */
+  .controller('AccountCtrl', function($scope,$log, authenticationFact) {
+    if(authenticationFact.isAuthorized())
+    {
+      //var defer = $q.defer();
+      $log.log("ACCOUNT CALL")
+      //var tken = authenticationFact.getToken()
+      //authenticationFact.queryData(tken)
+      $scope.accountInfo = authenticationFact.getData();
+      console.log("accountInfo:",$scope.accountInfo);
+    }
 
+
+  })
+
+  .controller('joinCtrl', function ($scope, $log, $ionicLoading, spotifyFact, firebaseFact) {
+
+
+  })
+
+
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//                                                      Search Ctrl             
+//                                                      Search Ctrl
 //                                                Written by: Thomas Brower
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -246,9 +370,9 @@ angular.module('starter.controllers', [])
     $scope.isArtist = false;
     $scope.isTrack = false;
     $scope.isAlbum = false;
-    $scope.track = "track"
-    $scope.album = "album"
-    $scope.artist = "artist"
+    $scope.track = "track";
+    $scope.album = "album";
+    $scope.artist = "artist";
 
     $scope.audio = new Audio();
 
@@ -260,7 +384,7 @@ angular.module('starter.controllers', [])
 
   $scope.openSpotify = function(link) {
     window.open(link, '_blank', 'location=yes');
-  }    
+  }
 
    $scope.play = function(trackInfo) {
       $scope.audio.src = trackInfo.preview_url;
@@ -329,17 +453,17 @@ angular.module('starter.controllers', [])
         if($stateParams.type === "track")
         {
           $scope.isTrack = true;
-        } 
+        }
 
         if($stateParams.type === "album")
         {
           $scope.isAlbum = true;
-        }               
+        }
 
         $log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
         $scope.hideLoading();
         })
-   }    
+   }
 
     $scope.performSearch = function(searchInput){
     // assign somehting to be displayed (promise)
@@ -392,7 +516,7 @@ angular.module('starter.controllers', [])
         })
    }
 
-})
+});
 
 
 
@@ -405,76 +529,7 @@ angular.module('starter.controllers', [])
 
 
 
-  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, authenticationFact){
-
-    $scope.platform = ionic.Platform.platform();
-    $scope.printURI = function(){
-      var ure = window.location.origin;
-      $ionicPopup.alert({
-        title: 'uri',
-        content:ure.toString()
-      })
-    }
-
-    $scope.performLogin = function(){
-      authenticationFact.login()
-      //https://accounts.spotify.com/authorize
-    }
-  })
 
 
 
 
-.controller('AccountCtrl', function($scope,$log, authenticationFact) {
-    if(authenticationFact.isAuthorized())
-    {
-      //var defer = $q.defer();
-      $log.log("ACCOUNT CALL")
-      //var tken = authenticationFact.getToken()
-      //authenticationFact.queryData(tken)
-      $scope.accountInfo = authenticationFact.getData();
-      console.log("accountInfo:",$scope.accountInfo);
-    }
-
-
-  })
-
-.controller('confirmationCtrl', function($scope,$log,$state, $ionicLoading, authenticationFact, firebaseFact) {
-  $scope.platform = ionic.Platform.platform();
-  showLoading = function() {
-      $ionicLoading.show({
-        template: '<i class="ion-loading-c"> Registering User </i>',
-        noBackdrop: false
-      });
-    }
-
-    hideLoading = function() {
-      $ionicLoading.hide();
-    }
-  $scope.load = function () {
-    if (authenticationFact.isAuthorized()) {
-      //var defer = $q.defer();
-      $log.log("ACCOUNT CALL")
-      //var tken = authenticationFact.getToken()
-      //authenticationFact.queryData(tken)
-      $scope.accountInfo = authenticationFact.getData();
-      console.log("accountInfo:", $scope.accountInfo);
-    } else{
-      $state.go("login");
-    }
-  }
-  $scope.confirm = function(){
-    showLoading();
-    var regPromise = firebaseFact.registerUser()
-    regPromise.then(function(response){
-      $log.log("Registered User")
-      hideLoading();
-      $state.go("app.playlists")
-    })
-  }
-  $scope.deny = function(){
-    authenticationFact.clearData();
-    $state.go('login')
-  }
-
-  });
