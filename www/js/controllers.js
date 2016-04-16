@@ -231,18 +231,83 @@ angular.module('starter.controllers', [])
   })
 
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//                                                      Search Ctrl             Written by Thomas Brower
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//                                                      Search Ctrl             
+//                                                Written by: Thomas Brower
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  .controller('searchCtrl', function($scope, $log, $ionicLoading, $ionicPlatform, $q, searchFact){
+  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, spotifyFact){
     $scope.platform = ionic.Platform.platform();
 
     $scope.isArtist = false;
     $scope.isTrack = false;
     $scope.isAlbum = false;
+    $scope.tracklist = "tracklist"
+    $scope.albumdetail = "albumdetail"
+    $scope.artistdetail = "artistdetail"
+
+    $scope.audio = new Audio();
+
+    // $scope.playTrack = function(trackInfo) {
+    //   $log.log("bruh: ", trackInfo);
+    //   $scope.audio.src = trackInfo.preview_url;
+    //   $scope.audio.play();
+    // }
+
+  $scope.openSpotify = function(link) {
+    window.open(link, '_blank', 'location=yes');
+  }    
+
+   $scope.play = function(trackInfo) {
+      $scope.audio.src = trackInfo.preview_url;
+
+      if ($scope.audio.src) {
+        $scope.audio.play();
+      }
+    }
+
+   $scope.stop = function() {
+    if ($scope.audio.src) {
+      $scope.audio.pause();
+    }
+  }
+
+    $scope.go = function(state){
+      $state.go('app.'+ state)
+    }
+
+    $scope.artistload = function(){
+      //artist promise
+      var artistPromise = spotifyFact.getArtistResults($stateParams.searchValue)
+      artistPromise.then(function(response){
+        $scope.item = response;
+        $log.log($scope.item);
+      })
+
+    }
+
+
+    $scope.trackload = function(){
+      //track promise
+      var trackPromise = spotifyFact.getTrackResults($stateParams.searchValue)
+      trackPromise.then(function(response){
+        $scope.item = response;
+        $log.log($scope.item);
+      })
+
+    }
+
+    $scope.albumload = function(){
+      //album promise
+      var albumPromise = spotifyFact.getAlbumResults($stateParams.searchValue)
+      albumPromise.then(function(response){
+        $scope.item = response;
+        $log.log($scope.item);
+      })
+
+    }    
 
     $scope.performSearch = function(searchInput){
     // assign somehting to be displayed (promise)
@@ -262,7 +327,9 @@ angular.module('starter.controllers', [])
         if($scope.returnDataTracks.length > 0)
         {
           $scope.isTrack = true;
+
         }
+        $log.log($scope.returnDataTracks);
 
         $scope.returnDataAlbum = response.albums.items;
         if($scope.returnDataAlbum.length > 0)
@@ -275,6 +342,8 @@ angular.module('starter.controllers', [])
         //window.location.reload();
         })
    }
+   $log.log($scope.isArtist);
+   $log.log($scope.returnDataArtists);
 
 
 })

@@ -11,7 +11,7 @@ Will be moved and hidden in development
  */
 var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
-var redirect_uri = 'http://localhost:8100/#/app/account#'; // Your redirect uri
+var redirect_uri = 'http://localhost:8100/'; // Your redirect uri
 var scopes_api = 'user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public playlist-read-collaborative'
 var ref = new Firebase("https://fantasydj.firebaseio.com")
 var firebase_secret = 'NQcYGN8O7OUtovRdkjMgt5t75Sj8vMnkGMtKNj3C'
@@ -209,8 +209,105 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Return Factory !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Written by:  Thomas Brower   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  .factory('spotifyFact',['$log', '$http','$q', function($log, $http, $q){
+    var spotifyFact = []
+    var searchValue = []
+
+    spotifyFact.areFetched = function(){
+      if(searchValue.length != 0){
+        //$log.log("true", playlists)
+        return true;
+      }else {
+        return false;
+      }
+    }
+
+    spotifyFact.getArtistResults = function(searchValue){
+      return $q(function(resolve, reject) {
+
+        $http({
+          url: "https://api.spotify.com/v1/artists/"+ searchValue + "/top-tracks?country=US",
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          searchValue = res.data
+          $log.log("searchfetched", searchValue)
+          resolve(searchValue)
+
+        }, function errorCallback(response) {
+
+          $log.log("Call Error Search: ",response)
+          reject("400 error in getArtistResults")
+        })
+      });
+    }
+
+
+  spotifyFact.getTrackResults = function(searchValue){
+    return $q(function(resolve, reject) {
+
+      $http({
+        url: "https://api.spotify.com/v1/tracks/"+ searchValue,
+        method: "Get",
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      }).then(function successCallback(res) {
+        searchValue = res.data
+        $log.log("searchfetched", searchValue)
+        resolve(searchValue)
+
+      }, function errorCallback(response) {
+
+        $log.log("Call Error Search: ",response)
+        reject("400 error in getTrackResults")
+      })
+    });
+  }
+
+
+
+
+    spotifyFact.getAlbumResults = function(searchValue){
+      return $q(function(resolve, reject) {
+
+        $http({
+          url: "https://api.spotify.com/v1/albums/"+ searchValue,
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          searchValue = res.data
+          $log.log("searchfetched", searchValue)
+          resolve(searchValue)
+
+        }, function errorCallback(response) {
+
+          $log.log("Call Error Search: ",response)
+          reject("400 error in getAlbumResults")
+        })
+      });
+    }
+
+
+    return spotifyFact;
+  }])
+
+
+
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
   /*
   playlistsFact written by Roy Myer
@@ -405,7 +502,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
       .state('app.info', {
-        url: '/search/info/:id',
+        url: '/search/info/:searchValue',
         views:{
         'menuContent':{
           templateUrl: 'templates/cardView.html',
@@ -418,8 +515,36 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       }
       })
 
+      .state('app.artistCard', {
+        url: '/search/artistCard/:searchValue',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/artistCard.html',
+          controller: 'searchCtrl'
 
-      .state('app.artist', {
+        }
+      },
+      data: {
+        link:'ArtistCard'
+      }
+      })
+
+      .state('app.albumCard', {
+        url: '/search/albumCard/:searchValue',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/albumCard.html',
+          controller: 'searchCtrl'
+
+        }
+      },
+      data: {
+        link:'AlbumCard'
+      }
+      })            
+
+
+      .state('app.artistdetail', {
         url: '/search/artist/:id',
         views:{
         'menuContent':{
@@ -432,8 +557,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       }
       })
 
-      .state('app.tracks', {
-        url: '/search/tracks/:id',
+      .state('app.tracklist', {
+        url: '/search/tracklist/:searchValue',
         views:{
         'menuContent':{
           templateUrl: 'templates/tracklist.html',
@@ -446,7 +571,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       }
       })      
 
-      .state('app.album', {
+      .state('app.albumdetail', {
         url: '/search/album/:id',
         views:{
         'menuContent':{

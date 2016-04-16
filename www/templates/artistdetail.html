@@ -1,6 +1,8 @@
-<ion-view view-title="Artist Details" ng-init="loadArtist()">
+<!-- Written by Thomas Brower -->
+<ion-view view-title="Artist Details" >
   <ion-content>
-
+<h2> artist </h2>
+<p> {{returnDataArtist}} </p>
   	<ion-list can-swipe="true">
   <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataArtist">
       <img ng-src="{{item.album.images[1].url}}" ng-show="platform != 'android'">
@@ -17,3 +19,4 @@
 
 </ion-content>
 </ion-view>
+
