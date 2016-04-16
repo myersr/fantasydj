@@ -193,7 +193,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
         var spotData = authenticationFact.getData() //.email
         //$log.log(spotData.id)
         var user = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id );
-        var randUID = Math.floor((Math.random() * 10000) + 1);//This needs to be updated to check the database for repitions
+        var randUID = Math.floor((Math.random() * 10000000) + 1);//This needs to be updated to check the database for repitions
         user.set({UID: randUID, SUID: spotData.id, email: spotData.email, usrName: spotData.display_name})
         $log.log("New registered User: ",user)
         resolve(user)
