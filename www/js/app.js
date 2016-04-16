@@ -83,6 +83,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
     //  }
     //}
 
+
     authenticationFact.queryData = function(authToken){
       //var defer = $q.defer();
       return $q(function(resolve, reject) {
@@ -152,6 +153,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
     authenticationFact.spotifyLogin = function(){
        //return Spotify.login();
     }
+
       return authenticationFact;
   }])
 
