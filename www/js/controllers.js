@@ -82,35 +82,7 @@ angular.module('starter.controllers', [])
         currentState = toState.data['link'];
 
       })
-    //$rootScope.$on("ionicView.beforeEnter", function(){
-    //  $log.log("help")
-    //})
 
-    //if(!authenticationFact.isAuthorized() && authenticationFact.hasToken())
-    //{
-    //
-    //  //var defer = $q.defer();
-    //  $log.log("inside token length")
-    //  var tken = authenticationFact.getToken()
-    //  authenticationFact.queryData(tken)
-    //  $scope.accountInfo = authenticationFact.getData();
-    //  console.log($scope.accountInfo.images[0]);
-    //}
-
-    //$scope.$on('$stateChangeStart', function($q) {
-    //  // Code you want executed every time view is opened
-    //  currentState = $state.current.data.link;
-    //  $log.log("currentState: ", currentState)
-    //
-    //  if(!authenticationFact.isAuthorized()){
-    //    var tken = authenticationFact.getToken()
-    //    var promise =authenticationFact.queryData(tken);
-    //    promise.then(function(response){
-    //      $log.log(response)
-    //    })
-    //  }
-    //
-    //})
 
 
     $scope.menuOptions = [
@@ -241,8 +213,10 @@ angular.module('starter.controllers', [])
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //                                                      Search Ctrl             
 //                                                Written by: Thomas Brower
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -405,20 +379,11 @@ angular.module('starter.controllers', [])
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
-  //.controller('PlaylistCtrl', function($scope, $stateParams, $log, playlistsFact) {
-  //  $scope.isDownloadActive = false;
-  //  $scope.playlists = playlistsFact.getPlaylists();
-  //  $log.log($scope.playlists)
-  //  //$scope.song = $scope.songs[0]
-  //
-  //
-  //
-  //
-  //
-  //})
 
   .controller('login', function($scope, $stateParams, $log, $firebaseArray, $ionicPlatform, $ionicPopup, authenticationFact){
     $scope.platform = ionic.Platform.platform();
@@ -434,30 +399,6 @@ angular.module('starter.controllers', [])
 
 
 
-//http://10.31.23.184:8100
-//$timeout(function() {
-//      // $timeout to allow animation to complete
-//      $scope.currentSong = Recommendations.queue[0];
-////    }, 250);
-//function asyncGreet(name) {
-//  // perform some asynchronous operation, resolve or reject the promise when appropriate.
-//  return $q(function(resolve, reject) {
-//    setTimeout(function() {
-//      if (okToGreet(name)) {
-//        resolve('Hello, ' + name + '!');
-//      } else {
-//        reject('Greeting ' + name + ' is not allowed.');
-//      }
-//    }, 1000);
-//  });
-//}
-//
-//var promise = asyncGreet('Robin Hood');
-//promise.then(function(greeting) {
-//  alert('Success: ' + greeting);
-//}, function(reason) {
-//  alert('Failed: ' + reason);
-//});
 
 .controller('AccountCtrl', function($scope,$log, authenticationFact) {
 

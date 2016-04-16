@@ -315,6 +315,106 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   }])
 
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Add Playlist Factory  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  By: Thomas Brower    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+  .factory('addPlaylist',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
+    var playlistsFact = []
+    var playlists = []
+    var userData = authenticationFact.getData();
+
+    addPlaylist.areFetched = function(){
+      if(playlists.length != 0){
+        //$log.log("true", playlists)
+        return true;
+      }else {
+        return false;
+      }
+    }
+    addPlaylist.getPlaylists = function(){
+      return playlists;
+    }
+
+    addPlaylist.getPlaylistsData = function(){
+      return $q(function(resolve, reject) {
+        //$log.log("Before Call")
+        userData = authenticationFact.getData();
+        //$log.log("userData: ", userData)
+        $http({
+          url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists",
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          //$log.log("pre assign", res.data)
+          playlists = res.data.items
+          $log.log("playlistsfetched",playlists)
+          resolve("playlists fetched")
+
+        }, function errorCallback(response) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          $log.log("Call Error Playlists: ",response)
+          reject(response)
+        })
+        //return playlists;
+        //https://api.spotify.com/v1/users/{user_id}/playlists
+      });
+    }
+
+
+    var getLinkbyId = function(playlistId) {
+      for (var i = 0; i < playlists.length; i++) {
+        if (playlists[i].id == playlistId) {
+          return playlists[i].href
+        }
+      }
+    }
+
+
+    addPlaylist.getPlaylistData = function(playlistId){
+      return $q(function(resolve, reject) {
+        var playlistLink = getLinkbyId(playlistId)
+        $log.log("after For loop: ", playlistLink)
+        //var userData = authenticationFact.getData();
+        //$log.log("userData: ", userData)
+        $http({
+          url: playlistLink,//"GET https://api.spotify.com/v1/users/"+ userData.id +"/playlists/"+ playlistId + "/playlists",
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          //need to create dictionary with keys so that we can loop through quickly possibly
+          playlistData = res.data;
+          //$log.log("playlist",playlistData)
+          resolve(playlistData)
+
+        }, function errorCallback(response) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          $log.log("Call Error single Playlist: ",response)
+          reject(response)//"Sorry, we have encountered an error grabbing your playlist.")
+        })
+        //return playlists;
+        //https://api.spotify.com/v1/users/{user_id}/playlists
+      });
+    }
+    addPlaylist.getPlaylist = function(playlistId){
+
+    }
+
+    addPlaylist.getSong = function(index){
+      return songs[index];
+    }
+
+    return playlistsFact;
+  }])
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -461,29 +561,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
            $state.go("login")
          }
         },
-        //
-        //  //$log.log("yo", playlistsFact.areFetched())
-        //  if(!playlistsFact.areFetched()){
-        //    var playlistPromise = playlistsFact.getPlaylistsData();
-        //      playlistPromise.then(function(response){
-        //        $log.log("Promise resolved: ",response)
-        //        $rootScope.$apply()
-        //        $state.go("app.playlists", {}, { reload: true })
-        //      })
-        //  }
-        //
-        //  //  else{
-        //  //    if(!authenticationFact.isAuthorized() || !authenticationFact.hasToken()){
-        //  //      $log.log("inside token length")
-        //  //      var token = authenticationFact.getToken()
-        //  //      authenticationFact.setToken(token)
-        //  //
-        //  //
-        //  //}else{
-        //  //  $log.log("good to go")
-        //  //}
-        //  //  }
-        //},
+
         data:{
           link:'App'
         }
@@ -599,6 +677,20 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           link:'Playlists'
         }
       })
+
+
+      .state('app.myLeagues', {
+        url: '/browse/myLeagues/:playlistId',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/myLeagues.html',
+            controller: 'PlaylistCtrl'
+          }
+        },
+        data: {
+          link: 'myLeagues'
+        }
+      })      
 
       .state('app.playlist', {
         url: '/playlist/:playlistId',
