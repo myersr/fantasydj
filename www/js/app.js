@@ -13,13 +13,13 @@ var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
 var redirect_uri = 'http://localhost:8100/'; // Your redirect uri
 var scopes_api = 'user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public playlist-read-collaborative'
-//var ref = new Firebase("https://fantasydj.firebaseio.com")
+var fireREF = new Firebase("https://fantasydj.firebaseio.com")
 var firebase_secret = 'NQcYGN8O7OUtovRdkjMgt5t75Sj8vMnkGMtKNj3C'
 var token;
 var set = false;
 
 
-angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordovaOauth','spotify'])
+angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordovaOauth','spotify', 'firebase'])
 
   .run(function($ionicPlatform, $timeout, $state) {
     $ionicPlatform.ready(function() {
@@ -144,6 +144,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
 
     };
 
+    authenticationFact.clearData = function(){
+      data = {};
+      authorized = false;
+    }
+
 
     authenticationFact.getData = function() {
       return data;
@@ -155,8 +160,53 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
       return authenticationFact;
   }])
 
+  /*
+    Author: Roy Myers
+    function that returns a random number
+     */
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  /*
+   Author: Roy Myers
+   firebaseFact
+   */
+  .factory('firebaseFact',['$http', '$log', '$q', '$window', 'authenticationFact', function($http,$log, $q,$window, authenticationFact){
+    var firebaseFact = [];
+    var currentUser;
+    var firebaseData = [];
+
+    firebaseFact.isRegistered = function(){
+      return $q(function(resolve, reject) {
+        var spotData = authenticationFact.getData()
+        var fireUsers = new Firebase('https://fantasydj.firebaseio.com/users')
+        fireUsers.once("value", function (snapshot) {
+          //$log.log("inside Promise", snapshot.child(spotData.id).exists())
+          var isRegistered = snapshot.child(spotData.id).exists();
+          resolve(isRegistered);
+        })//end once promise
+      });//end $q
+    }
+
+
+    firebaseFact.registerUser = function(){
+      return $q(function(resolve, reject) {
+        var spotData = authenticationFact.getData() //.email
+        //$log.log(spotData.id)
+        var user = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id );
+        var randUID = Math.floor((Math.random() * 10000) + 1);//This needs to be updated to check the database for repitions
+        user.set({UID: randUID, SUID: spotData.id, email: spotData.email})
+        $log.log("New registered User: ",user)
+        resolve(user)
+      });//end $q
+    }
+
+    return firebaseFact;
+  }])
+
+
+
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //                                        Factory for search :: Thomas Brower
@@ -215,7 +265,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   /*
-  playlistsFact written by Roy Myer
+  playlistsFact written by Roy Myers
+  findplaylists
   Returns the playlists of a user
   get Call
   using $q as promises
@@ -331,10 +382,22 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
         controller: 'AppCtrl'
       })
 
+      .state('confirmation',{
+        url:'/confirm',
+        templateUrl:'templates/confirmAccount.html',
+        controller: 'confirmationCtrl',
+        onEnter: function($state, $log, authenticationFact){
+          if(!authenticationFact.isAuthorized()){
+            $state.go("login")
+          }
+        }
+
+      })
+
       .state('login', {
         url: '/login',
         templateUrl: 'templates/loginPage.html',
-        controller: 'login',
+        controller: 'loginCtrl',
         data:{
           link:'Login'
         }
