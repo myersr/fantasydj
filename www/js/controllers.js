@@ -47,6 +47,7 @@ angular.module('starter.controllers', [])
                   $scope.hideLoading();
                   $state.go("confirmation")
                 }
+
               })
 
               //if already a user take to playlists
@@ -371,7 +372,7 @@ angular.module('starter.controllers', [])
 
   })
 
-.controller('confirmationCtrl', function($scope,$log,$state, authenticationFact, firebaseFact) {
+.controller('confirmationCtrl', function($scope,$log,$state, $ionicLoading, authenticationFact, firebaseFact) {
   $scope.platform = ionic.Platform.platform();
   showLoading = function() {
       $ionicLoading.show({
