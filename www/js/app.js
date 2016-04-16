@@ -154,6 +154,45 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   }])
 
 
+
+  /*
+   Author: Roy Myers
+   firebaseFact
+   */
+  .factory('firebaseFact',['$http', '$log', '$q', '$window', 'authenticationFact', function($http,$log, $q,$window, authenticationFact){
+    var firebaseFact = [];
+    var currentUser;
+    var firebaseData = [];
+
+    firebaseFact.isRegistered = function(){
+      return $q(function(resolve, reject) {
+        var spotData = authenticationFact.getData()
+        var fireUsers = new Firebase('https://fantasydj.firebaseio.com/users')
+        fireUsers.once("value", function (snapshot) {
+          //$log.log("inside Promise", snapshot.child(spotData.id).exists())
+          var isRegistered = snapshot.child(spotData.id).exists();
+          resolve(isRegistered);
+        })//end once promise
+      });//end $q
+    }
+
+
+    firebaseFact.registerUser = function(){
+      return $q(function(resolve, reject) {
+        var spotData = authenticationFact.getData() //.email
+        //$log.log(spotData.id)
+        var user = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id );
+        var randUID = Math.floor((Math.random() * 10000) + 1);//This needs to be updated to check the database for repitions
+        user.set({UID: randUID, SUID: spotData.id, email: spotData.email, usrName: spotData.display_name})
+        $log.log("New registered User: ",user)
+        resolve(user)
+      });//end $q
+    }
+
+    return firebaseFact;
+  }])
+
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -541,10 +580,22 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         controller: 'AppCtrl'
       })
 
+      .state('confirmation',{
+        url:'/confirm',
+        templateUrl:'templates/confirmAccount.html',
+        controller: 'confirmationCtrl',
+        onEnter: function($state, $log, authenticationFact){
+          if(!authenticationFact.isAuthorized()){
+            $state.go("login")
+          }
+        }
+
+      })      
+
       .state('login', {
         url: '/login',
         templateUrl: 'templates/loginPage.html',
-        controller: 'login',
+        controller: 'loginCtrl',
         data:{
           link:'Login'
         }
