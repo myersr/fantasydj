@@ -102,35 +102,7 @@ angular.module('starter.controllers', [])
         currentState = toState.data['link'];
 
       })
-    //$rootScope.$on("ionicView.beforeEnter", function(){
-    //  $log.log("help")
-    //})
 
-    //if(!authenticationFact.isAuthorized() && authenticationFact.hasToken())
-    //{
-    //
-    //  //var defer = $q.defer();
-    //  $log.log("inside token length")
-    //  var tken = authenticationFact.getToken()
-    //  authenticationFact.queryData(tken)
-    //  $scope.accountInfo = authenticationFact.getData();
-    //  console.log($scope.accountInfo.images[0]);
-    //}
-
-    //$scope.$on('$stateChangeStart', function($q) {
-    //  // Code you want executed every time view is opened
-    //  currentState = $state.current.data.link;
-    //  $log.log("currentState: ", currentState)
-    //
-    //  if(!authenticationFact.isAuthorized()){
-    //    var tken = authenticationFact.getToken()
-    //    var promise =authenticationFact.queryData(tken);
-    //    promise.then(function(response){
-    //      $log.log(response)
-    //    })
-    //  }
-    //
-    //})
 
 
     $scope.menuOptions = [
@@ -213,21 +185,29 @@ angular.module('starter.controllers', [])
     }
     $scope.playlist;
 
-    $scope.playTrack = function(trackInfo) {
+    // $scope.playTrack = function(trackInfo) {
+    //   $scope.audio.src = trackInfo.track.preview_url;
+    //   $scope.audio.play();
+    // };
+   $scope.play = function(trackInfo) {
       $scope.audio.src = trackInfo.track.preview_url;
-      $scope.audio.play();
-    };
-    $scope.play = function() {
+
       if ($scope.audio.src) {
         $scope.audio.play();
       }
-    };
+    }
+
+  $scope.stop = function() {
+    if ($scope.audio.src) {
+      $scope.audio.pause();
+    }
+  }
 
     $scope.load = function(){
       showLoading();
       var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId);
       playlistPromise.then(function (response) {
-        $log.log("Response in controller: ",response)
+        $log.log("Response i controller: ",response)
         $scope.playlist = response;
         $log.log(response.tracks.items[0].track.album.images[2].url);
         hideLoading();
@@ -251,18 +231,115 @@ angular.module('starter.controllers', [])
   })
 
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//                                                      Search Ctrl             Written by Thomas Brower
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//                                                      Search Ctrl             
+//                                                Written by: Thomas Brower
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  .controller('searchCtrl', function($scope, $log, $ionicLoading, $ionicPlatform, $q, searchFact){
+  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, spotifyFact){
     $scope.platform = ionic.Platform.platform();
 
     $scope.isArtist = false;
     $scope.isTrack = false;
     $scope.isAlbum = false;
+    $scope.track = "track"
+    $scope.album = "album"
+    $scope.artist = "artist"
+
+    $scope.audio = new Audio();
+
+    // $scope.playTrack = function(trackInfo) {
+    //   $log.log("bruh: ", trackInfo);
+    //   $scope.audio.src = trackInfo.preview_url;
+    //   $scope.audio.play();
+    // }
+
+  $scope.openSpotify = function(link) {
+    window.open(link, '_blank', 'location=yes');
+  }    
+
+   $scope.play = function(trackInfo) {
+      $scope.audio.src = trackInfo.preview_url;
+
+      if ($scope.audio.src) {
+        $scope.audio.play();
+      }
+    }
+
+   $scope.stop = function() {
+    if ($scope.audio.src) {
+      $scope.audio.pause();
+    }
+  }
+
+    $scope.go = function(input, type){
+      $state.go('app.more', {type: type, input: input})
+
+    }
+
+    $scope.artistload = function(){
+      //artist promise
+      var artistPromise = spotifyFact.getArtistResults($stateParams.searchValue)
+      artistPromise.then(function(response){
+        $scope.item = response;
+        $log.log($scope.item);
+      })
+
+    }
+
+
+    $scope.trackload = function(){
+      //track promise
+      var trackPromise = spotifyFact.getTrackResults($stateParams.searchValue)
+      trackPromise.then(function(response){
+        $scope.item = response;
+        $log.log($scope.item);
+      })
+
+    }
+
+    $scope.albumload = function(){
+      //album promise
+      var albumPromise = spotifyFact.getAlbumResults($stateParams.searchValue)
+      albumPromise.then(function(response){
+        $scope.item = response;
+        $log.log($scope.item);
+      })
+
+    }
+
+    $scope.inheritload = function(){
+      $scope.showLoading();
+      $log.log("type: ", $stateParams.type);
+      var promise = searchFact.getInheritResults($stateParams.input, $stateParams.type);
+      promise.then(function(response){
+        $log.log(response);
+        $scope.returnData = response;
+        $log.log($scope.returnData);
+
+        if($stateParams.type === "artist")
+        {
+          $scope.isArtist = true;
+        }
+
+        if($stateParams.type === "track")
+        {
+          $scope.isTrack = true;
+        } 
+
+        if($stateParams.type === "album")
+        {
+          $scope.isAlbum = true;
+        }               
+
+        $log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
+        $scope.hideLoading();
+        })
+   }    
 
     $scope.performSearch = function(searchInput){
     // assign somehting to be displayed (promise)
@@ -282,7 +359,9 @@ angular.module('starter.controllers', [])
         if($scope.returnDataTracks.length > 0)
         {
           $scope.isTrack = true;
+
         }
+        $log.log($scope.returnDataTracks);
 
         $scope.returnDataAlbum = response.albums.items;
         if($scope.returnDataAlbum.length > 0)
@@ -295,27 +374,39 @@ angular.module('starter.controllers', [])
         //window.location.reload();
         })
    }
+
+
+   $scope.inheritSearch = function(newsearch){
+    // assign somehting to be displayed (promise)
+    // use ionic loading to wait while its being assigned
+      $scope.showLoading();
+      $log.log("type: ", $stateParams.type);
+      var promise = searchFact.getInheritResults(newsearch, $stateParams.type);
+      promise.then(function(response){
+        $log.log(response);
+        $scope.returnData = response;
+        $log.log($scope.returnData);
+
+
+        $scope.hideLoading();
+        })
+   }
+
 })
 
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
-  //.controller('PlaylistCtrl', function($scope, $stateParams, $log, playlistsFact) {
-  //  $scope.isDownloadActive = false;
-  //  $scope.playlists = playlistsFact.getPlaylists();
-  //  $log.log($scope.playlists)
-  //  //$scope.song = $scope.songs[0]
-  //
-  //
-  //
-  //
-  //
-  //})
-//$firebaseArray
+
   .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, authenticationFact){
+
     $scope.platform = ionic.Platform.platform();
     $scope.printURI = function(){
       var ure = window.location.origin;
@@ -333,30 +424,6 @@ angular.module('starter.controllers', [])
 
 
 
-//http://10.31.23.184:8100
-//$timeout(function() {
-//      // $timeout to allow animation to complete
-//      $scope.currentSong = Recommendations.queue[0];
-////    }, 250);
-//function asyncGreet(name) {
-//  // perform some asynchronous operation, resolve or reject the promise when appropriate.
-//  return $q(function(resolve, reject) {
-//    setTimeout(function() {
-//      if (okToGreet(name)) {
-//        resolve('Hello, ' + name + '!');
-//      } else {
-//        reject('Greeting ' + name + ' is not allowed.');
-//      }
-//    }, 1000);
-//  });
-//}
-//
-//var promise = asyncGreet('Robin Hood');
-//promise.then(function(greeting) {
-//  alert('Success: ' + greeting);
-//}, function(reason) {
-//  alert('Failed: ' + reason);
-//});
 
 .controller('AccountCtrl', function($scope,$log, authenticationFact) {
     if(authenticationFact.isAuthorized())

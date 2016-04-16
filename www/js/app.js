@@ -13,15 +13,15 @@ var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
 var redirect_uri = 'http://localhost:8100/'; // Your redirect uri
 var scopes_api = 'user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public playlist-read-collaborative'
-var fireREF = new Firebase("https://fantasydj.firebaseio.com")
+var ref = new Firebase("https://fantasydj.firebaseio.com")
 var firebase_secret = 'NQcYGN8O7OUtovRdkjMgt5t75Sj8vMnkGMtKNj3C'
 var token;
 var set = false;
 
 
-angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordovaOauth','spotify', 'firebase'])
+angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify','ngCordovaOauth','firebase'])
 
-  .run(function($ionicPlatform, $timeout, $state) {
+  .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -35,22 +35,19 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
         StatusBar.styleDefault();
       }
     });
-    //$timeout(function() {
-    //  $state.go('app.playlists');
-    //}, 5000);
   })
 
   /*
   sets the spotify client codes
    */
-  //.config(function (SpotifyProvider) {
-  //  SpotifyProvider.setClientId(client_id);
-  //  SpotifyProvider.setRedirectUri(redirect_uri);
-  //  SpotifyProvider.setScope(scopes_api);
-  //
-  //  // If you already have an auth token
-  //  //SpotifyProvider.setAuthToken(client_secret);
-  //})
+  .config(function (SpotifyProvider) {
+    SpotifyProvider.setClientId(client_id);
+    SpotifyProvider.setRedirectUri(redirect_uri);
+    SpotifyProvider.setScope(scopes_api);
+
+    // If you already have an auth token
+    //SpotifyProvider.setAuthToken(client_secret);
+  })
   //['spotifyProvider', function (spotifyProvider) {
   //  spotifyProvider.setConfig({
   //    clientId: client_id,
@@ -61,6 +58,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
   //    showDialog: false
   //  })
   //}])
+
 
   /*
   Authentication Factory
@@ -74,7 +72,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
                   encodeURIComponent(redirect_uri) +"&scope="+encodeURIComponent(scopes_api)//+"&show_dialog=true"
     var data;
     var authorized;
-    $log.log(url)
+
     //function authDataCallback(authData) {
     //  if (authData) {
     //    console.log("User " + authData.uid + " is logged in with " + authData.provider);
@@ -140,14 +138,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
 
     authenticationFact.login = function () {
       return $window.location = url;
-      //$log.log($location.absUrl())
+      $log.log($location.absUrl())
 
     };
-
-    authenticationFact.clearData = function(){
-      data = {};
-      authorized = false;
-    }
 
 
     authenticationFact.getData = function() {
@@ -155,15 +148,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
     }
 
     authenticationFact.spotifyLogin = function(){
-       //return Spotify.login();
+       return Spotify.login();
     }
       return authenticationFact;
   }])
 
-  /*
-    Author: Roy Myers
-    function that returns a random number
-     */
 
 
   /*
@@ -204,9 +193,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
   }])
 
 
-
-
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //                                        Factory for search :: Thomas Brower
@@ -220,7 +207,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
 
     searchFact.areFetched = function(){
       if(searchResults.length != 0){
-        //$log.log("true", playlists)
         return true;
       }else {
         return false;
@@ -231,29 +217,44 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
       return $q(function(resolve, reject) {
 
         $http({
-          url: "https://api.spotify.com/v1/search?q="+ encodeURIComponent(searchInput) + "&type=artist,album,playlist,track",
+          url: "https://api.spotify.com/v1/search?q="+ encodeURIComponent(searchInput) + "&type=artist,album,track",
           method: "Get",
           headers: {
             'Authorization': 'Bearer ' + token
           }
         }).then(function successCallback(res) {
           searchResults = res.data
-          //$log.log("searchfetched", searchResults)
+          $log.log("searchfetched", searchResults)
           resolve(searchResults)
 
         }, function errorCallback(response) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
           $log.log("Call Error Search: ",response)
           reject("400 error in getSearchData")
         })
-        //return playlists;
-        //https://api.spotify.com/v1/users/{user_id}/playlists
       });
     }
-    // searchFact.getSong = function(index){
-    //   return songs[index];
-   // }
+
+
+    searchFact.getInheritResults = function(searchInput, type){
+      return $q(function(resolve, reject) {
+
+        $http({
+          url: "https://api.spotify.com/v1/search?q="+ encodeURIComponent(searchInput) + "&type=" + type,
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          searchResults = res.data
+          $log.log("searchfetched", searchResults)
+          resolve(searchResults)
+
+        }, function errorCallback(response) {
+          $log.log("Call Error Search: ",response)
+          reject("400 error in getSearchData")
+        })
+      });
+    }
 
     return searchFact;
   }])
@@ -261,12 +262,208 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Return Factory !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Written by:  Thomas Brower   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  .factory('spotifyFact',['$log', '$http','$q', function($log, $http, $q){
+    var spotifyFact = []
+    var searchValue = []
+
+    spotifyFact.areFetched = function(){
+      if(searchValue.length != 0){
+        //$log.log("true", playlists)
+        return true;
+      }else {
+        return false;
+      }
+    }
+
+    spotifyFact.getArtistResults = function(searchValue){
+      return $q(function(resolve, reject) {
+
+        $http({
+          url: "https://api.spotify.com/v1/artists/"+ searchValue + "/top-tracks?country=US",
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          searchValue = res.data
+          $log.log("searchfetched", searchValue)
+          resolve(searchValue)
+
+        }, function errorCallback(response) {
+
+          $log.log("Call Error Search: ",response)
+          reject("400 error in getArtistResults")
+        })
+      });
+    }
+
+
+  spotifyFact.getTrackResults = function(searchValue){
+    return $q(function(resolve, reject) {
+
+      $http({
+        url: "https://api.spotify.com/v1/tracks/"+ searchValue,
+        method: "Get",
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      }).then(function successCallback(res) {
+        searchValue = res.data
+        $log.log("searchfetched", searchValue)
+        resolve(searchValue)
+
+      }, function errorCallback(response) {
+
+        $log.log("Call Error Search: ",response)
+        reject("400 error in getTrackResults")
+      })
+    });
+  }
+
+
+
+
+    spotifyFact.getAlbumResults = function(searchValue){
+      return $q(function(resolve, reject) {
+
+        $http({
+          url: "https://api.spotify.com/v1/albums/"+ searchValue,
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          searchValue = res.data
+          $log.log("searchfetched", searchValue)
+          resolve(searchValue)
+
+        }, function errorCallback(response) {
+
+          $log.log("Call Error Search: ",response)
+          reject("400 error in getAlbumResults")
+        })
+      });
+    }
+
+
+    return spotifyFact;
+  }])
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Add Playlist Factory  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  By: Thomas Brower    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+  .factory('addPlaylist',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
+    var playlistsFact = []
+    var playlists = []
+    var userData = authenticationFact.getData();
+
+    addPlaylist.areFetched = function(){
+      if(playlists.length != 0){
+        //$log.log("true", playlists)
+        return true;
+      }else {
+        return false;
+      }
+    }
+    addPlaylist.getPlaylists = function(){
+      return playlists;
+    }
+
+    addPlaylist.getPlaylistsData = function(){
+      return $q(function(resolve, reject) {
+        //$log.log("Before Call")
+        userData = authenticationFact.getData();
+        //$log.log("userData: ", userData)
+        $http({
+          url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists" ,
+          method: "post",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          //$log.log("pre assign", res.data)
+          playlists = res.data.items
+          $log.log("playlistsfetched",playlists)
+          resolve("playlists fetched")
+
+        }, function errorCallback(response) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          $log.log("Call Error Playlists: ",response)
+          reject(response)
+        })
+        //return playlists;
+        //https://api.spotify.com/v1/users/{user_id}/playlists
+      });
+    }
+
+
+    var getLinkbyId = function(playlistId) {
+      for (var i = 0; i < playlists.length; i++) {
+        if (playlists[i].id == playlistId) {
+          return playlists[i].href
+        }
+      }
+    }
+
+
+    addPlaylist.getPlaylistData = function(playlistId){
+      return $q(function(resolve, reject) {
+        var playlistLink = getLinkbyId(playlistId)
+        $log.log("after For loop: ", playlistLink)
+        //var userData = authenticationFact.getData();
+        //$log.log("userData: ", userData)
+        $http({
+          url: playlistLink,//"GET https://api.spotify.com/v1/users/"+ userData.id +"/playlists/"+ playlistId + "/playlists",
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          //need to create dictionary with keys so that we can loop through quickly possibly
+          playlistData = res.data;
+          //$log.log("playlist",playlistData)
+          resolve(playlistData)
+
+        }, function errorCallback(response) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          $log.log("Call Error single Playlist: ",response)
+          reject(response)//"Sorry, we have encountered an error grabbing your playlist.")
+        })
+        //return playlists;
+        //https://api.spotify.com/v1/users/{user_id}/playlists
+      });
+    }
+    addPlaylist.getPlaylist = function(playlistId){
+
+    }
+
+    addPlaylist.getSong = function(index){
+      return songs[index];
+    }
+
+    return playlistsFact;
+  }])
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
   /*
-  playlistsFact written by Roy Myers
-  findplaylists
+  playlistsFact written by Roy Myer
   Returns the playlists of a user
   get Call
   using $q as promises
@@ -302,7 +499,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
         }).then(function successCallback(res) {
           //$log.log("pre assign", res.data)
           playlists = res.data.items
-          //$log.log("playlistsfetched",playlists)
+          $log.log("playlistsfetched",playlists)
           resolve("playlists fetched")
 
         }, function errorCallback(response) {
@@ -339,6 +536,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
     playlistsFact.getPlaylistData = function(playlistId){
       return $q(function(resolve, reject) {
         var playlistLink = getLinkbyId(playlistId)
+        $log.log("after For loop: ", playlistLink)
         //var userData = authenticationFact.getData();
         //$log.log("userData: ", userData)
         $http({
@@ -392,7 +590,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
           }
         }
 
-      })
+      })      
 
       .state('login', {
         url: '/login',
@@ -414,6 +612,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
            $state.go("login")
          }
         },
+
         data:{
           link:'App'
         }
@@ -446,16 +645,61 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
       })
 
       .state('app.info', {
-        url: '/search/info/:id',
+        url: '/search/info/:searchValue',
         views:{
         'menuContent':{
-          templateUrl: 'templates/cardView.html'
+          templateUrl: 'templates/cardView.html',
+          controller: 'searchCtrl'
+
         }
       },
       data: {
         link:'Card'
       }
       })
+
+      .state('app.artistCard', {
+        url: '/search/artistCard/:searchValue',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/artistCard.html',
+          controller: 'searchCtrl'
+
+        }
+      },
+      data: {
+        link:'ArtistCard'
+      }
+      })
+
+      .state('app.albumCard', {
+        url: '/search/albumCard/:searchValue',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/albumCard.html',
+          controller: 'searchCtrl'
+
+        }
+      },
+      data: {
+        link:'AlbumCard'
+      }
+      })            
+
+
+      .state('app.more', {
+        url: '/search/more?type=value1&input=value2',
+        views:{
+        'menuContent':{
+          templateUrl: 'templates/moreSearch.html',
+          controller: 'searchCtrl'
+        }
+      },
+      data: {
+        link:'More'
+      }
+      })
+
 
       .state('app.browse', {
         url: '/browse',
@@ -470,6 +714,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
       })
       .state('app.playlists', {
         url: '/playlists',
+        //onEnter: function($state, $log, authenticationFact){
+        //  $log.log("hitting playlists", $state.current)
+        //
+        //},
         views: {
           'menuContent': {
             templateUrl: 'templates/playlists.html',
@@ -480,6 +728,20 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
           link:'Playlists'
         }
       })
+
+
+      .state('app.myLeagues', {
+        url: '/browse/myLeagues/:playlistId',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/myLeagues.html',
+            controller: 'PlaylistCtrl'
+          }
+        },
+        data: {
+          link: 'myLeagues'
+        }
+      })      
 
       .state('app.playlist', {
         url: '/playlist/:playlistId',
@@ -496,5 +758,5 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
     //$urlRouterProvider.when('/access_token','/app/playlists')
     // if none of the above states are matched, use this as the fallback
     //$urlRouterProvider.otherwise('/app/playlists')//'#/app/playlists');
-    //$locationProvider.html5Mode(false);
+    //$locationProvider.html5Mode(true);
   });
