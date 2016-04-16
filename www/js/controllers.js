@@ -193,15 +193,23 @@ angular.module('starter.controllers', [])
     }
     $scope.playlist;
 
-    $scope.playTrack = function(trackInfo) {
+    // $scope.playTrack = function(trackInfo) {
+    //   $scope.audio.src = trackInfo.track.preview_url;
+    //   $scope.audio.play();
+    // };
+   $scope.play = function(trackInfo) {
       $scope.audio.src = trackInfo.track.preview_url;
-      $scope.audio.play();
-    };
-    $scope.play = function() {
+
       if ($scope.audio.src) {
         $scope.audio.play();
       }
-    };
+    }
+
+  $scope.stop = function() {
+    if ($scope.audio.src) {
+      $scope.audio.pause();
+    }
+  }
 
     $scope.load = function(){
       showLoading();
@@ -244,9 +252,9 @@ angular.module('starter.controllers', [])
     $scope.isArtist = false;
     $scope.isTrack = false;
     $scope.isAlbum = false;
-    $scope.tracklist = "tracklist"
-    $scope.albumdetail = "albumdetail"
-    $scope.artistdetail = "artistdetail"
+    $scope.track = "track"
+    $scope.album = "album"
+    $scope.artist = "artist"
 
     $scope.audio = new Audio();
 
@@ -274,8 +282,9 @@ angular.module('starter.controllers', [])
     }
   }
 
-    $scope.go = function(state){
-      $state.go('app.'+ state)
+    $scope.go = function(input, type){
+      $state.go('app.more', {type: type, input: input})
+
     }
 
     $scope.artistload = function(){
@@ -307,7 +316,36 @@ angular.module('starter.controllers', [])
         $log.log($scope.item);
       })
 
-    }    
+    }
+
+    $scope.inheritload = function(){
+      $scope.showLoading();
+      $log.log("type: ", $stateParams.type);
+      var promise = searchFact.getInheritResults($stateParams.input, $stateParams.type);
+      promise.then(function(response){
+        $log.log(response);
+        $scope.returnData = response;
+        $log.log($scope.returnData);
+
+        if($stateParams.type === "artist")
+        {
+          $scope.isArtist = true;
+        }
+
+        if($stateParams.type === "track")
+        {
+          $scope.isTrack = true;
+        } 
+
+        if($stateParams.type === "album")
+        {
+          $scope.isAlbum = true;
+        }               
+
+        $log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
+        $scope.hideLoading();
+        })
+   }    
 
     $scope.performSearch = function(searchInput){
     // assign somehting to be displayed (promise)
@@ -342,9 +380,23 @@ angular.module('starter.controllers', [])
         //window.location.reload();
         })
    }
-   $log.log($scope.isArtist);
-   $log.log($scope.returnDataArtists);
 
+
+   $scope.inheritSearch = function(newsearch){
+    // assign somehting to be displayed (promise)
+    // use ionic loading to wait while its being assigned
+      $scope.showLoading();
+      $log.log("type: ", $stateParams.type);
+      var promise = searchFact.getInheritResults(newsearch, $stateParams.type);
+      promise.then(function(response){
+        $log.log(response);
+        $scope.returnData = response;
+        $log.log($scope.returnData);
+
+
+        $scope.hideLoading();
+        })
+   }
 
 })
 

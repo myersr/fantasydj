@@ -168,7 +168,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
     searchFact.areFetched = function(){
       if(searchResults.length != 0){
-        //$log.log("true", playlists)
         return true;
       }else {
         return false;
@@ -179,7 +178,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return $q(function(resolve, reject) {
 
         $http({
-          url: "https://api.spotify.com/v1/search?q="+ encodeURIComponent(searchInput) + "&type=artist,album,playlist,track",
+          url: "https://api.spotify.com/v1/search?q="+ encodeURIComponent(searchInput) + "&type=artist,album,track",
           method: "Get",
           headers: {
             'Authorization': 'Bearer ' + token
@@ -190,18 +189,33 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           resolve(searchResults)
 
         }, function errorCallback(response) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
           $log.log("Call Error Search: ",response)
           reject("400 error in getSearchData")
         })
-        //return playlists;
-        //https://api.spotify.com/v1/users/{user_id}/playlists
       });
     }
-    // searchFact.getSong = function(index){
-    //   return songs[index];
-   // }
+
+
+    searchFact.getInheritResults = function(searchInput, type){
+      return $q(function(resolve, reject) {
+
+        $http({
+          url: "https://api.spotify.com/v1/search?q="+ encodeURIComponent(searchInput) + "&type=" + type,
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          searchResults = res.data
+          $log.log("searchfetched", searchResults)
+          resolve(searchResults)
+
+        }, function errorCallback(response) {
+          $log.log("Call Error Search: ",response)
+          reject("400 error in getSearchData")
+        })
+      });
+    }
 
     return searchFact;
   }])
@@ -544,46 +558,19 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })            
 
 
-      .state('app.artistdetail', {
-        url: '/search/artist/:id',
+      .state('app.more', {
+        url: '/search/more?type=value1&input=value2',
         views:{
         'menuContent':{
-          templateUrl: 'templates/artistdetail.html',
+          templateUrl: 'templates/moreSearch.html',
           controller: 'searchCtrl'
         }
       },
       data: {
-        link:'Artist'
+        link:'More'
       }
       })
 
-      .state('app.tracklist', {
-        url: '/search/tracklist/:searchValue',
-        views:{
-        'menuContent':{
-          templateUrl: 'templates/tracklist.html',
-          controller: 'searchCtrl'
-
-        }
-      },
-      data: {
-        link:'TrackList'
-      }
-      })      
-
-      .state('app.albumdetail', {
-        url: '/search/album/:id',
-        views:{
-        'menuContent':{
-          templateUrl: 'templates/albumdetail.html',
-          controller: 'searchCtrl'
-
-        }
-      },
-      data: {
-        link:'Album'
-      }
-      })
 
       .state('app.browse', {
         url: '/browse',

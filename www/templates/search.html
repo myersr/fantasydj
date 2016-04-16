@@ -2,7 +2,6 @@
 
 
 <ion-view view-title="Search">
-<base href="/app/search">
   <ion-content>
 
 
@@ -41,7 +40,7 @@
 </ion-list> 
 
 
-<button ng-show="isTrack" class="button button-full button-balanced" ng-click="go(tracklist)">
+<button ng-show="isTrack" class="button button-full button-balanced" ng-click="go(searchInput, track)">
   See all tracks
 </button>
 
@@ -67,7 +66,7 @@
       </ion-item>
 
     </ion-list>
-<button ng-show="isArtist" class="button button-full button-balanced" ng-click="go(artistdetail)">
+<button ng-show="isArtist" class="button button-full button-balanced" ng-click="go(searchInput, artist)">
   See all artists
 </button>
 
@@ -93,7 +92,7 @@
       </ion-item>
 
     </ion-list> 
-<button ng-show="isAlbum" class="button button-full button-balanced" ng-click="go(albumdetail)">
+<button ng-show="isAlbum" class="button button-full button-balanced" ng-click="go(searchInput, album)">
   See all albums
 </button>
 

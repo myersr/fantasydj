@@ -37,7 +37,7 @@
                         Pause
                     </a> 
 
-                    <a class="tab-item" ng-click="openSpotify(thing.tracks.external_urls.spotify)">
+                    <a class="tab-item" ng-click="openSpotify(thing.external_urls.spotify)">
                         <i class="icon ion-share"></i>
                         Open in Spotify
                     </a>
@@ -48,14 +48,6 @@
 
 </div>
 
-
-
-<div>
-    <ion-footer-bar align-title="left" class="bar-light" ng-show="audio.src">
-        <button class="button button-outline button-balanced" ng-click="play()"><i class="ion-play"> Play</i></button>
-        <button class="button button-outline button-balanced" ng-click="stop()"><i class="ion-stop"> Stop</i></button>
-    </ion-footer-bar>
-
-</div>    
+   
 </ion-content>
 </ion-view>

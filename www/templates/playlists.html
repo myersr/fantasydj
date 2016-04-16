@@ -1,5 +1,4 @@
 <ion-view view-title="Playlists" ng-init="load()">
-    <base href="/app/playlists">
   <ion-content>
     <ion-list can-swipe="true">
       <ion-item class="item-thumbnail-left" ng-repeat="playlist in playlists" ng-href="#/app/playlist/{{playlist.id}}">
