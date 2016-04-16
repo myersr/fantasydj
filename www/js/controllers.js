@@ -1,6 +1,7 @@
 angular.module('starter.controllers', [])
 
-  .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, playlistsFact){
+  .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, firebaseFact){
+    //$log.log(window.location.origin)
     $scope.showLoading = function() {
       $ionicLoading.show({
         template: '<i class="ion-loading-c">Fetching User Account</i>',
@@ -16,11 +17,13 @@ angular.module('starter.controllers', [])
 
       window.onload = function () {
         var hash = window.location.hash;
+        hash = hash.toString();
         //$log.log("hash",hash)
         if(!hash){
           $state.go('app.playlists')
         }else if (hash.includes("access_token")) {
           $scope.showLoading();
+          var isUser;
           // login success
           //$log.log("Login Success")
           var token = window.location.hash.split('&')[0].split('=')[1];
@@ -31,8 +34,24 @@ angular.module('starter.controllers', [])
             var promise = authenticationFact.queryData(token);
             promise.then(function(response){
               $log.log(response)
-              $scope.hideLoading();
-              $state.go("app.playlists")
+              //initialize promise
+              var promiseReg = firebaseFact.isRegistered();
+              //finishing the promise
+              promiseReg.then(function(response){
+                $log.log("inside isRegistered promise: ", response)
+                isUser = response;
+                if(isUser) {
+                  $scope.hideLoading();
+                  $state.go("app.playlists")
+                } else{ //if not a registered user, send to registry page.
+                  $scope.hideLoading();
+                  $state.go("confirmation")
+                }
+              })
+
+              //if already a user take to playlists
+
+
               //var promise2 = playlistsFact.getPlaylists();
               //promise2.then(function(response){
               //  $log.log(response)
@@ -54,7 +73,7 @@ angular.module('starter.controllers', [])
     }
   })
 
-  .controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location,$state, Spotify, authenticationFact) {
+  .controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location,$state, authenticationFact) {
 
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
@@ -385,24 +404,27 @@ angular.module('starter.controllers', [])
 
 
 
-  .controller('login', function($scope, $stateParams, $log, $firebaseArray, $ionicPlatform, $ionicPopup, authenticationFact){
+  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, authenticationFact){
+
     $scope.platform = ionic.Platform.platform();
+    $scope.printURI = function(){
+      var ure = window.location.origin;
+      $ionicPopup.alert({
+        title: 'uri',
+        content:ure.toString()
+      })
+    }
 
     $scope.performLogin = function(){
       authenticationFact.login()
       //https://accounts.spotify.com/authorize
     }
-
-
-
   })
 
 
 
 
 .controller('AccountCtrl', function($scope,$log, authenticationFact) {
-
-
     if(authenticationFact.isAuthorized())
     {
       //var defer = $q.defer();
@@ -413,5 +435,45 @@ angular.module('starter.controllers', [])
       console.log("accountInfo:",$scope.accountInfo);
     }
 
+
+  })
+
+.controller('confirmationCtrl', function($scope,$log,$state, authenticationFact, firebaseFact) {
+  $scope.platform = ionic.Platform.platform();
+  showLoading = function() {
+      $ionicLoading.show({
+        template: '<i class="ion-loading-c"> Registering User </i>',
+        noBackdrop: false
+      });
+    }
+
+    hideLoading = function() {
+      $ionicLoading.hide();
+    }
+  $scope.load = function () {
+    if (authenticationFact.isAuthorized()) {
+      //var defer = $q.defer();
+      $log.log("ACCOUNT CALL")
+      //var tken = authenticationFact.getToken()
+      //authenticationFact.queryData(tken)
+      $scope.accountInfo = authenticationFact.getData();
+      console.log("accountInfo:", $scope.accountInfo);
+    } else{
+      $state.go("login");
+    }
+  }
+  $scope.confirm = function(){
+    showLoading();
+    var regPromise = firebaseFact.registerUser()
+    regPromise.then(function(response){
+      $log.log("Registered User")
+      hideLoading();
+      $state.go("app.playlists")
+    })
+  }
+  $scope.deny = function(){
+    authenticationFact.clearData();
+    $state.go('login')
+  }
 
   });
