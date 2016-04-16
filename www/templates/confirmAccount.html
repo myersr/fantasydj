@@ -1,0 +1,49 @@
+<ion-view view-title="Confirmation" ng-init="load()">
+    <ion-content id="grad">
+        <div ng-class="{ 'row' : platform == 'android', 'browserCenterCard' : platform != 'android' }">
+            <div class="list card">
+                <div class="item item-avatar">
+                    <img src="../img/spotifySmallBlack.jpg">
+                    <h2> {{ accountInfo.display_name }} </h2>
+                    <p> {{ accountInfo.email }} </p>
+                </div>
+
+                <div class="item item-body">
+                    <img class="profile_pic" width="150" ng-src="{{ accountInfo.images[0].url }}">
+                    <p>
+                        Welcome to fantasyDJ. To register your account please confirm that the information shown is your own.
+                    </p>
+                    <p>
+                    <div class="row">
+                        <div class="col">
+                            <button class="button button-large button-balanced" ng-click="confirm()">
+                                Confirm
+                            </button>
+                        </div>
+                        <div class="col" ></div>
+                        <div class="col">
+                            <button class="button button-large button-assertive" ng-click="deny()">
+                                Deny
+                            </button>
+                        </div>
+                    </div>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </ion-content>
+</ion-view>
+<!--
+</div>
+    <ion-list>
+        <div>
+            <img class="profile_pic" width="150" src="{{ accountInfo.images[0].url }}" >
+            <h3 class="accountInfo">{{ accountInfo.display_name }}</h3>
+
+            <h4 class="accountInfo">{{ accountInfo.email }}</h4>
+
+            <h5 class="accountInfo">Subscriber Count:</h5>
+            <p class="accountInfo">{{ accountInfo.followers.total }}</p>
+        </div>
+-->

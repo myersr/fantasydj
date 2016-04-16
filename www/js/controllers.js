@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-  .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, playlistsFact){
+  .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, firebaseFact){
     //$log.log(window.location.origin)
     $scope.showLoading = function() {
       $ionicLoading.show({
@@ -23,6 +23,7 @@ angular.module('starter.controllers', [])
           $state.go('app.playlists')
         }else if (hash.includes("access_token")) {
           $scope.showLoading();
+          var isUser;
           // login success
           //$log.log("Login Success")
           var token = window.location.hash.split('&')[0].split('=')[1];
@@ -33,8 +34,24 @@ angular.module('starter.controllers', [])
             var promise = authenticationFact.queryData(token);
             promise.then(function(response){
               $log.log(response)
-              $scope.hideLoading();
-              $state.go("app.playlists")
+              //initialize promise
+              var promiseReg = firebaseFact.isRegistered();
+              //finishing the promise
+              promiseReg.then(function(response){
+                $log.log("inside isRegistered promise: ", response)
+                isUser = response;
+                if(isUser) {
+                  $scope.hideLoading();
+                  $state.go("app.playlists")
+                } else{ //if not a registered user, send to registry page.
+                  $scope.hideLoading();
+                  $state.go("confirmation")
+                }
+              })
+
+              //if already a user take to playlists
+
+
               //var promise2 = playlistsFact.getPlaylists();
               //promise2.then(function(response){
               //  $log.log(response)
@@ -297,7 +314,7 @@ angular.module('starter.controllers', [])
   //
   //})
 //$firebaseArray
-  .controller('login', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, authenticationFact){
+  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, authenticationFact){
     $scope.platform = ionic.Platform.platform();
     $scope.printURI = function(){
       var ure = window.location.origin;
@@ -311,45 +328,6 @@ angular.module('starter.controllers', [])
       authenticationFact.login()
       //https://accounts.spotify.com/authorize
     }
-    var scopes = ['user-read-private',' user-read-email',' playlist-read-private',' playlist-modify-private',' playlist-modify-public ','playlist-read-collaborative']
-    $scope.token;
-    $scope.secToken = window.localStorage.getItem('spotify-token');
-    $scope.testLogin = function() {
-      $cordovaOauth.spotify('be9a8fc1e71c45edb1cbf4d69759d6d3', scopes).then(function(result) {
-        window.localStorage.setItem('spotify-token', result.access_token);
-        //Spotify.setAuthToken(result.access_token);
-        $scope.token = result.access_token;
-        $scope.secToken = window.localStorage.getItem('spotify-token')
-        Spotify.setAuthToken(result.access_token);
-        $scope.Test();
-      }, function(error) {
-        $ionicPopup.alert({
-          title: 'function error',
-          content: error
-        })
-        console.log("Error -> " + error);
-      }).catch(function(error){
-         $ionicPopup.alert({
-          title: 'Catch Statment',
-          content: error
-        })
-      });;
-    };
-    $scope.Test = function(){
-      Spotify.getCurrentUser().then(function (data) {
-        $scope.getUserPlaylists(data.id);
-      });
-    };
-    $scope.getUserPlaylists = function(userid) {
-      Spotify.getUserPlaylists(userid).then(function (data) {
-        $scope.playlists = data.items;
-        console.log($scope.playlists)
-      });
-    };
-
-
-
-
   })
 
 
@@ -380,8 +358,6 @@ angular.module('starter.controllers', [])
 //});
 
 .controller('AccountCtrl', function($scope,$log, authenticationFact) {
-
-
     if(authenticationFact.isAuthorized())
     {
       //var defer = $q.defer();
@@ -392,5 +368,45 @@ angular.module('starter.controllers', [])
       console.log("accountInfo:",$scope.accountInfo);
     }
 
+
+  })
+
+.controller('confirmationCtrl', function($scope,$log,$state, authenticationFact, firebaseFact) {
+  $scope.platform = ionic.Platform.platform();
+  showLoading = function() {
+      $ionicLoading.show({
+        template: '<i class="ion-loading-c"> Registering User </i>',
+        noBackdrop: false
+      });
+    }
+
+    hideLoading = function() {
+      $ionicLoading.hide();
+    }
+  $scope.load = function () {
+    if (authenticationFact.isAuthorized()) {
+      //var defer = $q.defer();
+      $log.log("ACCOUNT CALL")
+      //var tken = authenticationFact.getToken()
+      //authenticationFact.queryData(tken)
+      $scope.accountInfo = authenticationFact.getData();
+      console.log("accountInfo:", $scope.accountInfo);
+    } else{
+      $state.go("login");
+    }
+  }
+  $scope.confirm = function(){
+    showLoading();
+    var regPromise = firebaseFact.registerUser()
+    regPromise.then(function(response){
+      $log.log("Registered User")
+      hideLoading();
+      $state.go("app.playlists")
+    })
+  }
+  $scope.deny = function(){
+    authenticationFact.clearData();
+    $state.go('login')
+  }
 
   });
