@@ -397,11 +397,91 @@ angular.module('starter.controllers', [])
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    League Controller     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    By: Thomas Brower     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
+
+.controller('leagueCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, addFact, $ionicPopup)
+{
+    $scope.platform = ionic.Platform.platform();
+
+
+
+    $scope.go = function(input, type){
+      $state.go('app.more', {type: type, input: input})
+
+    }
+
+
+  $scope.getNewName = function()
+  {
+
+     // Triggered on a button click, or some other target
+      $scope.showPopup = function() {
+        $scope.newplaylistname = {};
+        // An elaborate, custom popup
+        var myPopup = $ionicPopup.show({
+          template: '<input type="text" placeholder="New Playlist Name" ng-model="newplaylistname.name">',
+          title: 'Enter Playlist Name',
+          subTitle: 'Ex. Workout tunes',
+          scope: $scope,
+          buttons: [
+            { text: 'Cancel' },
+            {
+              text: '<b>Create</b>',
+              type: 'button-positive',
+              onTap: function(e) {
+                $log.log("Bruh: ",$scope.newplaylistname.name);
+                if (!$scope.newplaylistname.name) {
+                  //don't allow the user to close unless he enters name
+                  $log.log("Input is: ", $scope.newplaylistname.name);
+
+                  e.preventDefault();
+                } else {
+                  $log.log("Input is: ", $scope.newplaylistname.name);
+                  $scope.createPlaylist($scope.newplaylistname.name);
+                  return $scope.newplaylistname.name;
+                }
+              }
+            }
+          ]
+        })
+
+        myPopup.then(function(res) {
+          console.log('Tapped!', res);
+  })
+
+  }
+  $scope.showPopup();
+}
+
+  $scope.createPlaylist = function(newplaylistname)
+  {
+    $scope.showLoading();
+    var promise = addFact.createPlaylist(newplaylistname);
+      promise.then(function(response)
+      {
+        $log.log("Created response: ", response);
+        $scope.returnData = response;
+        $log.log($scope.returnData);
+
+
+        $scope.hideLoading(); 
+        $state.go("app.playlists");   
+      })  
+
+  }
+})
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
