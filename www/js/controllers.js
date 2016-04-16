@@ -40,15 +40,15 @@ angular.module('starter.controllers', [])
               promiseReg.then(function(response){
                 $log.log("inside isRegistered promise: ", response)
                 isUser = response;
-
-              })
-              if(isUser) {
+                if(isUser) {
                   $scope.hideLoading();
                   $state.go("app.playlists")
                 } else{ //if not a registered user, send to registry page.
                   $scope.hideLoading();
                   $state.go("confirmation")
                 }
+              })
+
               //if already a user take to playlists
 
 
