@@ -160,6 +160,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   /*
    Author: Roy Myers
    firebaseFact
+   performs multiple functions using firebaseio backend
    */
   .factory('firebaseFact',['$http', '$log', '$q', '$window', 'authenticationFact', function($http,$log, $q,$window, authenticationFact){
     var firebaseFact = [];
@@ -184,12 +185,13 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         var spotData = authenticationFact.getData() //.email
         //$log.log(spotData.id)
         var user = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id );
-        var randUID = Math.floor((Math.random() * 10000) + 1);//This needs to be updated to check the database for repitions
+        var randUID = Math.floor((Math.random() * 10000000) + 1);//This needs to be updated to check the database for repitions
         user.set({UID: randUID, SUID: spotData.id, email: spotData.email, usrName: spotData.display_name})
         $log.log("New registered User: ",user)
         resolve(user)
       });//end $q
     }
+
 
     //Author: Daniel Harper
     //Returns a competition based on the compId if it exists
@@ -210,15 +212,15 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
     //Author: Daniel Harper
     //Returns a list of leagues to be displayed
-    firebaseFact.getLeagues = function(){
-      return $q(function(resolve, reject) {
-        var leagues = new Firebase("https://fantasydj.firebaseio.com/");
-        leagues.once("value", function(snapshot){
-          if(snapshot.child('leagues').exists()){
-            var theComp = snapshot.child('leagues').val();
+    firebaseFact.getLeagues = function() {
+      return $q(function (resolve, reject) {
+        var leagues = new Firebase("https://fantasydj.firebaseio.com/leagues");
+        leagues.once("value", function (snapshot) {
+          if (snapshot.child('leagues').exists()) {
+            var theComp = snapshot.val();
             resolve(theComp);
           }
-          else{
+          else {
             reject("Could not reach leagues database");
           }
         })
@@ -339,6 +341,13 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Written by:  Thomas Brower   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
+  /*
+  Author: Roy Myers
+  spotifyFact -
+  Uses the Spotify Api to perform multiple functions.
+  Also stores instances of user data.
+   */
   .factory('spotifyFact',['$log', '$http','$q', function($log, $http, $q){
     var spotifyFact = []
     var searchValue = []
@@ -451,14 +460,13 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return playlists;
     }
 
-    addFact.createPlaylist = function(newplaylistname){
+    addFact.createPlaylist = function(newplaylistname, userID){
       return $q(function(resolve, reject) {
 
         $log.log("playlist name: ", newplaylistname);
-        userData = authenticationFact.getData();
         //$log.log("userData: ", userData)
         $http({
-          url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists" ,
+          url: "https://api.spotify.com/v1/users/"+ userID + "/playlists" ,
           method: "POST",
           headers: {
             'Authorization': 'Bearer ' + token,
@@ -536,9 +544,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
   /*
-  playlistsFact written by Roy Myer
-  Returns the playlists of a user
-  get Call
+  Author Roy Myers
+  playlistsFact -
+  Returns users playlist from spotify
+
   using $q as promises
    */
   .factory('playlistsFact',['$log', '$http','$q', 'authenticationFact', 'firebaseFact', function($log, $http, $q, authenticationFact, firebaseFact){
@@ -561,6 +570,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 //  !!!!!!!!!!!!!! Thomas Brower !!!!!!!!!!!!!!!!!!
     var matchingPlaylists = function(list1, array1)
     {
+      if((list1 === null) || (array1.length < 1)){
+        return []
+      }
       var arrayLength = array1.length;
       var matches = [];
       var keys = Object.keys(list1);
@@ -602,6 +614,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     //    })
     //  });
     //}
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     playlistsFact.getPlaylistsData = function(){
       return $q(function(resolve, reject) {
@@ -659,14 +674,14 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
    using $q as promises
     */
 
-    playlistsFact.getPlaylistData = function(playlistId){
+    playlistsFact.getPlaylistData = function(playlistId, spotID){
       return $q(function(resolve, reject) {
         var playlistLink = getLinkbyId(playlistId)
         $log.log("after For loop: ", playlistLink)
         //var userData = authenticationFact.getData();
         //$log.log("userData: ", userData)
         $http({
-          url: playlistLink,//"GET https://api.spotify.com/v1/users/"+ userData.id +"/playlists/"+ playlistId + "/playlists",
+          url: "https://api.spotify.com/v1/users/"+ spotID +"/playlists/"+ playlistId,
           method: "Get",
           headers: {
             'Authorization': 'Bearer ' + token
@@ -703,7 +718,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       .state('test',{
         url:'/',
         templateUrl: 'index.html',
-        controller: 'AppCtrl'
+        controller: 'indexController'
       })
 
       .state('confirmation',{
@@ -757,7 +772,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       })
       .state('app.search', {
-        url: '/search',
+        url: '/:PID/search',
         views: {
           'menuContent': {
             templateUrl: 'templates/search.html',
@@ -814,7 +829,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
       .state('app.more', {
-        url: '/search/more?type=value1&input=value2',
+        url: '/:PID/search/more?type=value1&input=value2',
         views:{
         'menuContent':{
           templateUrl: 'templates/moreSearch.html',
@@ -838,8 +853,23 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           link:'Browse'
         }
       })
+      /*
+      Author: Roy Myers
+      join league controller
+       */
+      .state('app.join', {
+        url:'/league/join',
+        views:{
+          'menuContent': {
+            templateURl: 'templates/joinLeague.html',
+            controller: 'joinCtrl'
+          }
+        }
+
+      })
+
       .state('app.playlists', {
-        url: '/playlists',
+        url: '/:SPID/playlists',
         //onEnter: function($state, $log, authenticationFact){
         //  $log.log("hitting playlists", $state.current)
         //
@@ -870,7 +900,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
       .state('app.playlist', {
-        url: '/playlist/:playlistId',
+        url: '/:SPID/playlist/:playlistId',
         views: {
           'menuContent': {
             templateUrl: 'templates/playlist.html',

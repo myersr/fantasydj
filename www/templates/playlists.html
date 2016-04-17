@@ -1,7 +1,7 @@
 <ion-view view-title="Playlists" ng-init="load()" class="grad">
   <ion-content>
     <ion-list can-swipe="true">
-      <ion-item class="item-thumbnail-left grad black-text" ng-repeat="playlist in playlists" ng-href="#/app/playlist/{{playlist.id}}">
+      <ion-item class="item-thumbnail-left grad black-text" ng-repeat="playlist in playlists" ng-href="#/app/{{SPID}}/playlist/{{playlist.id}}">
           <img ng-src="{{playlist.images[0].url}}">
           <h2>{{playlist.name}}</h2>
           <ion-option-button class="button-positive"

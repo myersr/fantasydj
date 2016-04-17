@@ -33,10 +33,10 @@
       <img ng-src="{{item.album.images[0].url}}" ng-show="platform == 'android'">
 
       <h2>{{item.name}}</h2>
+      <h3>{{ item.artists[0].name }}</h3>
 
 
   </ion-item>
-
 
 </ion-list>
 
@@ -61,6 +61,7 @@
           <img ng-src="{{item.images[0].url}}" ng-show="platform == 'android'">
 
           <h2>{{item.name}}</h2>
+
 
 
       </ion-item>
