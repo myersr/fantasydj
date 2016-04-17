@@ -202,6 +202,22 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
       });//end $q
     }
 
+    //Author: Daniel Harper
+    //Returns a competition based on the compId if it exists
+    firebaseFact.getLeague = function(compId){
+      return $q(function(resolve, reject) {
+        var league = new Firebase("https://fantasydj.firebaseio.com/leagues");
+        league.once("value", function(snapshot){
+          if(snapshot.child(compId).exists()){
+            var theComp = snapshot.child(compId).val();
+            resolve(theComp);
+          }
+          else{
+            reject(compId + " does not exist");
+          }
+        })
+      }); //end of promise
+    }
     return firebaseFact;
   }])
 
@@ -493,6 +509,19 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','ngCordova
         },
         data: {
           link: 'Playlists'
+        }
+      })
+
+    .state('app.bracket', {
+        url: '/leagues/:leagueId',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/bracket.html',
+            controller: 'BracketCtrl'
+          }
+        },
+        data: {
+          link: 'Competitions'
         }
       });
     //$urlRouterProvider.when('/access_token','/app/playlists')
