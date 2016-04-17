@@ -33,11 +33,12 @@
       <img ng-src="{{item.album.images[0].url}}" ng-show="platform == 'android'">
 
       <h2>{{item.name}}</h2>
+      <h3>{{ item.artists[0].name }}</h3>
 
 
   </ion-item>
 
-</ion-list> 
+</ion-list>
 
 
 <button ng-show="isTrack" class="button button-full button-balanced" ng-click="go(searchInput, track)">
@@ -46,7 +47,7 @@
 
 
 </div>
- 
+
 
 <div class="list">
 
@@ -61,6 +62,7 @@
           <img ng-src="{{item.images[0].url}}" ng-show="platform == 'android'">
 
           <h2>{{item.name}}</h2>
+
 
 
       </ion-item>
@@ -91,7 +93,7 @@
 
       </ion-item>
 
-    </ion-list> 
+    </ion-list>
 <button ng-show="isAlbum" class="button button-full button-balanced" ng-click="go(searchInput, album)">
   See all albums
 </button>
