@@ -190,7 +190,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     firebaseFact.addPlaylist = function(playlist){
@@ -199,13 +201,30 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
         var spotData = authenticationFact.getData() // return the users spotify data
         var newPlaylist = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists');
-        newPlaylist.set({SPID: playlist.id, Name: playlist.name, LeagueName: null})
+        var firebasePlaylists = newPlaylist.push();
+        firebasePlaylists.set(playlist.id)
+        var playlistChild = firebasePlaylists.child(playlist.id)
+        playlistChild.set({ Name: playlist.name, League: "null"})
         $log.log("New playlist created in database: ", newPlaylist)
         resolve(playlist.id)
 
 
       })
     }
+
+
+    firebaseFact.getPlaylists = function(){
+      return $q(function(resolve,reject)
+      {
+
+        var playlist = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists');
+        newPlaylist.set({SPID: playlist.id, Name: playlist.name, LeagueName: null})
+        $log.log("New playlist created in database: ", newPlaylist)
+        resolve(playlist.id)
+
+
+      })
+    }    
 
     return firebaseFact;
   }])
