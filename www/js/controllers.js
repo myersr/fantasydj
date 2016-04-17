@@ -285,7 +285,7 @@ angular.module('starter.controllers', [])
 
     $scope.goTo = function(playlistId)
     {
-      $state.go('app.search', {PID:playlistId})
+      $state.go('app.search', {playlistId:playlistId})
       $log.log("Playlist Pass-from-playlist-window ID: " + playlistId)
     }
 
@@ -436,7 +436,7 @@ angular.module('starter.controllers', [])
       $log.log(response);
 
     })
-    $state.go('app.playlists',{PID:playlistId})
+    $state.go('app.playlist',{playlistId:playlistId})
     $log.log("PID passed from addTo playlist function: ", $scope.playlistId);
     $log.log("Track URI is: ", uri);
   }  
