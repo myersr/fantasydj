@@ -405,7 +405,7 @@ angular.module('starter.controllers', [])
 
 
 
-.controller('leagueCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, addFact, $ionicPopup)
+.controller('leagueCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, addFact, $ionicPopup, firebaseFact)
 {
     $scope.platform = ionic.Platform.platform();
 
@@ -435,14 +435,13 @@ angular.module('starter.controllers', [])
               text: '<b>Create</b>',
               type: 'button-positive',
               onTap: function(e) {
-                $log.log("Bruh: ",$scope.newplaylistname.name);
                 if (!$scope.newplaylistname.name) {
                   //don't allow the user to close unless he enters name
-                  $log.log("Input is: ", $scope.newplaylistname.name);
+                  $log.log("Input failed: ", $scope.newplaylistname);
 
                   e.preventDefault();
                 } else {
-                  $log.log("Input is: ", $scope.newplaylistname.name);
+                  $log.log("ID is: ", $scope.newplaylistname);
                   $scope.createPlaylist($scope.newplaylistname.name);
                   return $scope.newplaylistname.name;
                 }
@@ -452,7 +451,7 @@ angular.module('starter.controllers', [])
         })
 
         myPopup.then(function(res) {
-          console.log('Tapped!', res);
+          console.log('Playlist Created!', res);
   })
 
   }
@@ -468,10 +467,13 @@ angular.module('starter.controllers', [])
         $log.log("Created response: ", response);
         $scope.returnData = response;
         $log.log($scope.returnData);
+        var addPlayPromise = firebaseFact.addPlaylist($scope.returnData.data);
+        addPlayPromise.then(function(response)
+         {
+           $scope.hideLoading(); 
+           $state.go("app.playlist", {playlistId: response} ); 
+         })
 
-
-        $scope.hideLoading(); 
-        $state.go("app.playlists");   
       })  
 
   }

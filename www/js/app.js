@@ -189,6 +189,24 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       });//end $q
     }
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    firebaseFact.addPlaylist = function(playlist){
+      return $q(function(resolve,reject)
+      {
+
+        var spotData = authenticationFact.getData() // return the users spotify data
+        var newPlaylist = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists');
+        newPlaylist.set({SPID: playlist.id, Name: playlist.name, LeagueName: null})
+        $log.log("New playlist created in database: ", newPlaylist)
+        resolve(playlist.id)
+
+
+      })
+    }
+
     return firebaseFact;
   }])
 
@@ -401,7 +419,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           playlists = res
           $log.log("playlistscreated",playlists)
           $log.log("response: ", res)
-          resolve("playlists created: ", playlists)
+          resolve(playlists)
 
         }, function errorCallback(response) {
           // called asynchronously if an error occurs
