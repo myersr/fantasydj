@@ -209,7 +209,7 @@ angular.module('starter.controllers', [])
       playlistPromise.then(function (response) {
         $log.log("Response i controller: ",response)
         $scope.playlist = response;
-        $log.log(response.tracks.items[0].track.album.images[2].url);
+        //$log.log(response.tracks.items[0].track.album.images[2].url);
         hideLoading();
         //$log.log("Promise resolved: ", response)
         //$scope.playlists = playlistsFact.getPlaylist($stateParams.playlistId);

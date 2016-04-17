@@ -200,11 +200,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       {
 
         var spotData = authenticationFact.getData() // return the users spotify data
-        var newPlaylist = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists');
-        var firebasePlaylists = newPlaylist.push();
-        firebasePlaylists.set(playlist.id)
-        var playlistChild = firebasePlaylists.child(playlist.id)
-        playlistChild.set({ Name: playlist.name, League: "null"})
+        var newPlaylist = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists/' + playlist.id);
+        newPlaylist.set({ Name: playlist.name, League: "null"})
         $log.log("New playlist created in database: ", newPlaylist)
         resolve(playlist.id)
 
@@ -213,16 +210,19 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
 
-    firebaseFact.getPlaylists = function(){
+    firebaseFact.getFirePlaylists = function(){
       return $q(function(resolve,reject)
       {
+        var spotData = authenticationFact.getData()
+        var playlistInfo = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists');
+        $log.log(playlistInfo)
+        playlistInfo.once("value", function(snapshot)
+        {
 
-        var playlist = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists');
-        newPlaylist.set({SPID: playlist.id, Name: playlist.name, LeagueName: null})
-        $log.log("New playlist created in database: ", newPlaylist)
-        resolve(playlist.id)
+          var fireList = snapshot.val();
+          resolve(fireList);
 
-
+        })
       })
     }    
 
@@ -505,7 +505,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   get Call
   using $q as promises
    */
-  .factory('playlistsFact',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
+  .factory('playlistsFact',['$log', '$http','$q', 'authenticationFact', 'firebaseFact', function($log, $http, $q, authenticationFact, firebaseFact){
     var playlistsFact = []
     var playlists = []
     var userData = authenticationFact.getData();
@@ -522,6 +522,29 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return playlists;
     }
 
+//  !!!!!!!!!!!!!! Thomas Brower !!!!!!!!!!!!!!!!!!
+    var matchingPlaylists = function(list1, array1)
+    {
+      var arrayLength = array1.length;
+      var matches = [];
+      var keys = Object.keys(list1);
+      $log.log("true dat: ",array1)
+
+      for (var i = 0; i < arrayLength; i++) 
+      {
+        for (var j = 0; j < keys.length; j++) 
+        {
+          if(array1[i].id === keys[j])
+          {
+            // do stuff
+            matches[matches.length] = array1[i];
+          }        
+        }
+      }
+      return matches;
+    }
+
+
     playlistsFact.getPlaylistsData = function(){
       return $q(function(resolve, reject) {
         //$log.log("Before Call")
@@ -535,9 +558,17 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }).then(function successCallback(res) {
           //$log.log("pre assign", res.data)
-          playlists = res.data.items
-          $log.log("playlistsfetched",playlists)
-          resolve("playlists fetched")
+          var firePromise = firebaseFact.getFirePlaylists();
+          firePromise.then(function(response)
+          {
+            list1 = response
+            var array1 = res.data.items
+            //playlist = res.data.items
+            playlists = matchingPlaylists(list1, array1)
+            $log.log("playlistsfetched",playlists)
+            resolve("playlists fetched") 
+          })
+
 
         }, function errorCallback(response) {
           // called asynchronously if an error occurs
