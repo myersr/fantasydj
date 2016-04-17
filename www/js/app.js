@@ -580,6 +580,28 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return matches;
     }
 
+    ////Author: Daniel Harper
+    ////getPublicPlaylist returns public a spotify playlist from spotify
+    //playlistsFact.getPublicPlaylist = function(userId,playListId){
+    //  return $q(function(resolve, reject) {
+    //     userData = authenticationFact.getData();//get the current user
+    //    //$log.log("userData: ", userData)
+    //    $http({
+    //      url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playListId,
+    //      method: "Get",
+    //      headers: {
+    //        'Authorization': 'Bearer ' + token
+    //      }
+    //    }).then(function successCallback(res) {
+    //
+    //    }, function errorCallback(response) {
+    //      // called asynchronously if an error occurs
+    //      // or server returns response with an error status.
+    //      $log.log("Call Error Playlist: ",response)
+    //      reject(response);
+    //    })
+    //  });
+    //}
 
     playlistsFact.getPlaylistsData = function(){
       return $q(function(resolve, reject) {
