@@ -852,7 +852,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
       .state('app.playlists', {
-        url: '/:SPID/playlists',
+        url: '/playlists',
         //onEnter: function($state, $log, authenticationFact){
         //  $log.log("hitting playlists", $state.current)
         //

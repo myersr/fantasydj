@@ -51,7 +51,7 @@ angular.module('starter.controllers', [])
                 isUser = response;
                 if(isUser) {
                   $scope.hideLoading();
-                  $state.go("app.playlists", {SPID: userID})
+                  $state.go("app.playlists")
                 } else{ //if not a registered user, send to registry page.
                   $scope.hideLoading();
                   $state.go("confirmation")
@@ -144,7 +144,7 @@ angular.module('starter.controllers', [])
       regPromise.then(function(response){
         $log.log("Registered User")
         hideLoading();
-        $state.go("app.playlists", {SPID:$scope.accountInfo.id})
+        $state.go("app.playlists")
       })
     }
     $scope.deny = function(){
@@ -219,7 +219,7 @@ angular.module('starter.controllers', [])
   PlaylistsCtrl -
   grabs and lists all playlists for a spotify user
    */
-  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, $stateParams, playlistsFact) {
+  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, $stateParams,authenticationFact, playlistsFact) {
     showLoading = function() {
       $ionicLoading.show({
         template: '<i class="ion-loading-c"> Loading Playlists </i>',
@@ -231,7 +231,7 @@ angular.module('starter.controllers', [])
       $ionicLoading.hide();
     }
     $scope.playlists;// = playlistsFact.getPlaylistsData();
-    $scope.SPID = $stateParams.SPID;
+    $scope.SPID = authenticationFact.getData().id;
 
     $scope.load =  function() {
       showLoading();
