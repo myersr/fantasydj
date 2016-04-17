@@ -348,7 +348,34 @@ angular.module('starter.controllers', [])
 
   })
 
+
+
   .controller('joinCtrl', function ($scope, $log, $ionicLoading, spotifyFact, firebaseFact) {
+    showLoading = function() {
+      $ionicLoading.show({
+        template: '<i class="ion-loading-c"> Loading open Leagues </i>',
+        noBackdrop: false
+      });
+    }
+
+    hideLoading = function() {
+      $ionicLoading.hide();
+    }
+
+    $log.log("hitting Ctrl")
+    $scope.leagues;
+
+    $scope.load = function(){
+      showLoading();
+      $log.log("hitting load")
+      var leaugePromise = firebaseFact.getLeagues();
+      leaugePromise.then(function(response){
+        $log.log(response)
+        $scope.leagues = response;
+        hideLoading();
+      })
+    }
+
 
 
   })

@@ -190,6 +190,16 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       });//end $q
     }
 
+    firebaseFact.getLeagues = function(){
+      return $q(function(resolve, reject) {
+        var fireLeagues = new Firebase('https://fantasydj.firebaseio.com/leagues');
+        fireLeagues.once("value", function (snapshot) {
+          var data = snapshot.val();
+          resolve(data);
+        })
+      })
+    }
+
     return firebaseFact;
   }])
 
@@ -586,7 +596,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       .state('test',{
         url:'/',
         templateUrl: 'index.html',
-        controller: 'AppCtrl'
+        controller: 'indexCtrl'
       })
 
       .state('confirmation',{
@@ -726,10 +736,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       join league controller
        */
       .state('app.join', {
-        url:'league/join',
+        url:'/league/join',
         views:{
           'menuContent': {
-            templateURl: 'templates/joinLeague',
+            templateURl: 'templates/joinLeague.html',
             controller: 'joinCtrl'
           }
         }
