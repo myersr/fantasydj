@@ -170,14 +170,21 @@ angular.module('starter.controllers', [])
 
   })
 
-  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $ionicPopup, playlistsFact) {
+  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, playlistsFact) {
     $scope.audio = new Audio();
+    $scope.playlistId = $stateParams.PID
 
     showLoading = function() {
       $ionicLoading.show({
         template: '<i class="ion-loading-c"> Grabbing Playlist </i>',
         noBackdrop: false
       });
+    }
+
+    $scope.goTo = function(playlistId)
+    {
+      $state.go('app.search', {PID:playlistId})
+      $log.log("Playlist Pass-from-playlist-window ID: " + playlistId)
     }
 
     hideLoading = function() {
@@ -276,7 +283,8 @@ angular.module('starter.controllers', [])
     }
   }
 
-    $scope.go = function(input, type){
+    $scope.go = function(input, type)
+    {
       $state.go('app.more', {type: type, input: input})
 
     }
@@ -394,8 +402,8 @@ angular.module('starter.controllers', [])
 
 })
 
-
-
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    League Controller     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    By: Thomas Brower     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 

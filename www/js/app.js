@@ -545,6 +545,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
 
+    
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     playlistsFact.getPlaylistsData = function(){
       return $q(function(resolve, reject) {
         //$log.log("Before Call")
@@ -699,7 +702,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       })
       .state('app.search', {
-        url: '/search',
+        url: '/:PID/search',
         views: {
           'menuContent': {
             templateUrl: 'templates/search.html',
@@ -756,7 +759,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
       .state('app.more', {
-        url: '/search/more?type=value1&input=value2',
+        url: '/:PID/search/more?type=value1&input=value2',
         views:{
         'menuContent':{
           templateUrl: 'templates/moreSearch.html',
