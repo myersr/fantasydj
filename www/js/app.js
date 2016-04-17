@@ -883,7 +883,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
       .state('app.playlist', {
-        url: '/:SPID/playlist/:playlistId',
+        url: '/playlist/:playlistId',
         views: {
           'menuContent': {
             templateUrl: 'templates/playlist.html',
