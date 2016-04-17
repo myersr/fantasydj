@@ -273,7 +273,7 @@ angular.module('starter.controllers', [])
    grabs and lists all songs in a playlist
    */
 
-  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, playlistsFact) {
+  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, authenticationFact, playlistsFact) {
     $scope.audio = new Audio();
     $scope.playlistId = $stateParams.PID
 
@@ -315,7 +315,8 @@ angular.module('starter.controllers', [])
 
     $scope.load = function(){
       showLoading();
-      var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, $stateParams.SPID);
+      var userData = authenticationFact.getData();
+      var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, userData.id);
       playlistPromise.then(function (response) {
         $log.log("Response i controller: ",response)
         $scope.playlist = response;
@@ -635,7 +636,7 @@ angular.module('starter.controllers', [])
         addPlayPromise.then(function(response)
          {
            $scope.hideLoading();
-           $state.go("app.playlist", {playlistId: response, SPID: userData.id} );
+           $state.go("app.playlist", {playlistId: response} );
          })
 
       })
