@@ -172,7 +172,6 @@ angular.module('starter.controllers', [])
 
   .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, playlistsFact) {
     $scope.audio = new Audio();
-    $scope.playlistId = $stateParams.PID
 
     showLoading = function() {
       $ionicLoading.show({
@@ -247,8 +246,10 @@ angular.module('starter.controllers', [])
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, spotifyFact){
+  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, spotifyFact, playlistsFact){
     $scope.platform = ionic.Platform.platform();
+    $scope.playlistId = $stateParams.PID
+
 
     $scope.isArtist = false;
     $scope.isTrack = false;
@@ -267,7 +268,22 @@ angular.module('starter.controllers', [])
 
   $scope.openSpotify = function(link) {
     window.open(link, '_blank', 'location=yes');
-  }    
+  }  
+
+  $scope.addTo = function(playlistId, uri)
+  {
+    // call add to playlist Fact
+    var addPromise = playlistsFact.addTrack($scope.playlistId, uri)
+    addPromise.then(function(response)
+    {
+      $scope.item = response;
+      $log.log(response);
+
+    })
+    $state.go('app.playlist')
+    $log.log("PID passed from addTo playlist function: ", $scope.playlistId);
+    $log.log("Track URI is: ", uri);
+  }  
 
    $scope.play = function(trackInfo) {
       $scope.audio.src = trackInfo.preview_url;
@@ -296,6 +312,7 @@ angular.module('starter.controllers', [])
         $scope.item = response;
         $log.log($scope.item);
       })
+      $log.log("PID passed from search-artist: ", $scope.playlistId);
 
     }
 
@@ -307,6 +324,7 @@ angular.module('starter.controllers', [])
         $scope.item = response;
         $log.log($scope.item);
       })
+      $log.log("PID passed from search-track: ", $scope.playlistId);
 
     }
 
@@ -317,6 +335,7 @@ angular.module('starter.controllers', [])
         $scope.item = response;
         $log.log($scope.item);
       })
+      $log.log("PID passed from search-album: ", $scope.playlistId);
 
     }
 
@@ -451,7 +470,7 @@ angular.module('starter.controllers', [])
                 } else {
                   $log.log("ID is: ", $scope.newplaylistname);
                   $scope.createPlaylist($scope.newplaylistname.name);
-                  return $scope.newplaylistname.name;
+                  //return $scope.newplaylistname.name;
                 }
               }
             }

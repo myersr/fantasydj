@@ -17,10 +17,10 @@
   </div>
 </div>
 
-<div>
-        <ion-list>
-            <ion-item ng-repeat="thing in item.tracks" class="list card">
-                <div class="item item-avatar">
+<div class="list">
+        <ion-list can-swipe="true">
+            <ion-item ng-repeat="thing in item.tracks" class="item-thumbnail-left" ng-href="#/app/{{playlistId}}/search/info/{{item.id}}">
+                <div class="item item-avatar" >
                     <img ng-src="{{thing.album.images[0].url}}">
                     <h2> {{thing.name}} </h2>
                     <p> Album: {{thing.album.name}} </p>

@@ -201,7 +201,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
         var spotData = authenticationFact.getData() // return the users spotify data
         var newPlaylist = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists/' + playlist.id);
-        newPlaylist.set({ Name: playlist.name, League: "null"})
+        newPlaylist.set({ name: playlist.name, league: "null"})
         $log.log("New playlist created in database: ", newPlaylist)
         resolve(playlist.id)
 
@@ -265,7 +265,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           resolve(searchResults)
 
         }, function errorCallback(response) {
-          $log.log("Call Error Search: ",response)
+          $log.log("Call Error Search results: ",response)
           reject("400 error in getSearchData")
         })
       });
@@ -287,7 +287,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           resolve(searchResults)
 
         }, function errorCallback(response) {
-          $log.log("Call Error Search: ",response)
+          $log.log("Call Error Search inherit: ",response)
           reject("400 error in getSearchData")
         })
       });
@@ -332,7 +332,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
         }, function errorCallback(response) {
 
-          $log.log("Call Error Search: ",response)
+          $log.log("Call Error Search Artist result: ",response)
           reject("400 error in getArtistResults")
         })
       });
@@ -355,7 +355,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
       }, function errorCallback(response) {
 
-        $log.log("Call Error Search: ",response)
+        $log.log("Call Error Search track results: ",response)
         reject("400 error in getTrackResults")
       })
     });
@@ -380,7 +380,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
         }, function errorCallback(response) {
 
-          $log.log("Call Error Search: ",response)
+          $log.log("Call Error Search album results: ",response)
           reject("400 error in getAlbumResults")
         })
       });
@@ -543,6 +543,38 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       }
       return matches;
     }
+
+    playlistsFact.addTrack = function(playlistId, uri)
+    {
+        return $q(function(resolve, reject) {
+
+        $log.log("playlist ID in addTrackFact: ", playlistId);
+        userData = authenticationFact.getData();
+        //$log.log("userData: ", userData)
+        $http({
+          url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playlistId + "/tracks?uris=" + uri,
+          method: "POST",
+          headers: {
+            'Authorization': 'Bearer ' + token,
+                    }
+          }).then(function successCallback(res) {
+          //$log.log("pre assign", res.data)
+          playlists = res
+          $log.log("song added ",playlists)
+          $log.log("response: ", res)
+          resolve(playlists)
+
+        }, function errorCallback(response) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          $log.log("Call Error Playlist not created: ",response)
+          reject(response)
+        })
+        //return playlists;
+        //https://api.spotify.com/v1/users/{user_id}/playlists
+      });
+    }
+
 
 
     
@@ -716,7 +748,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
       .state('app.info', {
-        url: '/search/info/:searchValue',
+        url: '/:PID/search/info/:searchValue',
         views:{
         'menuContent':{
           templateUrl: 'templates/cardView.html',
@@ -730,7 +762,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
       .state('app.artistCard', {
-        url: '/search/artistCard/:searchValue',
+        url: '/:PID/search/artistCard/:searchValue',
         views:{
         'menuContent':{
           templateUrl: 'templates/artistCard.html',
@@ -744,7 +776,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
       .state('app.albumCard', {
-        url: '/search/albumCard/:searchValue',
+        url: '/:PID/search/albumCard/:searchValue',
         views:{
         'menuContent':{
           templateUrl: 'templates/albumCard.html',
