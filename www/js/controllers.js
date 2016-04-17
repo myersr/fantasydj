@@ -234,7 +234,7 @@ angular.module('starter.controllers', [])
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//                                                      Search Ctrl             
+//                                                      Search Ctrl
 //                                                Written by: Thomas Brower
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -260,7 +260,7 @@ angular.module('starter.controllers', [])
 
   $scope.openSpotify = function(link) {
     window.open(link, '_blank', 'location=yes');
-  }    
+  }
 
    $scope.play = function(trackInfo) {
       $scope.audio.src = trackInfo.preview_url;
@@ -329,17 +329,17 @@ angular.module('starter.controllers', [])
         if($stateParams.type === "track")
         {
           $scope.isTrack = true;
-        } 
+        }
 
         if($stateParams.type === "album")
         {
           $scope.isAlbum = true;
-        }               
+        }
 
         $log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
         $scope.hideLoading();
         })
-   }    
+   }
 
     $scope.performSearch = function(searchInput){
     // assign somehting to be displayed (promise)
@@ -398,7 +398,7 @@ angular.module('starter.controllers', [])
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    League Controller     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    By: Thomas Brower     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    By: Thomas Brower     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -470,11 +470,11 @@ angular.module('starter.controllers', [])
         var addPlayPromise = firebaseFact.addPlaylist($scope.returnData.data);
         addPlayPromise.then(function(response)
          {
-           $scope.hideLoading(); 
-           $state.go("app.playlist", {playlistId: response} ); 
+           $scope.hideLoading();
+           $state.go("app.playlist", {playlistId: response} );
          })
 
-      })  
+      })
 
   }
 })
@@ -563,7 +563,7 @@ angular.module('starter.controllers', [])
 
 .controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
   //var so = cordova.plugins.screenorientation;
-  var compId = $stateParams.leagueId;
+  var compId = $stateParams.compId;
 
   /*
   $scope.$on('$ionicView.enter', function(ev) {
@@ -585,6 +585,17 @@ angular.module('starter.controllers', [])
     console.log("round1:",response.rounds[1]);
     console.log("compRounds",$scope.competitionRounds);
     console.log("noRounds",$scope.noRounds);
+  });
+
+})
+
+.controller('LeaguesCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
+  //var so = cordova.plugins.screenorientation;
+  var leaguesPromise = firebaseFact.getLeagues();
+
+  leaguesPromise.then(function(response){
+    console.log("response:",response);
+    $scope.leagues = response;
   });
 
 });

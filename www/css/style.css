@@ -17,6 +17,9 @@ ul{
   background: -moz-linear-gradient(right, #0A1215 , #1a102a); /* For Firefox 3.6 to 15 */
   background: linear-gradient(to right, #0A1215 , #1a102a); /* Standard syntax */
 }
+.league-name-plate{
+  color:#000000;
+}
 .grad h1,h2,h3,h4,h5{
   color:#ffffff;
 }

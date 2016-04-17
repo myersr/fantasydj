@@ -208,6 +208,23 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       }); //end of promise
     }
 
+    //Author: Daniel Harper
+    //Returns a list of leagues to be displayed
+    firebaseFact.getLeagues = function(){
+      return $q(function(resolve, reject) {
+        var leagues = new Firebase("https://fantasydj.firebaseio.com/");
+        leagues.once("value", function(snapshot){
+          if(snapshot.child('leagues').exists()){
+            var theComp = snapshot.child('leagues').val();
+            resolve(theComp);
+          }
+          else{
+            reject("Could not reach leagues database");
+          }
+        })
+      }); //end of promise
+    }
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -844,7 +861,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
     .state('app.bracket', {
-        url: '/leagues/:leagueId',
+        url: '/leagues/:compId',
         views: {
           'menuContent': {
             templateUrl: 'templates/bracket.html',
@@ -852,7 +869,19 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         },
         data: {
-          link: 'Competitions'
+          link: 'Leagues'
+        }
+      })
+    .state('app.leagues', {
+        url: '/leagues',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/leagues.html',
+            controller: 'LeaguesCtrl'
+          }
+        },
+        data: {
+          link: 'Leagues'
         }
       });
     //$urlRouterProvider.when('/access_token','/app/playlists')
