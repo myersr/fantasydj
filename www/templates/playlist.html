@@ -5,13 +5,23 @@
           <h2>{{ playlist.name }}</h2>
           <p><a href="{{ playlist.external_urls.spotify }}">Open in Spotify</a></p>
       </div>
-      <div class="list" ng-repeat="song in playlist.tracks.items" ng-click="playTrack(song)">
+      <div class="list" ng-repeat="song in playlist.tracks.items">
           <a class="item item-thumbnail-left">
               <img ng-src="{{ song.track.album.images[1].url }}">
               <h2>{{ song.track.name }}</h2>
               <p>{{ song.track.artists[0].name }}</p>
               <p>{{ song.track.album.name }}</p>
           </a>
+          <div class="item tabs tabs-secondary tabs-icon-left">
+          <a class="tab-item" ng-click="play(song)">
+                    <i class="icon ion-music-note"></i>
+                        Play Song
+                    </a>
+                    <a class="tab-item" ng-click="stop()">
+                        <i class="icon ion-pause"></i>
+                        Pause
+                    </a>  
+          </div>
       </div>
 
 

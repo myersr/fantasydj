@@ -1,0 +1,91 @@
+<!-- Written by Thomas Brower -->
+
+
+<ion-view view-title="Search" ng-init="inheritload()">
+  <ion-content>
+
+  <div class="item item-input-inset">
+    <label class="item-input-wrapper">
+      <input type="search" placeholder="Ex. Sweet Child Of Mine" ng-model="newsearch">
+    </label>
+    <button class="button button-small" ng-click="inheritSearch(newsearch)">
+      Search 
+    </button>
+  </div>
+<!-- Tracks -->
+
+<div class="list" ng-show="isTrack">
+
+  <div ng-show="isTrack" class="item item-divider">
+   Tracks
+  </div>
+
+
+<ion-list can-swipe="true">
+  <ion-item class="item-thumbnail-left" ng-repeat="item in returnData.tracks.items" ng-href="#/app/search/info/{{item.id}}">
+      <img ng-src="{{item.album.images[1].url}}" ng-show="platform != 'android'">
+      <img ng-src="{{item.album.images[0].url}}" ng-show="platform == 'android'">
+
+      <h2>{{item.name}}</h2>
+
+
+  </ion-item>
+
+</ion-list> 
+
+</div>
+
+
+<!-- Artist -->
+
+
+<div class="list" ng-show="isArtist">
+
+  <div ng-show="isArtist" class="item item-divider">
+  Artists
+  </div>
+
+
+<ion-list can-swipe="true">
+  <ion-item class="item-thumbnail-left" ng-repeat="item in returnData.artists.items" ng-href="#/app/search/artistCard/{{item.id}}">
+      <img ng-src="{{item.images[1].url}}" ng-show="platform != 'android'">
+      <img ng-src="{{item.images[0].url}}" ng-show="platform == 'android'">
+
+      <h2>{{item.name}}</h2>
+
+
+  </ion-item>
+
+</ion-list> 
+
+</div>
+
+
+<!-- Album -->
+
+
+
+<div class="list" ng-show="isAlbum">
+
+  <div ng-show="isAlbum" class="item item-divider">
+   Albums
+  </div>
+
+
+<ion-list can-swipe="true">
+  <ion-item class="item-thumbnail-left" ng-repeat="item in returnData.albums.items" ng-href="#/app/search/albumCard/{{item.id}}">
+      <img ng-src="{{item.images[1].url}}" ng-show="platform != 'android'">
+      <img ng-src="{{item.images[0].url}}" ng-show="platform == 'android'">
+
+      <h2>{{item.name}}</h2>
+
+
+  </ion-item>
+
+</ion-list> 
+
+</div>
+
+
+  </ion-content>
+</ion-view>
