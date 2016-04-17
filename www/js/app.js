@@ -200,6 +200,43 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
     }
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    firebaseFact.addPlaylist = function(playlist){
+      return $q(function(resolve,reject)
+      {
+
+        var spotData = authenticationFact.getData() // return the users spotify data
+        var newPlaylist = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists/' + playlist.id);
+        newPlaylist.set({ Name: playlist.name, League: "null"})
+        $log.log("New playlist created in database: ", newPlaylist)
+        resolve(playlist.id)
+
+
+      })
+    }
+
+
+    firebaseFact.getFirePlaylists = function(){
+      return $q(function(resolve,reject)
+      {
+        var spotData = authenticationFact.getData()
+        var playlistInfo = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id + '/playlists');
+        $log.log(playlistInfo)
+        playlistInfo.once("value", function(snapshot)
+        {
+
+          var fireList = snapshot.val();
+          resolve(fireList);
+
+        })
+      })
+    }
+
     return firebaseFact;
   }])
 
@@ -235,7 +272,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }).then(function successCallback(res) {
           searchResults = res.data
-          $log.log("searchfetched", searchResults)
+          $log.log("search2fetched", searchResults)
           resolve(searchResults)
 
         }, function errorCallback(response) {
@@ -257,7 +294,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }).then(function successCallback(res) {
           searchResults = res.data
-          $log.log("searchfetched", searchResults)
+          $log.log("inheritfetched", searchResults)
           resolve(searchResults)
 
         }, function errorCallback(response) {
@@ -308,7 +345,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }).then(function successCallback(res) {
           searchValue = res.data
-          $log.log("searchfetched", searchValue)
+          $log.log("artistfetched", searchValue)
           resolve(searchValue)
 
         }, function errorCallback(response) {
@@ -331,7 +368,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       }).then(function successCallback(res) {
         searchValue = res.data
-        $log.log("searchfetched", searchValue)
+        $log.log("tracksfetched", searchValue)
         resolve(searchValue)
 
       }, function errorCallback(response) {
@@ -356,7 +393,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }).then(function successCallback(res) {
           searchValue = res.data
-          $log.log("searchfetched", searchValue)
+          $log.log("albumfetched", searchValue)
           resolve(searchValue)
 
         }, function errorCallback(response) {
@@ -379,12 +416,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-  .factory('addPlaylist',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
-    var playlistsFact = []
+  .factory('addFact',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
+    var addFact = []
     var playlists = []
     var userData = authenticationFact.getData();
 
-    addPlaylist.areFetched = function(){
+    addFact.areFetched = function(){
       if(playlists.length != 0){
         //$log.log("true", playlists)
         return true;
@@ -392,31 +429,38 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         return false;
       }
     }
-    addPlaylist.getPlaylists = function(){
+    addFact.getPlaylists = function(){
       return playlists;
     }
 
-    addPlaylist.getPlaylistsData = function(){
+    addFact.createPlaylist = function(newplaylistname, userID){
       return $q(function(resolve, reject) {
-        //$log.log("Before Call")
-        userData = authenticationFact.getData();
+
+        $log.log("playlist name: ", newplaylistname);
         //$log.log("userData: ", userData)
         $http({
-          url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists" ,
-          method: "post",
+          url: "https://api.spotify.com/v1/users/"+ userID + "/playlists" ,
+          method: "POST",
           headers: {
-            'Authorization': 'Bearer ' + token
+            'Authorization': 'Bearer ' + token,
+            "Content-Type": "application/json"
+          },
+            data: {
+            'name': (newplaylistname),
+            'public': true
+
           }
         }).then(function successCallback(res) {
           //$log.log("pre assign", res.data)
-          playlists = res.data.items
-          $log.log("playlistsfetched",playlists)
-          resolve("playlists fetched")
+          playlists = res
+          $log.log("playlistscreated",playlists)
+          $log.log("response: ", res)
+          resolve(playlists)
 
         }, function errorCallback(response) {
           // called asynchronously if an error occurs
           // or server returns response with an error status.
-          $log.log("Call Error Playlists: ",response)
+          $log.log("Call Error Playlist not created: ",response)
           reject(response)
         })
         //return playlists;
@@ -434,43 +478,35 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
 
-    addPlaylist.getPlaylistData = function(playlistId){
+    addFact.getPlaylistData = function(playlistId){
       return $q(function(resolve, reject) {
         var playlistLink = getLinkbyId(playlistId)
         $log.log("after For loop: ", playlistLink)
-        //var userData = authenticationFact.getData();
-        //$log.log("userData: ", userData)
         $http({
-          url: playlistLink,//"GET https://api.spotify.com/v1/users/"+ userData.id +"/playlists/"+ playlistId + "/playlists",
+          url: playlistLink,
           method: "Get",
           headers: {
             'Authorization': 'Bearer ' + token
           }
         }).then(function successCallback(res) {
-          //need to create dictionary with keys so that we can loop through quickly possibly
           playlistData = res.data;
-          //$log.log("playlist",playlistData)
           resolve(playlistData)
 
         }, function errorCallback(response) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
           $log.log("Call Error single Playlist: ",response)
-          reject(response)//"Sorry, we have encountered an error grabbing your playlist.")
+          reject(response)//"Sorry, we have encountered an error creating your playlist.")
         })
-        //return playlists;
-        //https://api.spotify.com/v1/users/{user_id}/playlists
       });
     }
-    addPlaylist.getPlaylist = function(playlistId){
+    addFact.getPlaylist = function(playlistId){
 
     }
 
-    addPlaylist.getSong = function(index){
+    addFact.getSong = function(index){
       return songs[index];
     }
 
-    return playlistsFact;
+    return addFact;
   }])
 
 
@@ -487,7 +523,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
   using $q as promises
    */
-  .factory('playlistsFact',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
+  .factory('playlistsFact',['$log', '$http','$q', 'authenticationFact', 'firebaseFact', function($log, $http, $q, authenticationFact, firebaseFact){
     var playlistsFact = []
     var playlists = []
     var userData = authenticationFact.getData();
@@ -504,6 +540,35 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return playlists;
     }
 
+//  !!!!!!!!!!!!!! Thomas Brower !!!!!!!!!!!!!!!!!!
+    var matchingPlaylists = function(list1, array1)
+    {
+      if((list1 === null) || (array1.length < 1)){
+        return []
+      }
+      var arrayLength = array1.length;
+      var matches = [];
+      var keys = Object.keys(list1);
+      $log.log("true dat: ",array1)
+
+      for (var i = 0; i < arrayLength; i++)
+      {
+        for (var j = 0; j < keys.length; j++)
+        {
+          if(array1[i].id === keys[j])
+          {
+            // do stuff
+            matches[matches.length] = array1[i];
+          }
+        }
+      }
+      return matches;
+    }
+
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     playlistsFact.getPlaylistsData = function(){
       return $q(function(resolve, reject) {
         //$log.log("Before Call")
@@ -517,9 +582,17 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }).then(function successCallback(res) {
           //$log.log("pre assign", res.data)
-          playlists = res.data.items
-          $log.log("playlistsfetched",playlists)
-          resolve("playlists fetched")
+          var firePromise = firebaseFact.getFirePlaylists();
+          firePromise.then(function(response)
+          {
+            list1 = response
+            var array1 = res.data.items
+            //playlist = res.data.items
+            playlists = matchingPlaylists(list1, array1)
+            $log.log("playlistsfetched",playlists)
+            resolve("playlists fetched")
+          })
+
 
         }, function errorCallback(response) {
           // called asynchronously if an error occurs
@@ -552,14 +625,14 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
    using $q as promises
     */
 
-    playlistsFact.getPlaylistData = function(playlistId){
+    playlistsFact.getPlaylistData = function(playlistId, spotID){
       return $q(function(resolve, reject) {
         var playlistLink = getLinkbyId(playlistId)
         $log.log("after For loop: ", playlistLink)
         //var userData = authenticationFact.getData();
         //$log.log("userData: ", userData)
         $http({
-          url: playlistLink,//"GET https://api.spotify.com/v1/users/"+ userData.id +"/playlists/"+ playlistId + "/playlists",
+          url: "https://api.spotify.com/v1/users/"+ spotID +"/playlists/"+ playlistId,
           method: "Get",
           headers: {
             'Authorization': 'Bearer ' + token
@@ -596,7 +669,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       .state('test',{
         url:'/',
         templateUrl: 'index.html',
-        controller: 'indexCtrl'
+        controller: 'indexController'
       })
 
       .state('confirmation',{
@@ -650,7 +723,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       })
       .state('app.search', {
-        url: '/search',
+        url: '/:PID/search',
         views: {
           'menuContent': {
             templateUrl: 'templates/search.html',
@@ -707,7 +780,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
       .state('app.more', {
-        url: '/search/more?type=value1&input=value2',
+        url: '/:PID/search/more?type=value1&input=value2',
         views:{
         'menuContent':{
           templateUrl: 'templates/moreSearch.html',
@@ -747,7 +820,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
       .state('app.playlists', {
-        url: '/playlists',
+        url: '/:SPID/playlists',
         //onEnter: function($state, $log, authenticationFact){
         //  $log.log("hitting playlists", $state.current)
         //
@@ -769,7 +842,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         views: {
           'menuContent': {
             templateUrl: 'templates/myLeagues.html',
-            controller: 'PlaylistCtrl'
+            controller: 'leagueCtrl'
           }
         },
         data: {
@@ -778,7 +851,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       })
 
       .state('app.playlist', {
-        url: '/playlist/:playlistId',
+        url: '/:SPID/playlist/:playlistId',
         views: {
           'menuContent': {
             templateUrl: 'templates/playlist.html',

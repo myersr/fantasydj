@@ -42,6 +42,8 @@ angular.module('starter.controllers', [])
             promise.then(function(response){
               $log.log(response)
               //initialize promise
+              var userData = authenticationFact.getData();
+              var userID = userData.id;
               var promiseReg = firebaseFact.isRegistered();
               //finishing the promise
               promiseReg.then(function(response){
@@ -49,7 +51,7 @@ angular.module('starter.controllers', [])
                 isUser = response;
                 if(isUser) {
                   $scope.hideLoading();
-                  $state.go("app.playlists")
+                  $state.go("app.playlists", {SPID: userID})
                 } else{ //if not a registered user, send to registry page.
                   $scope.hideLoading();
                   $state.go("confirmation")
@@ -142,7 +144,7 @@ angular.module('starter.controllers', [])
       regPromise.then(function(response){
         $log.log("Registered User")
         hideLoading();
-        $state.go("app.playlists")
+        $state.go("app.playlists", {SPID:$scope.accountInfo.id})
       })
     }
     $scope.deny = function(){
@@ -217,7 +219,7 @@ angular.module('starter.controllers', [])
   PlaylistsCtrl -
   grabs and lists all playlists for a spotify user
    */
-  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, playlistsFact) {
+  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, $stateParams, playlistsFact) {
     showLoading = function() {
       $ionicLoading.show({
         template: '<i class="ion-loading-c"> Loading Playlists </i>',
@@ -229,6 +231,7 @@ angular.module('starter.controllers', [])
       $ionicLoading.hide();
     }
     $scope.playlists;// = playlistsFact.getPlaylistsData();
+    $scope.SPID = $stateParams.SPID;
 
     $scope.load =  function() {
       showLoading();
@@ -262,20 +265,29 @@ angular.module('starter.controllers', [])
 
   })
 
+
   /*
    Author: Roy Myers
    findPlaylist
    PlaylistCtrl -
    grabs and lists all songs in a playlist
    */
-  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $ionicPopup, playlistsFact) {
+
+  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, playlistsFact) {
     $scope.audio = new Audio();
+    $scope.playlistId = $stateParams.PID
 
     showLoading = function() {
       $ionicLoading.show({
         template: '<i class="ion-loading-c"> Grabbing Playlist </i>',
         noBackdrop: false
       });
+    }
+
+    $scope.goTo = function(playlistId)
+    {
+      $state.go('app.search', {PID:playlistId})
+      $log.log("Playlist Pass-from-playlist-window ID: " + playlistId)
     }
 
     hideLoading = function() {
@@ -303,11 +315,11 @@ angular.module('starter.controllers', [])
 
     $scope.load = function(){
       showLoading();
-      var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId);
+      var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, $stateParams.SPID);
       playlistPromise.then(function (response) {
         $log.log("Response i controller: ",response)
         $scope.playlist = response;
-        $log.log(response.tracks.items[0].track.album.images[2].url);
+        //$log.log(response.tracks.items[0].track.album.images[2].url);
         hideLoading();
         //$log.log("Promise resolved: ", response)
         //$scope.playlists = playlistsFact.getPlaylist($stateParams.playlistId);
@@ -427,7 +439,8 @@ angular.module('starter.controllers', [])
     }
   }
 
-    $scope.go = function(input, type){
+    $scope.go = function(input, type)
+    {
       $state.go('app.more', {type: type, input: input})
 
     }
@@ -543,19 +556,98 @@ angular.module('starter.controllers', [])
         })
    }
 
-});
+})
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    League Controller     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    By: Thomas Brower     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+
+.controller('leagueCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, $ionicPopup, searchFact, addFact, authenticationFact, firebaseFact) {
+    $scope.platform = ionic.Platform.platform();
+
+
+
+    $scope.go = function(input, type){
+      $state.go('app.more', {type: type, input: input})
+
+    }
+
+
+  $scope.getNewName = function()
+  {
+
+     // Triggered on a button click, or some other target
+      $scope.showPopup = function() {
+        $scope.newplaylistname = {};
+        // An elaborate, custom popup
+        var myPopup = $ionicPopup.show({
+          template: '<input type="text" placeholder="New Playlist Name" ng-model="newplaylistname.name">',
+          title: 'Enter Playlist Name',
+          subTitle: 'Ex. Workout tunes',
+          scope: $scope,
+          buttons: [
+            { text: 'Cancel' },
+            {
+              text: '<b>Create</b>',
+              type: 'button-positive',
+              onTap: function(e) {
+                if (!$scope.newplaylistname.name) {
+                  //don't allow the user to close unless he enters name
+                  $log.log("Input failed: ", $scope.newplaylistname);
+
+                  e.preventDefault();
+                } else {
+                  $log.log("ID is: ", $scope.newplaylistname);
+                  $scope.createPlaylist($scope.newplaylistname.name);
+                  //return $scope.newplaylistname.name;
+                }
+              }
+            }
+          ]
+        })
+
+        myPopup.then(function(res) {
+          console.log('Playlist Created!', res);
+  })
+
+  }
+  $scope.showPopup();
+}
+
+  $scope.createPlaylist = function(newplaylistname)
+  {
+    $scope.showLoading();
+    var userData = authenticationFact.getData();
+    var promise = addFact.createPlaylist(newplaylistname, userData.id);
+      promise.then(function(response)
+      {
+        $log.log("Created response: ", response);
+        $scope.returnData = response;
+        $log.log($scope.returnData);
+        var addPlayPromise = firebaseFact.addPlaylist($scope.returnData.data);
+        addPlayPromise.then(function(response)
+         {
+           $scope.hideLoading();
+           $state.go("app.playlist", {playlistId: response, SPID: userData.id} );
+         })
+
+      })
+
+  }
+})
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-
 
 
 
