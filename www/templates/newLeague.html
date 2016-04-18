@@ -1,34 +1,28 @@
-
 <!-- Written by Thomas Brower -->
-
-
 <ion-view view-title="Create New League">
-  <ion-content>
-
-<div class="list">
-  <label class="item item-input item-stacked-label">
-    <span class="input-label">League Name</span>
-    <input type="text" placeholder="Hiphop Heads" ng-model="newLeague.compName">
-  </label>
-  <label   <label class="item item-input item-select" >
+    <ion-content>
+        <div class="list">
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">League Name</span>
+                <input type="text" placeholder="Hiphop Heads" ng-model="newLeague.compName">
+            </label>
+            <label   <label class="item item-input item-select" >
             <div class="input-label">
-              Number of Players
+                Number of Players
             </div>
             <select ng-model="newLeague.numPlayers">
-              <option>2</option>
-              <option selected>4</option>
-              <option>6</option>
+
+                <option selected>4</option>
+
             </select>
-  </label>
-  
-  <label>
-    <ion-checkbox ng-model="newLeague.filter" >Compete in Competition?</ion-checkbox>
-  </label>
-</div>
-
-<button class="button button-full button-positive" ng-click="addLeague(newLeague)">
-  Create New League
-</button>
-
+            </label>
+            <label>
+                <ion-checkbox ng-model="newLeague.filter" >Compete in Competition?</ion-checkbox>
+            </label>
+        </div>
+        <button class="button button-full button-positive" ng-click="addLeague(newLeague)">
+            Create New League
+        </button>
+        <p>Leagues end one (1) week after creation</p>
   </ion-content>
 </ion-view>

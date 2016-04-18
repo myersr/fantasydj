@@ -190,7 +190,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         //$log.log(spotData.id)
         var user = new Firebase('https://fantasydj.firebaseio.com/users/' + spotData.id );
         var randUID = Math.floor((Math.random() * 10000000) + 1);//This needs to be updated to check the database for repitions
-        user.set({UID: randUID, SUID: spotData.id, email: spotData.email, usrName: spotData.display_name})
+        user.set({UID: randUID, SUID: spotData.id, email: spotData.email, usrName: spotData.display_name, djPoints:0, bracketWins:0, bracketLosses:0, championships:0})
         $log.log("New registered User: ",user)
         resolve(user)
       });//end $q
@@ -243,41 +243,78 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           var roundsArray = []
           $log.log("Reaches inside if")
           for(var i = 1; i<=nPlayers/2; i++){
-            var toStringRound = "Round "+String(i)
-            $log.log("Set toStringRound")
+            var toStringRound = "Round "+String(i);
+            $log.log("Set toStringRound");
             if(i === 1){
-              var tempList = {name: spotData.id}
-              roundsArray.push(tempList)
-              $log.log("push list of toStringRound")
+              var player1 = {
+                SUID: spotData.id,
+                name: spotData.display_name};
+              var player2 = {
+                SUID: "",
+                name: ""};
+              var player3 = {
+                SUID: "",
+                name: ""};
+              var player4 = {
+                SUID: "",
+                name: ""};
+              var tempList = {
+                player1,
+                player2,
+                player3,
+                player4
+              };
+              roundsArray.push(tempList);
+              $log.log("push list of toStringRound");
             }else{
-              var tempList = {name: ""}
-              roundsArray.push(tempList)
-              $log.log("push empty list of toStringRound")
+              var player1 = {
+                SUID: "",
+                name: ""};
+              var player2 = {
+                SUID: "",
+                name: ""};
+              var player3 = {
+                SUID: "",
+                name: ""};
+              var player4 = {
+                SUID: "",
+                name: ""};
+              var tempList = {
+                player1,
+                player2,
+                player3,
+                player4
+              };
+              roundsArray.push(tempList);
+              $log.log("push empty list of toStringRound");
             }
           }
-          league.set({ID: compId, name: name, competitorList: spotData.id, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
+          league.set({ID: compId, name: name, competitorList: tempList, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
           $log.log("league set inside of if")
 
-        } else 
+        } else
         {
           var roundsArray = []
           for(var i = 1; i<=nPlayers/2; i++){
             var toStringRound = "Round "+String(i);
             var tempList = {toStringRound: ""}
             roundsArray.push(tempList)
-            
+
           }
           $log.log("Reaches inside else")
           league.set({ID: compId, name: name, competitorList: {}, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
         }
         $log.log("New league set: ", league)
         resolve("SUCCESS BRUH")
-
-      })
+      }
+     )
     }
+
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // <----------------------------------------------------------------------------------------------------------------------------------->
-
+    //Author: Daniel Harper
+    //Returns a competition based on the compId if it exists
     firebaseFact.getLeague = function(compId){
       return $q(function(resolve, reject) {
         var league = new Firebase("https://fantasydj.firebaseio.com/leagues");
@@ -289,10 +326,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           else{
             reject("filtered league does not exist");
           }
-        }, function (err) {
-  // code to handle read error
-  reject(err);
-})
+        }, function (err) { // code to handle read error
+          reject(err);
+        })
       }); //end of promise
     }
 
@@ -310,10 +346,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           else {
             reject("Could not reach leagues database ");
           }
-        }, function (err) {
-  // code to handle read error
-  reject(err);
-})
+        }, function (err) {  // code to handle read error
+          reject(err);
+        })
       }); //end of promise
     }
 
@@ -702,6 +737,29 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return matches;
     }
 
+    ////Author: Daniel Harper
+    ////getPublicPlaylist returns public a spotify playlist from spotify
+    //playlistsFact.getPublicPlaylist = function(userId,playListId){
+    //  return $q(function(resolve, reject) {
+    //     userData = authenticationFact.getData();//get the current user
+    //    //$log.log("userData: ", userData)
+    //    $http({
+    //      url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playListId,
+    //      method: "Get",
+    //      headers: {
+    //        'Authorization': 'Bearer ' + token
+    //      }
+    //    }).then(function successCallback(res) {
+    //
+    //    }, function errorCallback(response) {
+    //      // called asynchronously if an error occurs
+    //      // or server returns response with an error status.
+    //      $log.log("Call Error Playlist: ",response)
+    //      reject(response);
+    //    })
+    //  });
+    //}
+
     playlistsFact.addTrack = function(playlistId, uri)
     {
         return $q(function(resolve, reject) {
@@ -748,6 +806,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     //    }).then(function successCallback(res) {
     //
     //    }, function errorCallback(response) {
+    //    }, function errorCallback(response) {
     //      // called asynchronously if an error occurs
     //      // or server returns response with an error status.
     //      $log.log("Call Error Playlist: ",response)
@@ -755,6 +814,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     //    })
     //  });
     //}
+
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1052,7 +1112,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         data: {
           link: 'myLeagues'
         }
-      })      
+      })
 
       .state('app.playlist', {
         url: '/playlist/:playlistId',

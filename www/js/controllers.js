@@ -154,9 +154,9 @@ angular.module('starter.controllers', [])
 
         fireUserPromise.then(function(response)
         {
-            $scope.hideLoading();
+            hideLoading();
             $state.go("app.playlists")
-        })        
+        })
       })
     }
     $scope.deny = function(){
@@ -362,7 +362,7 @@ angular.module('starter.controllers', [])
    AccountCtrl -
    grabs and lists all songs in a playlist
    */
-  .controller('AccountCtrl', function($scope,$log, authenticationFact) {
+  .controller('AccountCtrl', function($scope,$log, authenticationFact, firebaseFact) {
     if(authenticationFact.isAuthorized())
     {
       //var defer = $q.defer();
@@ -370,7 +370,9 @@ angular.module('starter.controllers', [])
       //var tken = authenticationFact.getToken()
       //authenticationFact.queryData(tken)
       $scope.accountInfo = authenticationFact.getData();
+      $scope.firebaseInfo = firebaseFact.getUser();
       console.log("accountInfo:",$scope.accountInfo);
+      console.log("firebaseInfo:",$scope.firebaseInfo);
     }
 
 
@@ -398,8 +400,9 @@ angular.module('starter.controllers', [])
       $log.log("hitting load")
       var leaguePromise = firebaseFact.getLeagues();
       leaguePromise.then(function(response){
-        $log.log(response)
+        //$log.log(response);
         $scope.leagues = response;
+        $log.log("leagues:",$scope.leagues);
         hideLoading();
       })
     }
@@ -455,13 +458,14 @@ angular.module('starter.controllers', [])
 
   $scope.addTo = function( uri)
   {
+    var pId = $stateParams.PID;
     // call add to playlist Fact
-    var addPromise = playlistsFact.addTrack($scope.playlistId, uri)
+    var addPromise = playlistsFact.addTrack(pId, uri)
     addPromise.then(function(response)
     {
       $scope.item = response;
       $log.log(response);
-      $state.go('app.playlist',{playlistId:playlistId})
+      $state.go('app.playlist',{playlistId:pId})
 
     })
 
@@ -677,7 +681,7 @@ angular.module('starter.controllers', [])
   }
   $scope.showPopup();
 }
-  
+
   $scope.addLeague = function(newLeague)
   {
     $scope.showLoading();
@@ -688,6 +692,7 @@ angular.module('starter.controllers', [])
       $log.log("SUCCESS on add")
       $scope.hideLoading();
       $state.go("app.myLeagues")
+
       //$scope.returnData = response;
     }, function(reason) {
           hideLoading();
@@ -730,6 +735,7 @@ $scope.loadFilter = function(){
       hideLoading();
       $log.log(response)
       $scope.leagues = response;
+      $log.log("leagues",$scope.leagues);
 
     }, function(reason) {
           hideLoading();
@@ -740,7 +746,7 @@ $scope.loadFilter = function(){
           // console.log( "error message - " + err.message );
           // console.log( "error code - " + err.statusCode );
         })
-  }  
+  }
 
   $scope.createPlaylist = function(newplaylistname)
   {

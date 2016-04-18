@@ -1,21 +1,13 @@
-
 <!-- Written by Thomas Brower -->
-
-
-<ion-view view-title="Ongoing Leagues">
-  <ion-content  <ion-content ng-init="load()">
-
-  <ion-list can-swipe="true">
-      <ion-item class="item-thumbnail-left" ng-repeat="item in leagues" ui-sref="app.bracket">
-          <h2>{{item.name}}</h2>
-          <p>{{item.ID}}</p>
-          <p>User: {{item.userName}}</p>          
-          <p>{{item.competitorList}} </p>
-          <p>Start: {{item.start}}</p>
-          <p>End: {{item.end}}</p>
-          <p>Number of rounds: {{item.numRounds}}</p>
-
-      </ion-item>
-      </ion-list>
-  </ion-content>
+<ion-view view-title="Ongoing Leagues" class="grad">
+    <ion-content ng-init="load()">
+        <ion-list can-swipe="true">
+            <ion-item class="item-thumbnail-left" ng-repeat="item in leagues" ui-sref="app.bracket">
+                <h2>{{item.name}}</h2>
+                <p>User: {{item.userName}}</p>
+                <p>Start: {{item.start}}</p>
+                <p>End: {{item.end}}</p>
+            </ion-item>
+        </ion-list>
+    </ion-content>
 </ion-view>
