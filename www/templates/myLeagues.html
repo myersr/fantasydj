@@ -1,12 +1,9 @@
 <!-- Written by Thomas Brower -->
 
-<ion-view view-title="My Leagues">
+<ion-view view-title="My Leagues" ng-init="loadFilter()">
   <ion-content>
     <ion-list can-swipe="true">
-      <ion-item class="item-thumbnail-left" ng-repeat="playlist in playlists" ng-href="#/app/playlist/{{playlist.id}}">
-          <img ng-src="{{playlist.images[0].url}}">
-          <h2>{{playlist.name}}</h2>
-      </ion-item>
+
       <div>
 
       <div class="bar bar-header">
@@ -16,6 +13,21 @@
         <button class="button button-balanced" ui-sref="app.newLeague"> Add League </button>
 
       </div>
+      </div>
+
+      <div>
+      <ion-list can-swipe="true">
+        <ion-item class="item-thumbnail-left" ng-repeat="item in filtered" ui-sref="app.bracket">
+            <h2>{{item.name}}</h2>
+            <p>{{item.ID}}</p>
+            <p>User: {{item.userName}}</p>          
+            <p>{{item.competitorList}} </p>
+            <p>Start: {{item.start}}</p>
+            <p>End: {{item.end}}</p>
+            <p>Number of rounds: {{item.numRounds}}</p>
+
+        </ion-item>
+      </ion-list>
       </div>
 
  

@@ -246,11 +246,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             var toStringRound = "Round "+String(i)
             $log.log("Set toStringRound")
             if(i === 1){
-              var tempList = {toStringRound: spotData.id}
+              var tempList = {name: spotData.id}
               roundsArray.push(tempList)
               $log.log("push list of toStringRound")
             }else{
-              var tempList = {toStringRound: ""}
+              var tempList = {name: ""}
               roundsArray.push(tempList)
               $log.log("push empty list of toStringRound")
             }
@@ -287,7 +287,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             resolve(theComp);
           }
           else{
-            reject(compId + " does not exist");
+            reject("filtered league does not exist");
           }
         }, function (err) {
   // code to handle read error
@@ -304,7 +304,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         leagues.once("value", function (snapshot) {
           if (snapshot.exists()) {
             var theComp = snapshot.val();
-            resolve(theComp);
+            resolve("Return filtered");
           }
           else {
             reject("Could not reach leagues database ");
@@ -321,6 +321,26 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    firebaseFact.getFilteredLeagues = function() {
+      return $q(function (resolve, reject) {
+        var spotData = authenticationFact.getData() // return the users spotify data 
+        var league = spotData.id
+        var filtered = new Firebase("https://fantasydj.firebaseio.com/leagues");
+        filtered.once("value", function (snapshot) {
+          if (snapshot.exists()) {
+            var theComp = snapshot.val();
+            resolve(theComp);
+          }
+          else {
+            reject("Could not reach filtered leagues database ");
+          }
+        }, function (err) {
+  // code to handle read error
+  reject(err);
+})
+      }); //end of promise
+    }
 
     firebaseFact.addPlaylist = function(playlist){
       return $q(function(resolve,reject)
