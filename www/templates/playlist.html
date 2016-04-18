@@ -1,4 +1,4 @@
-<ion-view view-title="{{ song.title }}">
+<ion-view view-title="{{ song.title }}" class="grad">
   <ion-content ng-init="load()">
       <div class="item item-avatar">
           <img ng-src="{{ playlist.images[0].url }}">
@@ -20,7 +20,7 @@
                     <a class="tab-item" ng-click="stop()">
                         <i class="icon ion-pause"></i>
                         Pause
-                    </a>  
+                    </a>
           </div>
       </div>
       <div>

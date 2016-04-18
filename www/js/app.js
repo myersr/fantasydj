@@ -81,6 +81,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     //  }
     //}
 
+
     authenticationFact.queryData = function(authToken){
       //var defer = $q.defer();
       return $q(function(resolve, reject) {
@@ -150,6 +151,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     authenticationFact.spotifyLogin = function(){
        return Spotify.login();
     }
+
       return authenticationFact;
   }])
 
@@ -190,14 +192,39 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       });//end $q
     }
 
-    firebaseFact.getLeagues = function(){
+
+    //Author: Daniel Harper
+    //Returns a competition based on the compId if it exists
+    firebaseFact.getLeague = function(compId){
       return $q(function(resolve, reject) {
-        var fireLeagues = new Firebase('https://fantasydj.firebaseio.com/leagues');
-        fireLeagues.once("value", function (snapshot) {
-          var data = snapshot.val();
-          resolve(data);
+        var league = new Firebase("https://fantasydj.firebaseio.com/leagues");
+        league.once("value", function(snapshot){
+          if(snapshot.child(compId).exists()){
+            var theComp = snapshot.child(compId).val();
+            resolve(theComp);
+          }
+          else{
+            reject(compId + " does not exist");
+          }
         })
-      })
+      }); //end of promise
+    }
+
+    //Author: Daniel Harper
+    //Returns a list of leagues to be displayed
+    firebaseFact.getLeagues = function() {
+      return $q(function (resolve, reject) {
+        var leagues = new Firebase("https://fantasydj.firebaseio.com/leagues");
+        leagues.once("value", function (snapshot) {
+          if (snapshot.child('leagues').exists()) {
+            var theComp = snapshot.val();
+            resolve(theComp);
+          }
+          else {
+            reject("Could not reach leagues database");
+          }
+        })
+      }); //end of promise
     }
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -596,6 +623,28 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
 
+    ////Author: Daniel Harper
+    ////getPublicPlaylist returns public a spotify playlist from spotify
+    //playlistsFact.getPublicPlaylist = function(userId,playListId){
+    //  return $q(function(resolve, reject) {
+    //     userData = authenticationFact.getData();//get the current user
+    //    //$log.log("userData: ", userData)
+    //    $http({
+    //      url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playListId,
+    //      method: "Get",
+    //      headers: {
+    //        'Authorization': 'Bearer ' + token
+    //      }
+    //    }).then(function successCallback(res) {
+    //
+    //    }, function errorCallback(response) {
+    //      // called asynchronously if an error occurs
+    //      // or server returns response with an error status.
+    //      $log.log("Call Error Playlist: ",response)
+    //      reject(response);
+    //    })
+    //  });
+    //}
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -891,6 +940,31 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         },
         data: {
           link: 'Playlists'
+        }
+      })
+
+    .state('app.bracket', {
+        url: '/leagues/:compId',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/bracket.html',
+            controller: 'BracketCtrl'
+          }
+        },
+        data: {
+          link: 'Leagues'
+        }
+      })
+    .state('app.leagues', {
+        url: '/leagues',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/leagues.html',
+            controller: 'LeaguesCtrl'
+          }
+        },
+        data: {
+          link: 'Leagues'
         }
       });
     //$urlRouterProvider.when('/access_token','/app/playlists')

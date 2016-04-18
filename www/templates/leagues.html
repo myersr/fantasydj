@@ -1,0 +1,15 @@
+<!--
+Author: Daniel Harper
+View: Display's all leagues in the league database
+-->
+<!-- <link href="../css/style.css" rel="stylesheet"> -->
+<ion-view view-title="Leagues">
+  <ion-content ng-init="console.log('Leagues');" class="grad">
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="league in leagues" type="item-text-wrap" href="#/app/leagues/{{league.compId}}">
+        <h3 class="league-name-plate">{{league.name}}</h3>
+        <p>Start: {{league.start}}</p>
+        <p>End: {{league.start}}</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+  </ion-content>
+</ion-view>
