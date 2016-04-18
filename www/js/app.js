@@ -229,8 +229,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       {
         var spotData = authenticationFact.getData();
         var compId = Math.floor((Math.random() * 10000000) + 1);
-        var endTime = new Date().toJSON().slice(0,10);
-        var startTime = new Date().toJSON().slice(0,10);
+        var date = new Date();
+        var startWeek = new Date(date.getTime())        
+        var endWeek = new Date(date.getTime() + (60*60*24*7*1000));
+        var endTime = endWeek.toString("MM-dd-yyyy").slice(0,15);
+        var startTime = startWeek.toString("MM-dd-yyyy").slice(0,15);
         var nPlayers = newLeague.numPlayers;
         var participation = newLeague.filter;
         var name = newLeague.compName;
@@ -348,6 +351,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
 
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // <----------------------------------------------------------------------------------------------------------------------------------->
     //Author: Daniel Harper
@@ -361,7 +365,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             resolve(theComp);
           }
           else{
-            reject(compId + " does not exist");
+            reject("filtered league does not exist");
           }
         }, function (err) { // code to handle read error
           reject(err);
@@ -373,6 +377,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     //Returns a list of leagues to be displayed
     firebaseFact.getLeagues = function() {
       return $q(function (resolve, reject) {
+        $log.log("no")
         var leagues = new Firebase("https://fantasydj.firebaseio.com/leagues");
         leagues.once("value", function (snapshot) {
           if (snapshot.exists()) {
@@ -393,6 +398,26 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    firebaseFact.getFilteredLeagues = function() {
+      return $q(function (resolve, reject) {
+        var spotData = authenticationFact.getData() // return the users spotify data 
+        var league = spotData.id
+        var filtered = new Firebase("https://fantasydj.firebaseio.com/leagues");
+        filtered.once("value", function (snapshot) {
+          if (snapshot.exists()) {
+            var theComp = snapshot.val();
+            resolve(theComp);
+          }
+          else {
+            reject("Could not reach filtered leagues database ");
+          }
+        }, function (err) {
+  // code to handle read error
+  reject(err);
+})
+      }); //end of promise
+    }
 
     firebaseFact.addPlaylist = function(playlist){
       return $q(function(resolve,reject)

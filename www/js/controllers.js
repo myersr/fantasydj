@@ -691,7 +691,8 @@ angular.module('starter.controllers', [])
     {
       $log.log("SUCCESS on add")
       $scope.hideLoading();
-      $state.go('app.myLeagues');
+      $state.go("app.myLeagues")
+
       //$scope.returnData = response;
     }, function(reason) {
           hideLoading();
@@ -703,6 +704,28 @@ angular.module('starter.controllers', [])
           // console.log( "error code - " + err.statusCode );
         })
   }
+
+
+$scope.loadFilter = function(){
+    showLoading();
+    var filterPromise = firebaseFact.getFilteredLeagues();
+    $log.log("hitting filter load")
+    filterPromise.then(function(response){
+      hideLoading();
+      $log.log(response)
+      $scope.filtered = response;
+
+    }, function(reason) {
+          hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+          // console.log( "error message - " + err.message );
+          // console.log( "error code - " + err.statusCode );
+        })
+  }  
+
 
   $scope.load = function(){
     showLoading();
