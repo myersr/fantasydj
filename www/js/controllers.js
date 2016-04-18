@@ -316,8 +316,13 @@ angular.module('starter.controllers', [])
       var userData = authenticationFact.getData();
       var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, userData.id);
       playlistPromise.then(function (response) {
-        $log.log("Response i controller: ",response)
+        //$log.log("Response i controller: ",response)
         $scope.playlist = response;
+        $state.transitionTo($state.current, $stateParams, {
+            reload: true,
+            inherit: false,
+            notify: true
+        })
         //$log.log(response.tracks.items[0].track.album.images[2].url);
         hideLoading();
         //$log.log("Promise resolved: ", response)
@@ -435,7 +440,7 @@ angular.module('starter.controllers', [])
     window.open(link, '_blank', 'location=yes');
   }
 
-  $scope.addTo = function(playlistId, uri)
+  $scope.addTo = function( uri)
   {
     // call add to playlist Fact
     var addPromise = playlistsFact.addTrack($scope.playlistId, uri)
@@ -448,6 +453,7 @@ angular.module('starter.controllers', [])
     })
 
   }
+
 
 
    $scope.play = function(trackInfo) {
