@@ -50,8 +50,15 @@ angular.module('starter.controllers', [])
                 $log.log("inside isRegistered promise: ", response)
                 isUser = response;
                 if(isUser) {
-                  $scope.hideLoading();
-                  $state.go("app.playlists")
+                  var fireUserPromise = firebaseFact.setUserData();
+
+                  fireUserPromise.then(function(response)
+                  {
+                      $scope.hideLoading();
+                      $state.go("app.playlists")
+                  })
+
+
                 } else{ //if not a registered user, send to registry page.
                   $scope.hideLoading();
                   $state.go("confirmation")
@@ -143,8 +150,13 @@ angular.module('starter.controllers', [])
       var regPromise = firebaseFact.registerUser()
       regPromise.then(function(response){
         $log.log("Registered User")
-        hideLoading();
-        $state.go("app.playlists")
+        var fireUserPromise = firebaseFact.setUserData();
+
+        fireUserPromise.then(function(response)
+        {
+            $scope.hideLoading();
+            $state.go("app.playlists")
+        })        
       })
     }
     $scope.deny = function(){
@@ -666,17 +678,25 @@ angular.module('starter.controllers', [])
   $scope.showPopup();
 }
   
-  $scope.addLeague = function()
+  $scope.addLeague = function(newLeague)
   {
     $scope.showLoading();
     var userData = authenticationFact.getData();
-    var addPromise = firebaseFact.addLeague();
+    var addPromise = firebaseFact.addLeague(newLeague);
     addPromise.then(function(response)
     {
       $log.log("SUCCESS on add")
       $scope.hideLoading();
       //$scope.returnData = response;
-    })
+    }, function(reason) {
+          hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason.message
+          })
+          // console.log( "error message - " + err.message );
+          // console.log( "error code - " + err.statusCode );
+        })
   }
 
   $scope.load = function(){

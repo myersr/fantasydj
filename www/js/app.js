@@ -95,6 +95,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         }).then(function successCallback(res) {
           data = res.data;
+          if(res.data.display_name === null)
+          {
+            data.display_name = "Spotify Display Name Not Set"
+          }
           authorized = true;
           //ref.onAuth(authDataCallback)
           //$log.log("data: ",data)
@@ -193,19 +197,60 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 // <-------------------------------------------------- Written by Thomas Brower ------------------------------------------------------->
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    firebaseFact.setUserData = function(){
+      return $q(function(resolve, reject) {
+        var spotData = authenticationFact.getData() //.email
+        var users = new Firebase('https://fantasydj.firebaseio.com/users');
+        var user = users.child(spotData.id);
+        user.once("value", function(snapshot){
+          if(snapshot.exists()){
+            currentUser = snapshot.val();
+            resolve("USER FOUND");
+          }
+          else{
+            reject(currentUser + " does not exist");
+          }
+        }, function (err) {
+        // code to handle read error
+        reject(err);
+      })
+    }); //end of promise
+  }
 
-    firebaseFact.addLeague = function(leagueName)
+    firebaseFact.getUser = function()
+    {
+      return currentUser;
+    }
+
+
+    firebaseFact.addLeague = function(newLeague)
     {
       return $q(function(resolve,reject)
       {
-        var spotData = authenticationFact.getData()
+        var spotData = authenticationFact.getData();
         var compId = Math.floor((Math.random() * 10000000) + 1);
         var endTime = new Date().toJSON().slice(0,10);
         var startTime = new Date().toJSON().slice(0,10);
-        var numRounds = 3;
+        var nRounds = newLeague.numRounds;
+        var participation = newLeague.filter;
+        var name = newLeague.compName;
+
+        $log.log(spotData)
+
+
 
         var league = new Firebase('https://fantasydj.firebaseio.com/leagues/' + compId)
-        league.set({ID: compId, ComperitorList: leagueName, End: endTime, Start: startTime, iterations: numRounds})
+        if(participation)
+        {
+          // set flag equal to true
+          $log.log("Reaches inside if")
+          league.set({ID: compId, name: name, comperitorList: spotData.id, end: endTime, start: startTime, numRounds: nRounds, userName: spotData.display_name, rounds: {}})
+
+        } else 
+        {
+          $log.log("Reaches inside else")
+          league.set({ID: compId, name: name, comperitorList: {}, end: endTime, start: startTime, numRounds: nRounds, userName: spotData.display_name, rounds: {}})
+        }
         $log.log("New league set: ", league)
         resolve("SUCCESS BRUH")
 
@@ -955,6 +1000,19 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           link: 'myLeagues'
         }
       })
+
+      .state('app.newLeague', {
+        url: '/Leagues',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/newLeague.html',
+            controller: 'leagueCtrl'
+          }
+        },
+        data: {
+          link: 'myLeagues'
+        }
+      })      
 
       .state('app.playlist', {
         url: '/playlist/:playlistId',
