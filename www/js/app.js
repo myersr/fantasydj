@@ -300,11 +300,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     //Returns a list of leagues to be displayed
     firebaseFact.getLeagues = function() {
       return $q(function (resolve, reject) {
+        $log.log("no")
         var leagues = new Firebase("https://fantasydj.firebaseio.com/leagues");
         leagues.once("value", function (snapshot) {
           if (snapshot.exists()) {
             var theComp = snapshot.val();
-            resolve("Return filtered");
+            resolve(theComp);
           }
           else {
             reject("Could not reach leagues database ");
