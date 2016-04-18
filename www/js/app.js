@@ -242,7 +242,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           // set flag equal to true
           var roundsArray = []
           $log.log("Reaches inside if")
-          for(var i = 1; i<=nPlayers/2; i = i++){
+          for(var i = 1; i<=nPlayers/2; i++){
             var toStringRound = "Round "+String(i)
             $log.log("Set toStringRound")
             if(i === 1){
@@ -251,7 +251,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
               $log.log("push list of toStringRound")
             }else{
               var tempList = {toStringRound: ""}
-              round.push(tempList)
+              roundsArray.push(tempList)
               $log.log("push empty list of toStringRound")
             }
           }
@@ -261,10 +261,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         } else 
         {
           var roundsArray = []
-          for(var i = 1; i<=nPlayers/2; i = i++){
+          for(var i = 1; i<=nPlayers/2; i++){
             var toStringRound = "Round "+String(i);
             var tempList = {toStringRound: ""}
-            round.push(tempList)
+            roundsArray.push(tempList)
             
           }
           $log.log("Reaches inside else")
