@@ -229,8 +229,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       {
         var spotData = authenticationFact.getData();
         var compId = Math.floor((Math.random() * 10000000) + 1);
-        var endTime = new Date().toJSON().slice(0,10);
-        var startTime = new Date().toJSON().slice(0,10);
+        var date = new Date();
+        var startWeek = new Date(date.getTime())        
+        var endWeek = new Date(date.getTime() + (60*60*24*7*1000));
+        var endTime = endWeek.toString("MM-dd-yyyy").slice(0,15);
+        var startTime = startWeek.toString("MM-dd-yyyy").slice(0,15);
         var nPlayers = newLeague.numPlayers;
         var participation = newLeague.filter;
         var name = newLeague.compName;
