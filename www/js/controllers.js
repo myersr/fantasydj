@@ -684,10 +684,19 @@ angular.module('starter.controllers', [])
     $log.log("hitting league load")
     var leaguePromise = firebaseFact.getLeagues();
     leaguePromise.then(function(response){
+      hideLoading();
       $log.log(response)
       $scope.leagues = response;
-      hideLoading();
-    })
+
+    }, function(reason) {
+          hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+          // console.log( "error message - " + err.message );
+          // console.log( "error code - " + err.statusCode );
+        })
   }  
 
   $scope.createPlaylist = function(newplaylistname)

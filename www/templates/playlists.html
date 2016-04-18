@@ -4,11 +4,9 @@
       <ion-item class="item-thumbnail-left grad" ng-repeat="playlist in playlists" ng-href="#/app/playlist/{{playlist.id}}">
           <img ng-src="{{playlist.images[0].url}}">
           <h2>{{playlist.name}}</h2>
-          <ion-option-button class="button-positive"
-                       ng-click="share()">
-      Share
-    </ion-option-button>
+          <ion-option-button class="button-positive" ng-click="share()">
+              Share
+          </ion-option-button>
       </ion-item>
     </ion-list>
   </ion-content>
-</ion-view>

@@ -1,23 +1,13 @@
-<ion-view view-title="Leagues" class="grad">
-  <ion-content>
-      <div class="button-bar">
-          <a class="button">Leader Boards</a>
-          <a class="button" ng-href="#/app/browse/myLeagues/">My Leagues</a>
-          <a class="button" ui-sref="app.join">Join Leagues</a>
-      </div>
-
-      <!-- Written by Thomas Brower -->
-      <ion-view view-title="Ongoing Leagues">
-          <ion-content  <ion-content ng-init="load()">
-          <ion-list can-swipe="true">
-              <ion-item class="item-thumbnail-left" ng-repeat="item in leagues">
-                  <h2>{{item.ID}}</h2>
-                  <p>Start: {{item.Start}}</p>
-                  <p>End: {{item.End}}</p>
-                  <p>End: {{item.Iterations}}</p>
-              </ion-item>
-          </ion-list>
-      </ion-content>
-      </ion-view>
-  </ion-content>
+<!-- Written by Thomas Brower -->
+<ion-view view-title="Ongoing Leagues" class="grad">
+    <ion-content  <ion-content ng-init="load()">
+        <ion-list can-swipe="true">
+            <ion-item class="item-thumbnail-left" ng-repeat="item in leagues">
+                <h2>{{item.ID}}</h2>
+                <p>Start: {{item.Start}}</p>
+                <p>End: {{item.End}}</p>
+                <p>End: {{item.Iterations}}</p>
+            </ion-item>
+        </ion-list>
+    </ion-content>
 </ion-view>
