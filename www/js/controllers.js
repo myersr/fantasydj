@@ -51,7 +51,7 @@ angular.module('starter.controllers', [])
                 isUser = response;
                 if(isUser) {
                   $scope.hideLoading();
-                  $state.go("app.playlists", {SPID: userID})
+                  $state.go("app.playlists")
                 } else{ //if not a registered user, send to registry page.
                   $scope.hideLoading();
                   $state.go("confirmation")
@@ -144,7 +144,7 @@ angular.module('starter.controllers', [])
       regPromise.then(function(response){
         $log.log("Registered User")
         hideLoading();
-        $state.go("app.playlists", {SPID:$scope.accountInfo.id})
+        $state.go("app.playlists")
       })
     }
     $scope.deny = function(){
@@ -194,8 +194,8 @@ angular.module('starter.controllers', [])
 
 
     $scope.menuOptions = [
-      {name: 'Search', link:'#/app/search', class: 'item-dark'},
-      {name: 'Browse', link: '#/app/browse', class: 'item-dark'},
+      {name: 'My Leagues', link:'#/app/myLeagues', class: 'item-dark'},
+      {name: 'Leader Boards', link: '#/app/browse', class: 'item-dark'},
       {name: 'Account', link: '#/app/account', class: 'item-dark'},
       {name: 'Playlists', link: '#/app/playlists', class: 'item-dark'}];
 
@@ -219,7 +219,7 @@ angular.module('starter.controllers', [])
   PlaylistsCtrl -
   grabs and lists all playlists for a spotify user
    */
-  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, $stateParams, playlistsFact) {
+  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, $stateParams,authenticationFact, playlistsFact) {
     showLoading = function() {
       $ionicLoading.show({
         template: '<i class="ion-loading-c"> Loading Playlists </i>',
@@ -231,7 +231,7 @@ angular.module('starter.controllers', [])
       $ionicLoading.hide();
     }
     $scope.playlists;// = playlistsFact.getPlaylistsData();
-    $scope.SPID = $stateParams.SPID;
+    $scope.SPID = authenticationFact.getData().id;
 
     $scope.load =  function() {
       showLoading();
@@ -273,9 +273,8 @@ angular.module('starter.controllers', [])
    grabs and lists all songs in a playlist
    */
 
-  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, playlistsFact) {
+  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, authenticationFact, playlistsFact) {
     $scope.audio = new Audio();
-    $scope.playlistId = $stateParams.PID
 
     showLoading = function() {
       $ionicLoading.show({
@@ -287,7 +286,6 @@ angular.module('starter.controllers', [])
     $scope.goTo = function(playlistId)
     {
       $state.go('app.search', {PID:playlistId})
-      $log.log("Playlist Pass-from-playlist-window ID: " + playlistId)
     }
 
     hideLoading = function() {
@@ -315,10 +313,16 @@ angular.module('starter.controllers', [])
 
     $scope.load = function(){
       showLoading();
-      var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, $stateParams.SPID);
+      var userData = authenticationFact.getData();
+      var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, userData.id);
       playlistPromise.then(function (response) {
-        $log.log("Response i controller: ",response)
+        //$log.log("Response i controller: ",response)
         $scope.playlist = response;
+        $state.transitionTo($state.current, $stateParams, {
+            reload: true,
+            inherit: false,
+            notify: true
+        })
         //$log.log(response.tracks.items[0].track.album.images[2].url);
         hideLoading();
         //$log.log("Promise resolved: ", response)
@@ -380,8 +384,8 @@ angular.module('starter.controllers', [])
     $scope.load = function(){
       showLoading();
       $log.log("hitting load")
-      var leaugePromise = firebaseFact.getLeagues();
-      leaugePromise.then(function(response){
+      var leaguePromise = firebaseFact.getLeagues();
+      leaguePromise.then(function(response){
         $log.log(response)
         $scope.leagues = response;
         hideLoading();
@@ -404,8 +408,19 @@ angular.module('starter.controllers', [])
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, spotifyFact){
+  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, authenticationFact, spotifyFact, playlistsFact){
     $scope.platform = ionic.Platform.platform();
+    $scope.playlistId;
+    $scope.picIndex;
+    var platformPic = function(){
+      if($scope.platform == 'android'){
+        $scope.picIndex = 1;
+      } else{
+        $scope.picIndex = 2
+      }
+
+    }
+
 
     $scope.isArtist = false;
     $scope.isTrack = false;
@@ -426,6 +441,22 @@ angular.module('starter.controllers', [])
     window.open(link, '_blank', 'location=yes');
   }
 
+  $scope.addTo = function( uri)
+  {
+    // call add to playlist Fact
+    var addPromise = playlistsFact.addTrack($scope.playlistId, uri)
+    addPromise.then(function(response)
+    {
+      $scope.item = response;
+      $log.log(response);
+      $state.go('app.playlist',{playlistId:playlistId})
+
+    })
+
+  }
+
+
+
    $scope.play = function(trackInfo) {
       $scope.audio.src = trackInfo.preview_url;
 
@@ -440,9 +471,9 @@ angular.module('starter.controllers', [])
     }
   }
 
-    $scope.go = function(input, type)
-    {
-      $state.go('app.more', {type: type, input: input})
+    $scope.go = function(input, type) {
+      var userData = authenticationFact.getData()
+      $state.go('app.more', {PID: userData.id ,type: type, input: input})
 
     }
 
@@ -453,6 +484,7 @@ angular.module('starter.controllers', [])
         $scope.item = response;
         $log.log($scope.item);
       })
+      $log.log("PID passed from search-artist: ", $scope.playlistId);
 
     }
 
@@ -462,8 +494,11 @@ angular.module('starter.controllers', [])
       var trackPromise = spotifyFact.getTrackResults($stateParams.searchValue)
       trackPromise.then(function(response){
         $scope.item = response;
+        platformPic();
+        $scope.trackImg = $scope.item.album.images[$scope.picIndex].url
         $log.log($scope.item);
       })
+      $log.log("PID passed from search-track: ", $scope.playlistId);
 
     }
 
@@ -474,6 +509,7 @@ angular.module('starter.controllers', [])
         $scope.item = response;
         $log.log($scope.item);
       })
+      $log.log("PID passed from search-album: ", $scope.playlistId);
 
     }
 
@@ -507,6 +543,8 @@ angular.module('starter.controllers', [])
    }
 
     $scope.performSearch = function(searchInput){
+      platformPic();
+      $scope.playlistId = $stateParams.PID;
     // assign somehting to be displayed (promise)
     // use ionic loading to wait while its being assigned
       $scope.showLoading();
@@ -518,12 +556,16 @@ angular.module('starter.controllers', [])
         if($scope.returnDataArtists.length > 0)
         {
           $scope.isArtist = true;
+          //platformPic();
+          //$scope.dataArtistsImg = $scope.item.images[$scope.picIndex].url
         }
 
         $scope.returnDataTracks = response.tracks.items;
         if($scope.returnDataTracks.length > 0)
         {
           $scope.isTrack = true;
+          //platformPic();
+          //$scope.dataTracksImg = $scope.item.album.images[$scope.picIndex].url
 
         }
         $log.log($scope.returnDataTracks);
@@ -532,6 +574,8 @@ angular.module('starter.controllers', [])
         if($scope.returnDataAlbum.length > 0)
         {
           $scope.isAlbum = true;
+          //platformPic();
+          //$scope.dataAlbumImg = $scope.item.images[$scope.picIndex].url
           //$log.log($scope.returnDataAlbum);
         }
 
@@ -621,6 +665,30 @@ angular.module('starter.controllers', [])
   }
   $scope.showPopup();
 }
+  
+  $scope.addLeague = function()
+  {
+    $scope.showLoading();
+    var userData = authenticationFact.getData();
+    var addPromise = firebaseFact.addLeague();
+    addPromise.then(function(response)
+    {
+      $log.log("SUCCESS on add")
+      $scope.hideLoading();
+      //$scope.returnData = response;
+    })
+  }
+
+  $scope.load = function(){
+    showLoading();
+    $log.log("hitting league load")
+    var leaguePromise = firebaseFact.getLeagues();
+    leaguePromise.then(function(response){
+      $log.log(response)
+      $scope.leagues = response;
+      hideLoading();
+    })
+  }  
 
   $scope.createPlaylist = function(newplaylistname)
   {
@@ -636,7 +704,7 @@ angular.module('starter.controllers', [])
         addPlayPromise.then(function(response)
          {
            $scope.hideLoading();
-           $state.go("app.playlist", {playlistId: response, SPID: userData.id} );
+           $state.go("app.playlist", {playlistId: response} );
          })
 
       })

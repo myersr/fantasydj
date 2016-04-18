@@ -1,3 +1,5 @@
+<!-- Written by Thomas Brower -->
+
 <ion-view view-title="My Leagues">
   <ion-content>
     <ion-list can-swipe="true">
@@ -9,10 +11,14 @@
 
       <div class="bar bar-header">
         <h1 class="title">Leagues</h1>
-        <button class="button button-balanced" ng-click=getNewName()>Create Playlist</button>
-      </div>
+        <button class="button button-balanced" ng-click=getNewName()>Create League</button>
+        <button class="button button-balanced" ui-sref="app.join">Join Leagues </button>
+        <button class="button button-balanced" ng-click=addLeague()>Firebase League add </button>
 
       </div>
+      </div>
+
+ 
     </ion-list>
   </ion-content>
 </ion-view>
