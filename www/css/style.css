@@ -4,13 +4,25 @@
   padding-left:5px;
 }
 
-#grad{
+ul{
+  list-style-type: none;
+  list-style-image: none;
+}
+
+.grad{
   /* For browsers that do not support gradients */
   background-position: #000000;
   background: -webkit-linear-gradient(left, #0A1215 , #1a102a); /* For Safari 5.1 to 6.0 */
   background: -o-linear-gradient(right, #0A1215 , #1a102a); /* For Opera 11.1 to 12.0 */
   background: -moz-linear-gradient(right, #0A1215 , #1a102a); /* For Firefox 3.6 to 15 */
   background: linear-gradient(to right, #0A1215 , #1a102a); /* Standard syntax */
+}
+
+.grad h1,h2,h3,h4,h5{
+  color:#ffffff;
+}
+.black-text p,h1,h2,h3,h4,h5 {
+  color:#000000;
 }
 .loginAndroid {
   background: url('../img/loginBackground.jpg') no-repeat center;
@@ -33,4 +45,104 @@
   padding: 0px;
   width: 100px;
   height: 100px;
+}
+/*Bracket CSS*/
+
+.width{
+  font-size: 0.75em;
+}
+section {
+    width: 150px;
+    height: 500px;
+    float: left;
+}
+
+section > div {
+    width: 150px;
+    height: 40px;
+    border: 1px solid #000;
+    margin: 10px 0;
+    background: #73789F;
+    color: white;
+    padding: 10px 10px 10px 20px;
+}
+
+section > div:nth-child(2n) {
+    margin-bottom: 20px;
+}
+
+.connecter {
+    width: 30px;
+    height: 500px;
+    float: left;
+}
+
+.line {
+    width: 30px;
+    height: 20px;
+    float: left;
+}
+
+.connecter div {
+    border: 1px solid #ffffff;
+    border-left: none;
+    height: 50px;
+    width: 100%;
+    margin: 80px 0 0 1px;
+}
+
+.connecter div:first-child {
+    margin: 32px 0 0 1px;
+}
+
+.line div {
+    border-top: 1px solid #ffffff;
+    margin: 133px 0 0 1px;
+}
+
+.line div:first-child {
+    margin-top: 55px;
+}
+
+#semiFinals > div {
+    margin-top: 91px;
+}
+
+#semiFinals > div:first-child {
+    margin-top: 37px;
+}
+
+#conn2 div {
+    margin-top: 133px;
+    height: 133px;
+}
+
+#conn2 div:first-child {
+    margin-top: 57px;
+}
+
+#line2 div {
+    margin-top: 270px;
+}
+
+#line2 div:first-child {
+    margin-top: 125px;
+}
+#final > div {
+    margin-top: 230px;
+}
+#final > div:first-child {
+    margin-top: 105px;
+}
+#conn3 div {
+    margin-top: 125px;
+    height: 270px;
+}
+
+#line3 div {
+    margin-top: 270px;
+}
+
+#winner > div {
+    margin-top: 250px;
 }

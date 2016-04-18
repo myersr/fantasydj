@@ -401,6 +401,7 @@ angular.module('starter.controllers', [])
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //                                                      Search Ctrl
 //                                                Written by: Thomas Brower
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -683,10 +684,19 @@ angular.module('starter.controllers', [])
     $log.log("hitting league load")
     var leaguePromise = firebaseFact.getLeagues();
     leaguePromise.then(function(response){
+      hideLoading();
       $log.log(response)
       $scope.leagues = response;
-      hideLoading();
-    })
+
+    }, function(reason) {
+          hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+          // console.log( "error message - " + err.message );
+          // console.log( "error code - " + err.statusCode );
+        })
   }  
 
   $scope.createPlaylist = function(newplaylistname)
@@ -720,3 +730,42 @@ angular.module('starter.controllers', [])
 
 
 
+
+.controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
+  //var so = cordova.plugins.screenorientation;
+  var compId = $stateParams.compId;
+
+  /*
+  $scope.$on('$ionicView.enter', function(ev) {
+    so.lockOrientation('landscape');
+  });
+  $scope.$on('$ionicView.leave', function(ev) {
+    so.unlockOrientation();
+  });
+  */
+
+  var competitionPromise = firebaseFact.getLeague(compId);
+  competitionPromise.then(function(response){
+    console.log("response:",response);
+    $scope.competitionName = response.name;
+    $scope.round1 = response.rounds[1];
+    $scope.round2 = response.rounds[2];
+    $scope.round3 = response.rounds[3];
+    $scope.noRounds = response.noRounds;
+    console.log("round1:",response.rounds[1]);
+    console.log("compRounds",$scope.competitionRounds);
+    console.log("noRounds",$scope.noRounds);
+  });
+
+})
+
+.controller('LeaguesCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
+  //var so = cordova.plugins.screenorientation;
+  var leaguesPromise = firebaseFact.getLeagues();
+
+  leaguesPromise.then(function(response){
+    console.log("response:",response);
+    $scope.leagues = response;
+  });
+
+});

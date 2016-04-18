@@ -1,45 +1,41 @@
 <!-- Written by Thomas Brower -->
 
 <ion-view view-title="Details" ng-init="trackload()">
-<ion-content>
+    <ion-content>
 
-    <div class="list card">
+        <div class="list card">
 
-        <div class="item item-avatar">
-            <img ng-src="{{trackImg}}" >
+            <div class="item item-avatar">
+                <img ng-src="{{trackImg}}" >
 
-            <h2>{{item.name}}</h2>
-            <p>Artist: {{item.artists[0].name}} </p>
-            <p>Album: {{item.album.name}}</p>
-            <p>Content Type: {{item.type}}</p>
+                <h2>{{item.name}}</h2>
+                <p>Artist: {{item.artists[0].name}} </p>
+                <p>Album: {{item.album.name}}</p>
+                <p>Content Type: {{item.type}}</p>
+            </div>
+
+
         </div>
 
+        <div class="item tabs tabs-secondary tabs-icon-left">
+            <a class="tab-item" ng-click="play(item)">
+                <i class="icon ion-music-note"></i>
+                Play Song
+            </a>
+            <a class="tab-item" ng-click="stop()">
+                <i class="icon ion-pause"></i>
+                Pause
+            </a>
+            <a class="tab-item" ng-click="openSpotify(item.external_urls.spotify)">
+                <i class="icon ion-share"></i>
+                Open in Spotify
+            </a>
 
+            <a class="tab-item" ng-click="addTo(item.uri)">
+                <i class="icon ion-plus-round"></i>
+                Add To Playlist
+            </a>
+        </div>
 
-    </div>
-
-    <div class="item tabs tabs-secondary tabs-icon-left">
-                    <a class="tab-item" ng-click="play(item)">
-                        <i class="icon ion-music-note"></i>
-                        Play Song
-                    </a>
-                    <a class="tab-item" ng-click="stop()">
-                        <i class="icon ion-pause"></i>
-                        Pause
-                    </a>
-                    <a class="tab-item" ng-click="openSpotify(item.external_urls.spotify)">
-                        <i class="icon ion-share"></i>
-                        Open in Spotify
-                    </a>
-
-                    <a class="tab-item" ng-click="addTo(item.uri)">
-                        <i class="icon ion-plus-round"></i>
-                        Add To Playlist
-                    </a>
-</div>
-
-
-
-
-</ion-content>
+    </ion-content>
 </ion-view>
