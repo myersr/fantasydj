@@ -458,13 +458,14 @@ angular.module('starter.controllers', [])
 
   $scope.addTo = function( uri)
   {
+    var pId = $stateParams.PID;
     // call add to playlist Fact
-    var addPromise = playlistsFact.addTrack($scope.playlistId, uri)
+    var addPromise = playlistsFact.addTrack(pId, uri)
     addPromise.then(function(response)
     {
       $scope.item = response;
       $log.log(response);
-      $state.go('app.playlist',{playlistId:playlistId})
+      $state.go('app.playlist',{playlistId:pId})
 
     })
 
@@ -690,6 +691,7 @@ angular.module('starter.controllers', [])
     {
       $log.log("SUCCESS on add")
       $scope.hideLoading();
+      $state.go('app.myLeagues');
       //$scope.returnData = response;
     }, function(reason) {
           hideLoading();
