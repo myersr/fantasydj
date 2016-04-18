@@ -243,19 +243,54 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           var roundsArray = []
           $log.log("Reaches inside if")
           for(var i = 1; i<=nPlayers/2; i++){
-            var toStringRound = "Round "+String(i)
-            $log.log("Set toStringRound")
+            var toStringRound = "Round "+String(i);
+            $log.log("Set toStringRound");
             if(i === 1){
-              var tempList = {toStringRound: spotData.id}
-              roundsArray.push(tempList)
-              $log.log("push list of toStringRound")
+              var player1 = {
+                SUID: spotData.id,
+                name: spotData.display_name};
+              var player2 = {
+                SUID: "",
+                name: ""};
+              var player3 = {
+                SUID: "",
+                name: ""};
+              var player4 = {
+                SUID: "",
+                name: ""};
+              var tempList = {
+                player1,
+                player2,
+                player3,
+                player4
+              };
+              roundsArray.push(tempList);
+              $log.log("push list of toStringRound");
             }else{
-              var tempList = {toStringRound: ""}
-              roundsArray.push(tempList)
-              $log.log("push empty list of toStringRound")
+              var player1 = {
+                SUID: "",
+                name: ""};
+              var player2 = {
+                SUID: "",
+                name: ""};
+              var player3 = {
+                SUID: "",
+                name: ""};
+              var player4 = {
+                SUID: "",
+                name: ""};
+              var tempList = {
+                player1,
+                player2,
+                player3,
+                player4
+              };
+              var tempList = {name: ""};
+              roundsArray.push(tempList);
+              $log.log("push empty list of toStringRound");
             }
           }
-          league.set({ID: compId, name: name, competitorList: spotData.id, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
+          league.set({ID: compId, name: name, competitorList: tempList, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
           $log.log("league set inside of if")
 
         } else
@@ -265,7 +300,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             var toStringRound = "Round "+String(i);
             var tempList = {toStringRound: ""}
             roundsArray.push(tempList)
-            
+
           }
           $log.log("Reaches inside else")
           league.set({ID: compId, name: name, competitorList: {}, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
