@@ -50,8 +50,15 @@ angular.module('starter.controllers', [])
                 $log.log("inside isRegistered promise: ", response)
                 isUser = response;
                 if(isUser) {
-                  $scope.hideLoading();
-                  $state.go("app.playlists")
+                  var fireUserPromise = firebaseFact.setUserData();
+
+                  fireUserPromise.then(function(response)
+                  {
+                      $scope.hideLoading();
+                      $state.go("app.playlists")
+                  })
+
+
                 } else{ //if not a registered user, send to registry page.
                   $scope.hideLoading();
                   $state.go("confirmation")
@@ -143,8 +150,13 @@ angular.module('starter.controllers', [])
       var regPromise = firebaseFact.registerUser()
       regPromise.then(function(response){
         $log.log("Registered User")
-        hideLoading();
-        $state.go("app.playlists")
+        var fireUserPromise = firebaseFact.setUserData();
+
+        fireUserPromise.then(function(response)
+        {
+            hideLoading();
+            $state.go("app.playlists")
+        })
       })
     }
     $scope.deny = function(){
@@ -350,7 +362,7 @@ angular.module('starter.controllers', [])
    AccountCtrl -
    grabs and lists all songs in a playlist
    */
-  .controller('AccountCtrl', function($scope,$log, authenticationFact) {
+  .controller('AccountCtrl', function($scope,$log, authenticationFact, firebaseFact) {
     if(authenticationFact.isAuthorized())
     {
       //var defer = $q.defer();
@@ -358,7 +370,9 @@ angular.module('starter.controllers', [])
       //var tken = authenticationFact.getToken()
       //authenticationFact.queryData(tken)
       $scope.accountInfo = authenticationFact.getData();
+      $scope.firebaseInfo = firebaseFact.getUser();
       console.log("accountInfo:",$scope.accountInfo);
+      console.log("firebaseInfo:",$scope.firebaseInfo);
     }
 
 
@@ -386,8 +400,9 @@ angular.module('starter.controllers', [])
       $log.log("hitting load")
       var leaguePromise = firebaseFact.getLeagues();
       leaguePromise.then(function(response){
-        $log.log(response)
+        //$log.log(response);
         $scope.leagues = response;
+        $log.log("leagues:",$scope.leagues);
         hideLoading();
       })
     }
@@ -665,18 +680,26 @@ angular.module('starter.controllers', [])
   }
   $scope.showPopup();
 }
-  
-  $scope.addLeague = function()
+
+  $scope.addLeague = function(newLeague)
   {
     $scope.showLoading();
     var userData = authenticationFact.getData();
-    var addPromise = firebaseFact.addLeague();
+    var addPromise = firebaseFact.addLeague(newLeague);
     addPromise.then(function(response)
     {
       $log.log("SUCCESS on add")
       $scope.hideLoading();
       //$scope.returnData = response;
-    })
+    }, function(reason) {
+          hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason.message
+          })
+          // console.log( "error message - " + err.message );
+          // console.log( "error code - " + err.statusCode );
+        })
   }
 
   $scope.load = function(){
@@ -687,6 +710,7 @@ angular.module('starter.controllers', [])
       hideLoading();
       $log.log(response)
       $scope.leagues = response;
+      $log.log("leagues",$scope.leagues);
 
     }, function(reason) {
           hideLoading();
@@ -697,7 +721,7 @@ angular.module('starter.controllers', [])
           // console.log( "error message - " + err.message );
           // console.log( "error code - " + err.statusCode );
         })
-  }  
+  }
 
   $scope.createPlaylist = function(newplaylistname)
   {

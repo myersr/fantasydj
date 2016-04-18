@@ -1,20 +1,17 @@
 <!-- Written by Thomas Brower -->
 
-<ion-view view-title="My Leagues">
+<ion-view view-title="My Leagues" class="grad">
   <ion-content>
     <ion-list can-swipe="true">
       <ion-item class="item-thumbnail-left" ng-repeat="playlist in playlists" ng-href="#/app/playlist/{{playlist.id}}">
           <img ng-src="{{playlist.images[0].url}}">
           <h2>{{playlist.name}}</h2>
       </ion-item>
-      <div>
-          <div class="bar bar-header">
-              <h1 class="title">Leagues</h1>
-              <button class="button button-balanced" ng-click=getNewName()>Create League</button>
-              <button class="button button-balanced" ui-sref="app.join">Join Leagues </button>
-              <button class="button button-balanced" ng-click=addLeague()>Firebase League add </button>
-          </div>
-      </div>
+        <div class="bar bar-header">
+            <button class="button button-balanced" ng-click=getNewName()>Create Playlist</button>
+            <!-- <button class="button button-balanced" ui-sref="app.join">Join Leagues </button>-->
+            <button class="button button-balanced" ui-sref="app.newLeague"> Add League </button>
+        </div>
     </ion-list>
   </ion-content>
 </ion-view>

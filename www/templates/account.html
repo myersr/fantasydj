@@ -9,11 +9,11 @@
             <h5 class="accountInfo">Subscriber Count:</h5>
             <p class="accountInfo">{{ accountInfo.followers.total }}</p>
             <h5 class="accountInfo">Championships:</h5>
-            <p class="accountInfo">0</p>
+            <p class="accountInfo"> {{ firebaseInfo.championships }}</p>
             <h5 class="accountInfo">Bracket Record:</h5>
-            <p class="accountInfo">0-0</p>
+            <p class="accountInfo">{{ firebaseInfo.bracketWins }}-{{ firebaseInfo.bracketLosses }}</p>
             <h5 class="accountInfo">DJ Points:</h5>
-            <p class="accountInfo">0</p>
+            <p class="accountInfo">{{ firebaseInfo.djPoints }}</p>
         </div>
   </ion-content>
 </ion-view>
