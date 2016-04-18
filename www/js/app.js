@@ -5,9 +5,9 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
 /*
-Roy Myers
-All the various static id's
-Will be moved and hidden in development
+ Roy Myers
+ All the various static id's
+ Will be moved and hidden in development
  */
 var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
@@ -38,7 +38,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   })
 
   /*
-  sets the spotify client codes
+   sets the spotify client codes
    */
   .config(function (SpotifyProvider) {
     SpotifyProvider.setClientId(client_id);
@@ -61,15 +61,15 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
   /*
-  Authentication Factory
-  Written by Roy Myers
-  Performs the various authentication through spotify developers api
-  Used promises in the form of $q and http requests
+   Authentication Factory
+   Written by Roy Myers
+   Performs the various authentication through spotify developers api
+   Used promises in the form of $q and http requests
    */
   .factory('authenticationFact',['$http', '$log', '$q', '$window', function($http,$log, $q,$window){
     var authenticationFact = {};
     var url ="https://accounts.spotify.com/authorize?client_id=" + encodeURIComponent(client_id) + "&response_type=token&redirect_uri="+
-                  encodeURIComponent(redirect_uri) +"&scope="+encodeURIComponent(scopes_api)//+"&show_dialog=true"
+      encodeURIComponent(redirect_uri) +"&scope="+encodeURIComponent(scopes_api)//+"&show_dialog=true"
     var data;
     var authorized;
 
@@ -153,10 +153,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
     authenticationFact.spotifyLogin = function(){
-       return Spotify.login();
+      return Spotify.login();
     }
 
-      return authenticationFact;
+    return authenticationFact;
   }])
 
 
@@ -211,11 +211,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             reject(currentUser + " does not exist");
           }
         }, function (err) {
-        // code to handle read error
-        reject(err);
-      })
-    }); //end of promise
-  }
+          // code to handle read error
+          reject(err);
+        })
+      }); //end of promise
+    }
 
     firebaseFact.getUser = function()
     {
@@ -240,75 +240,111 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         if(participation)
         {
           // set flag equal to true
-          var roundsArray = []
+          var roundsArray = [];
+          var competitorList = [];
           $log.log("Reaches inside if")
-          for(var i = 1; i<=nPlayers/2; i++){
-            var toStringRound = "Round "+String(i);
-            $log.log("Set toStringRound");
-            if(i === 1){
-              var player1 = {
-                SUID: spotData.id,
-                name: spotData.display_name};
-              var player2 = {
-                SUID: "",
-                name: ""};
-              var player3 = {
-                SUID: "",
-                name: ""};
-              var player4 = {
-                SUID: "",
-                name: ""};
-              var tempList = {
-                player1,
-                player2,
-                player3,
-                player4
-              };
-              roundsArray.push(tempList);
-              $log.log("push list of toStringRound");
-            }else{
-              var player1 = {
-                SUID: "",
-                name: ""};
-              var player2 = {
-                SUID: "",
-                name: ""};
-              var player3 = {
-                SUID: "",
-                name: ""};
-              var player4 = {
-                SUID: "",
-                name: ""};
-              var tempList = {
-                player1,
-                player2,
-                player3,
-                player4
-              };
-              var tempList = {name: ""};
-              roundsArray.push(tempList);
-              $log.log("push empty list of toStringRound");
-            }
-          }
-          league.set({ID: compId, name: name, competitorList: tempList, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
+
+          //Set Round 1 by if the admin is playing or not (player 1)
+          $log.log("IF WAS TRUE");
+          var player1 = {
+            SUID: spotData.id,
+            name: spotData.display_name};
+          var player2 = {
+            SUID: "",
+            name: ""};
+          var player3 = {
+            SUID: "",
+            name: ""};
+          var player4 = {
+            SUID: "",
+            name: ""};
+          var tempList = {
+            player1,
+            player2,
+            player3,
+            player4
+          };
+          competitorList = tempList;
+          roundsArray.push(tempList);
+          $log.log("roundsArray true:",roundsArray);
+
+          //Set round 2 to two blank players (set to winners of round 1)
+          var player5 = {
+            SUID: "",
+            name: ""};
+          var player6 = {
+            SUID: "",
+            name: ""};
+          var tempList  = {
+            player5,
+            player6
+          };
+          roundsArray.push(tempList);
+
+          //Set round 3 (winner) to blank player7 (winner from round 2)
+          var player7 = {
+            SUID: "",
+            name: ""
+          };
+          roundsArray.push(player7);
+
+          league.set({ID: compId, name: name, competitorList: competitorList, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
           $log.log("league set inside of if")
 
         } else
         {
-          var roundsArray = []
-          for(var i = 1; i<=nPlayers/2; i++){
-            var toStringRound = "Round "+String(i);
-            var tempList = {toStringRound: ""}
-            roundsArray.push(tempList)
+          // set flag equal to true
+          var roundsArray = [];
+          var competitorList = [];
+          $log.log("Reaches inside if")
+          var player1 = {
+            SUID: "",
+            name: ""};
+          var player2 = {
+            SUID: "",
+            name: ""};
+          var player3 = {
+            SUID: "",
+            name: ""};
+          var player4 = {
+            SUID: "",
+            name: ""};
+          var tempList = {
+            player1,
+            player2,
+            player3,
+            player4
+          };
+          competitorList = tempList;
+          roundsArray.push(tempList);
+          $log.log("roundsArray true:",roundsArray);
 
-          }
-          $log.log("Reaches inside else")
-          league.set({ID: compId, name: name, competitorList: {}, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
-        }
-        $log.log("New league set: ", league)
-        resolve("SUCCESS BRUH")
-      }
-     )
+          //Set round 2 to two blank players (set to winners of round 1)
+          var player5 = {
+            SUID: "",
+            name: ""};
+          var player6 = {
+            SUID: "",
+            name: ""};
+          var tempList  = {
+            player5,
+            player6
+          };
+          roundsArray.push(tempList);
+
+          //Set round 3 (winner) to blank player7 (winner from round 2)
+          var player7 = {
+            SUID: "",
+            name: ""
+          };
+          roundsArray.push(player7);
+
+          league.set({ID: compId, name: name, competitorList: competitorList, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
+          $log.log("league set inside of if")
+        };
+        $log.log("New league set: ", league);
+        resolve("SUCCESS BRUH");
+      })
     }
 
 
@@ -393,13 +429,13 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   }])
 
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//                                        Factory for search :: Thomas Brower
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  //                                        Factory for search :: Thomas Brower
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   .factory('searchFact',['$log', '$http','$q', function($log, $http, $q){
     var searchFact = []
@@ -461,17 +497,17 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Return Factory !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Written by:  Thomas Brower   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Return Factory !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Written by:  Thomas Brower   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
   /*
-  Author: Roy Myers
-  spotifyFact -
-  Uses the Spotify Api to perform multiple functions.
-  Also stores instances of user data.
+   Author: Roy Myers
+   spotifyFact -
+   Uses the Spotify Api to perform multiple functions.
+   Also stores instances of user data.
    */
   .factory('spotifyFact',['$log', '$http','$q', function($log, $http, $q){
     var spotifyFact = []
@@ -509,27 +545,27 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
 
-  spotifyFact.getTrackResults = function(searchValue){
-    return $q(function(resolve, reject) {
+    spotifyFact.getTrackResults = function(searchValue){
+      return $q(function(resolve, reject) {
 
-      $http({
-        url: "https://api.spotify.com/v1/tracks/"+ searchValue,
-        method: "Get",
-        headers: {
-          'Authorization': 'Bearer ' + token
-        }
-      }).then(function successCallback(res) {
-        searchValue = res.data
-        $log.log("tracksfetched", searchValue)
-        resolve(searchValue)
+        $http({
+          url: "https://api.spotify.com/v1/tracks/"+ searchValue,
+          method: "Get",
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function successCallback(res) {
+          searchValue = res.data
+          $log.log("tracksfetched", searchValue)
+          resolve(searchValue)
 
-      }, function errorCallback(response) {
+        }, function errorCallback(response) {
 
-        $log.log("Call Error Search track results: ",response)
-        reject("400 error in getTrackResults")
-      })
-    });
-  }
+          $log.log("Call Error Search track results: ",response)
+          reject("400 error in getTrackResults")
+        })
+      });
+    }
 
 
 
@@ -561,11 +597,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   }])
 
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Add Playlist Factory  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  By: Thomas Brower    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Add Playlist Factory  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  By: Thomas Brower    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
   .factory('addFact',['$log', '$http','$q', 'authenticationFact', function($log, $http, $q, authenticationFact){
@@ -597,7 +633,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             'Authorization': 'Bearer ' + token,
             "Content-Type": "application/json"
           },
-            data: {
+          data: {
             'name': (newplaylistname),
             'public': true
 
@@ -662,18 +698,18 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   }])
 
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
   /*
-  Author Roy Myers
-  playlistsFact -
-  Returns users playlist from spotify
+   Author Roy Myers
+   playlistsFact -
+   Returns users playlist from spotify
 
-  using $q as promises
+   using $q as promises
    */
   .factory('playlistsFact',['$log', '$http','$q', 'authenticationFact', 'firebaseFact', function($log, $http, $q, authenticationFact, firebaseFact){
     var playlistsFact = []
@@ -742,7 +778,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
     playlistsFact.addTrack = function(playlistId, uri)
     {
-        return $q(function(resolve, reject) {
+      return $q(function(resolve, reject) {
 
         $log.log("playlist ID in addTrackFact: ", playlistId);
         userData = authenticationFact.getData();
@@ -752,8 +788,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           method: "POST",
           headers: {
             'Authorization': 'Bearer ' + token,
-                    }
-          }).then(function successCallback(res) {
+          }
+        }).then(function successCallback(res) {
           //$log.log("pre assign", res.data)
           playlists = res
           $log.log("response: ", res)
@@ -836,10 +872,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 
     /*
-    getLinkbyId function
-    Written by Roy Myers
-    Loops through an array and returns an item of a list
-    that matches the id input.
+     getLinkbyId function
+     Written by Roy Myers
+     Loops through an array and returns an item of a list
+     that matches the id input.
      */
     var getLinkbyId = function(playlistId) {
       for (var i = 0; i < playlists.length; i++) {
@@ -849,11 +885,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       }
     }
     /*
-   playlistFact written by Roy Myers
-   Returns the playlist data of a playlist by playlist id
-   get Call
-   using $q as promises
-    */
+     playlistFact written by Roy Myers
+     Returns the playlist data of a playlist by playlist id
+     get Call
+     using $q as promises
+     */
 
     playlistsFact.getPlaylistData = function(playlistId, spotID){
       return $q(function(resolve, reject) {
@@ -930,9 +966,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         templateUrl: 'templates/menu.html',
         controller: 'AppCtrl',
         onEnter: function($state, $log, authenticationFact, $ionicLoading,playlistsFact){
-         if(!authenticationFact.isAuthorized()){
-           $state.go("login")
-         }
+          if(!authenticationFact.isAuthorized()){
+            $state.go("login")
+          }
         },
 
         data:{
@@ -969,57 +1005,57 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       .state('app.info', {
         url: '/:PID/search/info/:searchValue',
         views:{
-        'menuContent':{
-          templateUrl: 'templates/cardView.html',
-          controller: 'searchCtrl'
+          'menuContent':{
+            templateUrl: 'templates/cardView.html',
+            controller: 'searchCtrl'
 
+          }
+        },
+        data: {
+          link:'Playlist'
         }
-      },
-      data: {
-        link:'Playlist'
-      }
       })
 
       .state('app.artistCard', {
         url: '/:PID/search/artistCard/:searchValue',
         views:{
-        'menuContent':{
-          templateUrl: 'templates/artistCard.html',
-          controller: 'searchCtrl'
+          'menuContent':{
+            templateUrl: 'templates/artistCard.html',
+            controller: 'searchCtrl'
 
+          }
+        },
+        data: {
+          link:'Playlist'
         }
-      },
-      data: {
-        link:'Playlist'
-      }
       })
 
       .state('app.albumCard', {
         url: '/:PID/search/albumCard/:searchValue',
         views:{
-        'menuContent':{
-          templateUrl: 'templates/albumCard.html',
-          controller: 'searchCtrl'
+          'menuContent':{
+            templateUrl: 'templates/albumCard.html',
+            controller: 'searchCtrl'
 
+          }
+        },
+        data: {
+          link:'Playlist'
         }
-      },
-      data: {
-        link:'Playlist'
-      }
       })
 
 
       .state('app.more', {
         url: '/:PID/search/more?type=value1&input=value2',
         views:{
-        'menuContent':{
-          templateUrl: 'templates/moreSearch.html',
-          controller: 'searchCtrl'
+          'menuContent':{
+            templateUrl: 'templates/moreSearch.html',
+            controller: 'searchCtrl'
+          }
+        },
+        data: {
+          link:'Playlist'
         }
-      },
-      data: {
-        link:'Playlist'
-      }
       })
 
 
@@ -1036,8 +1072,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       })
       /*
-      Author: Roy Myers
-      join league controller
+       Author: Roy Myers
+       join league controller
        */
       .state('app.join', {
         url:'/league/join',
@@ -1107,7 +1143,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       })
 
-    .state('app.bracket', {
+      .state('app.bracket', {
         url: '/leagues/:compId',
         views: {
           'menuContent': {
@@ -1119,7 +1155,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           link: 'Leagues'
         }
       })
-    .state('app.leagues', {
+      .state('app.leagues', {
         url: '/leagues',
         views: {
           'menuContent': {
