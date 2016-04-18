@@ -757,7 +757,23 @@ angular.module('starter.controllers', [])
 
 .controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
   //var so = cordova.plugins.screenorientation;
-  var compId = $stateParams.compId;
+  compId = $stateParams.compId;
+
+  $scope.load = function(){
+    var compId = $stateParams.compId;
+    var competitionPromise = firebaseFact.getLeague(compId);
+    competitionPromise.then(function(response){
+        console.log("response:",response);
+        $scope.competitionName = response.name;
+        $scope.round1 = response.rounds[1];
+        $scope.round2 = response.rounds[2];
+        $scope.round3 = response.rounds[3];
+        $scope.noRounds = response.noRounds;
+        console.log("round1:",response.rounds[1]);
+        console.log("compRounds",$scope.competitionRounds);
+        console.log("noRounds",$scope.noRounds);
+  });
+  }
 
   /*
   $scope.$on('$ionicView.enter', function(ev) {
@@ -768,18 +784,6 @@ angular.module('starter.controllers', [])
   });
   */
 
-  var competitionPromise = firebaseFact.getLeague(compId);
-  competitionPromise.then(function(response){
-    console.log("response:",response);
-    $scope.competitionName = response.name;
-    $scope.round1 = response.rounds[1];
-    $scope.round2 = response.rounds[2];
-    $scope.round3 = response.rounds[3];
-    $scope.noRounds = response.noRounds;
-    console.log("round1:",response.rounds[1]);
-    console.log("compRounds",$scope.competitionRounds);
-    console.log("noRounds",$scope.noRounds);
-  });
 
 })
 
