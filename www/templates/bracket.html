@@ -3,13 +3,13 @@ Author: Daniel Harper
 View: Bracket view with 4 initial players
 -->
 <ion-view view-title="{{ competitionName}}">
-  <ion-content ng-init="console.log('Bracket');" class="grad">
+  <ion-content ng-init="load()" class="grad">
       <div class="width">
           <h3>{{ competitionName }} - Bracket</h3>
 
           <!-- Semi-finals Round -->
           <section id="semiFinals">
-              <div ng-repeat="competitor in round1" ng-href="#/app/playlist/{{playlist.id}}">{{ competitor.name }}</div>
+              <div ng-repeat="competitor in round1" ng-href="#/app/playlist/{{playlist.id}}">{{ competitor.name }}"</div>
           </section>
           <!-- Connector lines from semi-finals to finals -->
           <div class="connecter" id="conn2">

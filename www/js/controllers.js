@@ -456,7 +456,7 @@ angular.module('starter.controllers', [])
     window.open(link, '_blank', 'location=yes');
   }
 
-  $scope.addTo = function( uri)
+  $scope.addTo = function(uri)
   {
     var pId = $stateParams.PID;
     // call add to playlist Fact
@@ -724,7 +724,7 @@ $scope.loadFilter = function(){
           // console.log( "error message - " + err.message );
           // console.log( "error code - " + err.statusCode );
         })
-  }  
+  }
 
 
   $scope.load = function(){
@@ -782,17 +782,18 @@ $scope.loadFilter = function(){
 
 .controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
   //var so = cordova.plugins.screenorientation;
-  compId = $stateParams.compId;
 
   $scope.load = function(){
+    $log.log("BracketCtrl.load called");
     var compId = $stateParams.compId;
     var competitionPromise = firebaseFact.getLeague(compId);
+    $log.log("Competition Promise:",competitionPromise);
     competitionPromise.then(function(response){
         console.log("response:",response);
         $scope.competitionName = response.name;
-        $scope.round1 = response.rounds[1];
-        $scope.round2 = response.rounds[2];
-        $scope.round3 = response.rounds[3];
+        $scope.round1 = response.rounds[0];
+        $scope.round2 = response.rounds[1];
+        $scope.round3 = response.rounds[2];
         $scope.noRounds = response.noRounds;
         console.log("round1:",response.rounds[1]);
         console.log("compRounds",$scope.competitionRounds);
