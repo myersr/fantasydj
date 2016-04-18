@@ -194,8 +194,8 @@ angular.module('starter.controllers', [])
 
 
     $scope.menuOptions = [
-      {name: 'Search', link:'#/app/search', class: 'item-dark'},
-      {name: 'Browse', link: '#/app/browse', class: 'item-dark'},
+      {name: 'My Leagues', link:'#/app/myLeagues', class: 'item-dark'},
+      {name: 'Leader Boards', link: '#/app/browse', class: 'item-dark'},
       {name: 'Account', link: '#/app/account', class: 'item-dark'},
       {name: 'Playlists', link: '#/app/playlists', class: 'item-dark'}];
 
@@ -384,8 +384,8 @@ angular.module('starter.controllers', [])
     $scope.load = function(){
       showLoading();
       $log.log("hitting load")
-      var leaugePromise = firebaseFact.getLeagues();
-      leaugePromise.then(function(response){
+      var leaguePromise = firebaseFact.getLeagues();
+      leaguePromise.then(function(response){
         $log.log(response)
         $scope.leagues = response;
         hideLoading();
@@ -664,6 +664,19 @@ angular.module('starter.controllers', [])
   }
   $scope.showPopup();
 }
+  
+  $scope.addLeague = function()
+  {
+    $scope.showLoading();
+    var userData = authenticationFact.getData();
+    var addPromise = firebaseFact.addLeague();
+    addPromise.then(function(response)
+    {
+      $log.log("SUCCESS on add")
+      $scope.hideLoading();
+      //$scope.returnData = response;
+    })
+  }
 
   $scope.createPlaylist = function(newplaylistname)
   {

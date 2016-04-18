@@ -189,7 +189,29 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         resolve(user)
       });//end $q
     }
+// <-------------------------------------------------- Written by Thomas Brower ------------------------------------------------------->
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    firebaseFact.addLeague = function()
+    {
+      return $q(function(resolve,reject)
+      {
+        var spotData = authenticationFact.getData()
+        var compId = Math.floor((Math.random() * 10000000) + 1);
+        var endTime = new Date().toJSON().slice(0,10);
+        var startTime = new Date().toJSON().slice(0,14);
+        var numRounds = 3;
+
+
+        var league = new Firebase('https://fantasydj.firebaseio.com/leagues/' + compId)
+        league.set({ID: compId, ComperitorList: {}, End: endTime, Start: startTime, iterations: numRounds})
+        $log.log("New league set: ", league)
+        resolve("SUCCESS BRUH")
+
+      })
+    }
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// <----------------------------------------------------------------------------------------------------------------------------------->
     firebaseFact.getLeagues = function(){
       return $q(function(resolve, reject) {
         var fireLeagues = new Firebase('https://fantasydj.firebaseio.com/leagues');
@@ -763,7 +785,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }
         },
         data:{
-          link:'Search'
+          link:'Playlists'
         }
       })
 
@@ -777,7 +799,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       },
       data: {
-        link:'Card'
+        link:'Playlist'
       }
       })
 
@@ -791,7 +813,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       },
       data: {
-        link:'ArtistCard'
+        link:'Playlist'
       }
       })
 
@@ -805,7 +827,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       },
       data: {
-        link:'AlbumCard'
+        link:'Playlist'
       }
       })
 
@@ -819,7 +841,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }
       },
       data: {
-        link:'More'
+        link:'Playlist'
       }
       })
 
@@ -828,11 +850,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         url: '/browse',
         views: {
           'menuContent': {
-            templateUrl: 'templates/browse.html'
+            templateUrl: 'templates/browse.html',
+            controller: 'joinCtrl'
           }
         },
         data:{
-          link:'Browse'
+          link:'Leader Boards'
         }
       })
       /*
@@ -869,7 +892,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
       .state('app.myLeagues', {
-        url: '/browse/myLeagues/:playlistId',
+        url: '/myLeagues',
         views: {
           'menuContent': {
             templateUrl: 'templates/myLeagues.html',
