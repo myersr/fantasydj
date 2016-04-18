@@ -581,7 +581,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           }).then(function successCallback(res) {
           //$log.log("pre assign", res.data)
           playlists = res
-          $log.log("song added ",playlists)
           $log.log("response: ", res)
           resolve(playlists)
 

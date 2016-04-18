@@ -285,7 +285,7 @@ angular.module('starter.controllers', [])
 
     $scope.goTo = function(playlistId)
     {
-      $state.go('app.search', {playlistId:playlistId})
+      $state.go('app.search', {PID:playlistId})
       $log.log("Playlist Pass-from-playlist-window ID: " + playlistId)
     }
 
@@ -317,8 +317,13 @@ angular.module('starter.controllers', [])
       var userData = authenticationFact.getData();
       var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, userData.id);
       playlistPromise.then(function (response) {
-        $log.log("Response i controller: ",response)
+        //$log.log("Response i controller: ",response)
         $scope.playlist = response;
+        $state.transitionTo($state.current, $stateParams, {
+            reload: true,
+            inherit: false,
+            notify: true
+        })
         //$log.log(response.tracks.items[0].track.album.images[2].url);
         hideLoading();
         //$log.log("Promise resolved: ", response)
@@ -403,7 +408,7 @@ angular.module('starter.controllers', [])
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, spotifyFact, playlistsFact){
+  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, authenticationFact, searchFact, spotifyFact, playlistsFact){
     $scope.platform = ionic.Platform.platform();
     $scope.playlistId = $stateParams.PID
 
@@ -427,7 +432,7 @@ angular.module('starter.controllers', [])
     window.open(link, '_blank', 'location=yes');
   }  
 
-  $scope.addTo = function(playlistId, uri)
+  $scope.addTo = function( uri)
   {
     // call add to playlist Fact
     var addPromise = playlistsFact.addTrack($scope.playlistId, uri)
@@ -435,9 +440,9 @@ angular.module('starter.controllers', [])
     {
       $scope.item = response;
       $log.log(response);
-
+      $state.go('app.playlist',{playlistId:$scope.playlistId})
     })
-    $state.go('app.playlist',{playlistId:playlistId})
+    
     $log.log("PID passed from addTo playlist function: ", $scope.playlistId);
     $log.log("Track URI is: ", uri);
   }  
@@ -459,7 +464,8 @@ angular.module('starter.controllers', [])
 
     $scope.go = function(input, type)
     {
-      $state.go('app.more', {type: type, input: input})
+      var userData = authenticationFact.getData();
+      $state.go('app.more', {PID: $scope.playlistId, type: type, input: input})
 
     }
 
