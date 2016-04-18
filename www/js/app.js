@@ -231,25 +231,44 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         var compId = Math.floor((Math.random() * 10000000) + 1);
         var endTime = new Date().toJSON().slice(0,10);
         var startTime = new Date().toJSON().slice(0,10);
-        var nRounds = newLeague.numRounds;
+        var nPlayers = newLeague.numPlayers;
         var participation = newLeague.filter;
         var name = newLeague.compName;
-
-        $log.log(spotData)
-
 
 
         var league = new Firebase('https://fantasydj.firebaseio.com/leagues/' + compId)
         if(participation)
         {
           // set flag equal to true
+          var roundsArray = []
           $log.log("Reaches inside if")
-          league.set({ID: compId, name: name, comperitorList: spotData.id, end: endTime, start: startTime, numRounds: nRounds, userName: spotData.display_name, rounds: {}})
+          for(var i = 1; i<=nPlayers/2; i = i++){
+            var toStringRound = "Round "+String(i)
+            $log.log("Set toStringRound")
+            if(i === 1){
+              var tempList = {toStringRound: spotData.id}
+              roundsArray.push(tempList)
+              $log.log("push list of toStringRound")
+            }else{
+              var tempList = {toStringRound: ""}
+              round.push(tempList)
+              $log.log("push empty list of toStringRound")
+            }
+          }
+          league.set({ID: compId, name: name, competitorList: spotData.id, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
+          $log.log("league set inside of if")
 
         } else 
         {
+          var roundsArray = []
+          for(var i = 1; i<=nPlayers/2; i = i++){
+            var toStringRound = "Round "+String(i);
+            var tempList = {toStringRound: ""}
+            round.push(tempList)
+            
+          }
           $log.log("Reaches inside else")
-          league.set({ID: compId, name: name, comperitorList: {}, end: endTime, start: startTime, numRounds: nRounds, userName: spotData.display_name, rounds: {}})
+          league.set({ID: compId, name: name, competitorList: {}, end: endTime, start: startTime, numRounds: nPlayers, userName: spotData.display_name, rounds: roundsArray})
         }
         $log.log("New league set: ", league)
         resolve("SUCCESS BRUH")
