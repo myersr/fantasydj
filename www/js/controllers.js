@@ -678,6 +678,17 @@ angular.module('starter.controllers', [])
     })
   }
 
+  $scope.load = function(){
+    showLoading();
+    $log.log("hitting league load")
+    var leaguePromise = firebaseFact.getLeagues();
+    leaguePromise.then(function(response){
+      $log.log(response)
+      $scope.leagues = response;
+      hideLoading();
+    })
+  }  
+
   $scope.createPlaylist = function(newplaylistname)
   {
     $scope.showLoading();

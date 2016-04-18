@@ -1,14 +1,15 @@
 <!-- Written by Thomas Brower -->
 
 
-<ion-view view-title="Current Leaders">
+<ion-view view-title="Ongoing Leagues">
   <ion-content  <ion-content ng-init="load()">
 
   <ion-list can-swipe="true">
       <ion-item class="item-thumbnail-left" ng-repeat="item in leagues">
-          <h2>{{item.name}}</h2>
-          <p>Start: {{item.start}}</p>
-          <p>End: {{item.end}}</p>
+          <h2>{{item.ID}}</h2>
+          <p>Start: {{item.Start}}</p>
+          <p>End: {{item.End}}</p>
+          <p>End: {{item.Iterations}}</p>
 
       </ion-item>
       </ion-list>

@@ -851,7 +851,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         views: {
           'menuContent': {
             templateUrl: 'templates/browse.html',
-            controller: 'joinCtrl'
+            controller: 'leagueCtrl'
           }
         },
         data:{
