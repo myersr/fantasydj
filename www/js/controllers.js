@@ -96,6 +96,7 @@ angular.module('starter.controllers', [])
    loginCtrl
    loginCtrl -
    returns the url for spotify authentication
+   on Mobile it uses ngOauth for spotify authentication
    */
   .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, $ionicLoading, $state, firebaseFact, authenticationFact){
     $scope.showLoading = function() {
@@ -225,8 +226,7 @@ angular.module('starter.controllers', [])
   /*
    Author: Roy Myers
    AppCtrl
-   PlaylistCtrl -
-   grabs and lists all songs in a playlist
+   controlls the side menu
    */
   .controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location,$state, authenticationFact) {
 
@@ -284,6 +284,7 @@ angular.module('starter.controllers', [])
    findPlaylists
    PlaylistsCtrl -
    grabs and lists all playlists for a spotify user
+   pull to refresh
    */
   .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, $stateParams,authenticationFact, playlistsFact) {
     showLoading = function() {
@@ -365,6 +366,7 @@ angular.module('starter.controllers', [])
    findPlaylist
    PlaylistCtrl -
    grabs and lists all songs in a playlist
+   includes pull to reload
    */
 
   .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, authenticationFact, playlistsFact) {
@@ -486,7 +488,7 @@ angular.module('starter.controllers', [])
    Author: Daniel Harper
    findPlaylist
    AccountCtrl -
-   grabs and lists all songs in a playlist
+   Pulls firbase data as well as spotify data
    */
   .controller('AccountCtrl', function($scope,$log, authenticationFact, firebaseFact) {
     if(authenticationFact.isAuthorized())
@@ -505,7 +507,12 @@ angular.module('starter.controllers', [])
   })
 
 
-
+/*
+   Author: Roy Myers
+   findPlaylist
+   AccountCtrl -
+   Pulls firbase data as well as spotify data
+   */
   .controller('joinCtrl', function ($scope, $log, $ionicLoading, spotifyFact, firebaseFact) {
     showLoading = function() {
       $ionicLoading.show({
