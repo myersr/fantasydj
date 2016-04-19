@@ -875,6 +875,8 @@ angular.module('starter.controllers', [])
         $log.log(response)
         $scope.filtered = response;
         hideLoading();
+        setTimeout(function(){ hideLoading(); }, 2000);
+
 
       }, function(reason) {
         hideLoading();

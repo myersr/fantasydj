@@ -136,3 +136,7 @@ section > div:nth-child(2n) {
 #winner > div {
     margin-top: 250px;
 }
+
+.hidden{
+  display: none;
+}
