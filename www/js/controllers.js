@@ -582,11 +582,6 @@ angular.module('starter.controllers', [])
 
     $scope.audio = new Audio();
 
-    // $scope.playTrack = function(trackInfo) {
-    //   $log.log("bruh: ", trackInfo);
-    //   $scope.audio.src = trackInfo.preview_url;
-    //   $scope.audio.play();
-    // }
 
     $scope.openSpotify = function(link) {
       window.open(link, '_blank', 'location=yes');
@@ -672,13 +667,12 @@ angular.module('starter.controllers', [])
     $scope.inheritload = function(){
       $scope.showLoading();
       $scope.playlistId = $stateParams.PID;
-      $scope.playlistId = $stateParams.PID;
       $log.log("type: ", $stateParams.type);
       var promise = searchFact.getInheritResults($stateParams.input, $stateParams.type);
       promise.then(function(response){
-        $log.log(response);
+        //$log.log(response);
         $scope.returnData = response;
-        $log.log($scope.returnData);
+        //$log.log($scope.returnData);
 
         if($stateParams.type === "artist")
         {
@@ -695,7 +689,7 @@ angular.module('starter.controllers', [])
           $scope.isAlbum = true;
         }
 
-        $log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
+        //$log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
         $scope.hideLoading();
       })
     }
@@ -738,7 +732,6 @@ angular.module('starter.controllers', [])
         }
 
         $scope.hideLoading();
-        //window.location.reload();
       })
     }
 
@@ -766,6 +759,8 @@ angular.module('starter.controllers', [])
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    League Controller     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    By: Thomas Brower     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    Contributions by:     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!        Roy Myers         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -786,10 +781,8 @@ angular.module('starter.controllers', [])
     $scope.getNewName = function()
     {
 
-      // Triggered on a button click, or some other target
       $scope.showPopup = function() {
         $scope.newplaylistname = {};
-        // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
           template: '<input type="text" placeholder="New Playlist Name" ng-model="newplaylistname.name">',
           title: 'Enter Playlist Name',
@@ -802,7 +795,7 @@ angular.module('starter.controllers', [])
               type: 'button-positive',
               onTap: function(e) {
                 if (!$scope.newplaylistname.name) {
-                  //don't allow the user to close unless he enters name
+                  //don't allow the user to close unless he enters something (name)
                   $log.log("Input failed: ", $scope.newplaylistname);
 
                   e.preventDefault();
@@ -842,12 +835,10 @@ angular.module('starter.controllers', [])
           title: 'reason',
           content: reason.message
         })
-        // console.log( "error message - " + err.message );
-        // console.log( "error code - " + err.statusCode );
       })
     }
 
-
+// Contributed by Roy Myers
     $scope.doRefresh = function() {
       if (authenticationFact.isAuthorized()) {
         var filterPromise = firebaseFact.getFilteredLeagues();
@@ -949,7 +940,7 @@ angular.module('starter.controllers', [])
 
 
 
-
+// Author: Daniel Harper
   .controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
     //var so = cordova.plugins.screenorientation;
     $scope.load = function(){

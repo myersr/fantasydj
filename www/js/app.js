@@ -202,6 +202,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 // <-------------------------------------------------- Written by Thomas Brower ------------------------------------------------------->
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! With contributions !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! from both Daniel Harper !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! and Roy Myers !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     firebaseFact.setUserData = function(){
       return $q(function(resolve, reject) {
         var spotData = authenticationFact.getData() //.email
@@ -365,7 +370,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           $log.log("league set inside of if")
         };
         $log.log("New league set: ", league);
-        resolve("SUCCESS BRUH");
+        resolve("SUCCESS");
       })
     }
 
@@ -373,6 +378,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // <----------------------------------------------------------------------------------------------------------------------------------->
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
     //Author: Daniel Harper
     //Returns a competition based on the compId if it exists
     firebaseFact.getLeague = function(compId){
@@ -414,7 +422,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -433,10 +441,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             reject("Could not reach filtered leagues database ");
           }
         }, function (err) {
-  // code to handle read error
   reject(err);
 })
-      }); //end of promise
+      }); 
     }
 
     firebaseFact.addPlaylist = function(playlist){
@@ -477,7 +484,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //                                        Factory for search :: Thomas Brower
+  //                                                   Search Factory : Thomas Brower
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -542,14 +549,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Return Factory !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Written by:  Thomas Brower   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
   /*
    Author: Roy Myers
+   Contributions made by: Thomas Brower
    spotifyFact -
    Uses the Spotify Api to perform multiple functions.
    Also stores instances of user data.
@@ -560,7 +563,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
     spotifyFact.areFetched = function(){
       if(searchValue.length != 0){
-        //$log.log("true", playlists)
         return true;
       }else {
         return false;
@@ -643,7 +645,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Add Playlist Factory  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  By: Thomas Brower    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -656,7 +657,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
     addFact.areFetched = function(){
       if(playlists.length != 0){
-        //$log.log("true", playlists)
         return true;
       }else {
         return false;
@@ -670,7 +670,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return $q(function(resolve, reject) {
 
         $log.log("playlist name: ", newplaylistname);
-        //$log.log("userData: ", userData)
         $http({
           url: "https://api.spotify.com/v1/users/"+ userID + "/playlists" ,
           method: "POST",
@@ -684,20 +683,15 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
           }
         }).then(function successCallback(res) {
-          //$log.log("pre assign", res.data)
           playlists = res
           $log.log("playlistscreated",playlists)
           $log.log("response: ", res)
           resolve(playlists)
 
         }, function errorCallback(response) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
           $log.log("Call Error Playlist not created: ",response)
           reject(response)
         })
-        //return playlists;
-        //https://api.spotify.com/v1/users/{user_id}/playlists
       });
     }
 
@@ -773,7 +767,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return playlists;
     }
 
-//  !!!!!!!!!!!!!! Thomas Brower !!!!!!!!!!!!!!!!!!
+//  !!!!!!!!!!!!!!!!!!!!!!!!!! Thomas Brower !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     var matchingPlaylists = function(list1, array1)
     {
       if((list1 === null) || (array1.length < 1)){
@@ -804,33 +800,31 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return $q(function(resolve, reject) {
         $log.log("playlist ID in addTrackFact: ", playlistId);
         userData = authenticationFact.getData();
-        //$log.log("userData: ", userData)
         $http({
           url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playlistId + "/tracks?uris=" + uri,
           method: "POST",
           headers: {
             'Authorization': 'Bearer ' + token,
           }
-        }).then(function successCallback(res) {
-          //$log.log("pre assign", res.data)
+        }).then(function successCallback(res)
+         {
           playlists = res
           $log.log("response: ", res)
           resolve(playlists)
 
-        }, function errorCallback(response) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
+        }, function errorCallback(response) 
+        {
           $log.log("Call Error Playlist not created: ",response)
           reject(response)
         })
-        //return playlists;
-        //https://api.spotify.com/v1/users/{user_id}/playlists
       });
     }
 
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
     playlistsFact.getPlaylistsData = function(){
       return $q(function(resolve, reject) {
