@@ -1,12 +1,13 @@
 angular.module('starter.controllers', [])
 
-  /*
-   Author: Roy Myers
-   indexController
-   indexController -
-   The index app/ is the callback uri from spotify. on that page we parse the auth token and store all the user data.
-   If the user is in our database, we continue to playlists, if now we go to confirmation.
-   */
+/*
+ Author: Roy Myers
+ indexController
+ indexController -
+ The index app/ is the callback uri from spotify. on that page we parse the auth token and store all the user data.
+ If the user is in our database, we continue to playlists, if now we go to confirmation.
+ */
+
   .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, firebaseFact){
     //$log.log(window.location.origin)
     $scope.showLoading = function() {
@@ -50,8 +51,15 @@ angular.module('starter.controllers', [])
                 $log.log("inside isRegistered promise: ", response)
                 isUser = response;
                 if(isUser) {
-                  $scope.hideLoading();
-                  $state.go("app.playlists")
+                  var fireUserPromise = firebaseFact.setUserData();
+
+                  fireUserPromise.then(function(response)
+                  {
+                    $scope.hideLoading();
+                    $state.go("app.playlists")
+                  })
+
+
                 } else{ //if not a registered user, send to registry page.
                   $scope.hideLoading();
                   $state.go("confirmation")
@@ -196,8 +204,13 @@ angular.module('starter.controllers', [])
       var regPromise = firebaseFact.registerUser()
       regPromise.then(function(response){
         $log.log("Registered User")
-        hideLoading();
-        $state.go("app.playlists")
+        var fireUserPromise = firebaseFact.setUserData();
+
+        fireUserPromise.then(function(response)
+        {
+          hideLoading();
+          $state.go("app.playlists")
+        })
       })
     }
     $scope.deny = function(){
@@ -247,8 +260,8 @@ angular.module('starter.controllers', [])
 
 
     $scope.menuOptions = [
-      {name: 'Search', link:'#/app/search', class: 'item-dark'},
-      {name: 'Browse', link: '#/app/browse', class: 'item-dark'},
+      {name: 'My Leagues', link:'#/app/myLeagues', class: 'item-dark'},
+      {name: 'Leader Boards', link: '#/app/browse', class: 'item-dark'},
       {name: 'Account', link: '#/app/account', class: 'item-dark'},
       {name: 'Playlists', link: '#/app/playlists', class: 'item-dark'}];
 
@@ -403,7 +416,7 @@ angular.module('starter.controllers', [])
    AccountCtrl -
    grabs and lists all songs in a playlist
    */
-  .controller('AccountCtrl', function($scope,$log, authenticationFact) {
+  .controller('AccountCtrl', function($scope,$log, authenticationFact, firebaseFact) {
     if(authenticationFact.isAuthorized())
     {
       //var defer = $q.defer();
@@ -411,7 +424,9 @@ angular.module('starter.controllers', [])
       //var tken = authenticationFact.getToken()
       //authenticationFact.queryData(tken)
       $scope.accountInfo = authenticationFact.getData();
+      $scope.firebaseInfo = firebaseFact.getUser();
       console.log("accountInfo:",$scope.accountInfo);
+      console.log("firebaseInfo:",$scope.firebaseInfo);
     }
 
 
@@ -437,14 +452,17 @@ angular.module('starter.controllers', [])
     $scope.load = function(){
       showLoading();
       $log.log("hitting load")
-      var leaugePromise = firebaseFact.getLeagues();
-      leaugePromise.then(function(response){
-        $log.log(response)
+      var leaguePromise = firebaseFact.getLeagues();
+      leaguePromise.then(function(response){
+        //$log.log(response);
         $scope.leagues = response;
+        $log.log("leagues:",$scope.leagues);
+        hideLoading();
+      },function(res){
+        $log.log("RES:",res);
         hideLoading();
       })
     }
-
 
 
   })
@@ -463,7 +481,8 @@ angular.module('starter.controllers', [])
 
   .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, authenticationFact, spotifyFact, playlistsFact){
     $scope.platform = ionic.Platform.platform();
-    $scope.playlistId = $stateParams.PID;
+
+    $scope.pId = $stateParams.PID;
     $scope.picIndex;
     var platformPic = function(){
       if($scope.platform == 'android'){
@@ -494,15 +513,16 @@ angular.module('starter.controllers', [])
       window.open(link, '_blank', 'location=yes');
     }
 
-    $scope.addTo = function(uri){
+    $scope.addTo = function(uri)
+    {
+      var pId = $stateParams.PID;
       // call add to playlist Fact
-      var addPromise = playlistsFact.addTrack($scope.playlistId, uri)
+      var addPromise = playlistsFact.addTrack(pId, uri)
       addPromise.then(function(response)
       {
         $scope.item = response;
         $log.log(response);
-        $state.go('app.playlist',{playlistId:$scope.playlistId})
-
+        $state.go('app.playlist',{playlistId:pId})
       })
 
     }
@@ -525,26 +545,28 @@ angular.module('starter.controllers', [])
 
     $scope.go = function(input, type) {
       var userData = authenticationFact.getData()
-      $state.go('app.more', {PID: userData.id ,type: type, input: input})
+      var pId = $stateParams.PID;
+      $state.go('app.more', {PID: pId ,type: type, input: input})
 
     }
 
     $scope.artistload = function(){
       $scope.playlistId = $stateParams.PID;
       //artist promise
+      var pId = $stateParams.PID;
       var artistPromise = spotifyFact.getArtistResults($stateParams.searchValue)
       artistPromise.then(function(response){
         $scope.item = response;
         $log.log($scope.item);
       })
-      $log.log("PID passed from search-artist: ", $scope.playlistId);
+      $log.log("PID passed from search-artist: ", $stateParams.PID);
 
     }
 
 
     $scope.trackload = function(){
       //track promise
-      $scope.playlistId = $stateParams.PID;
+      var pId = $stateParams.PID;
       var trackPromise = spotifyFact.getTrackResults($stateParams.searchValue)
       trackPromise.then(function(response){
         $scope.item = response;
@@ -552,13 +574,13 @@ angular.module('starter.controllers', [])
         $scope.trackImg = $scope.item.album.images[$scope.picIndex].url
         $log.log($scope.item);
       })
-      $log.log("PID passed from search-track: ", $scope.playlistId);
+      $log.log("PID passed from search-track: ", $stateParams.PID);
 
     }
 
     $scope.albumload = function(){
       //album promise
-      $scope.playlistId = $stateParams.PID;
+      var pId = $stateParams.PID;
       var albumPromise = spotifyFact.getAlbumResults($stateParams.searchValue)
       albumPromise.then(function(response){
         $scope.item = response;
@@ -723,6 +745,72 @@ angular.module('starter.controllers', [])
       $scope.showPopup();
     }
 
+    $scope.addLeague = function(newLeague)
+    {
+      $scope.showLoading();
+      var userData = authenticationFact.getData();
+      var addPromise = firebaseFact.addLeague(newLeague);
+      addPromise.then(function(response)
+      {
+        $log.log("SUCCESS on add")
+        $scope.hideLoading();
+        $state.go("app.myLeagues")
+
+        //$scope.returnData = response;
+      }, function(reason) {
+        hideLoading();
+        $ionicPopup.alert({
+          title: 'reason',
+          content: reason.message
+        })
+        // console.log( "error message - " + err.message );
+        // console.log( "error code - " + err.statusCode );
+      })
+    }
+
+
+    $scope.loadFilter = function(){
+      showLoading();
+      var filterPromise = firebaseFact.getFilteredLeagues();
+      $log.log("hitting filter load")
+      filterPromise.then(function(response){
+        hideLoading();
+        $log.log(response)
+        $scope.filtered = response;
+
+      }, function(reason) {
+        hideLoading();
+        $ionicPopup.alert({
+          title: 'reason',
+          content: reason
+        })
+        // console.log( "error message - " + err.message );
+        // console.log( "error code - " + err.statusCode );
+      })
+    }
+
+
+    $scope.load = function(){
+      showLoading();
+      $log.log("hitting league load")
+      var leaguePromise = firebaseFact.getLeagues();
+      leaguePromise.then(function(response){
+        hideLoading();
+        $log.log(response)
+        $scope.leagues = response;
+        $log.log("leagues",$scope.leagues);
+
+      }, function(reason) {
+        hideLoading();
+        $ionicPopup.alert({
+          title: 'reason',
+          content: reason
+        })
+        // console.log( "error message - " + err.message );
+        // console.log( "error code - " + err.statusCode );
+      })
+    }
+
     $scope.createPlaylist = function(newplaylistname)
     {
       $scope.showLoading();
@@ -757,7 +845,25 @@ angular.module('starter.controllers', [])
 
   .controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
     //var so = cordova.plugins.screenorientation;
-    var compId = $stateParams.compId;
+    $scope.load = function(){
+      $log.log("BracketCtrl.load called");
+      var compId = $stateParams.compId;
+      var competitionPromise = firebaseFact.getLeague(compId);
+      $log.log("Competition Promise:",competitionPromise);
+      competitionPromise.then(function(response){
+        console.log("response:",response);
+        $scope.competitionName = response.name;
+        $scope.round1 = response.rounds[0];
+        $scope.round2 = response.rounds[1];
+        $scope.round3 = response.rounds[2];
+        $scope.noRounds = response.noRounds;
+        //console.log("round1:",response.rounds[0]);
+        //console.log("round2:",response.rounds[1]);
+        //console.log("round3:",response.rounds[2]);
+        //console.log("compRounds",$scope.competitionRounds);
+        //console.log("noRounds",$scope.noRounds);
+      });
+    }
 
     /*
      $scope.$on('$ionicView.enter', function(ev) {
@@ -768,25 +874,12 @@ angular.module('starter.controllers', [])
      });
      */
 
-    var competitionPromise = firebaseFact.getLeague(compId);
-    competitionPromise.then(function(response){
-      console.log("response:",response);
-      $scope.competitionName = response.name;
-      $scope.round1 = response.rounds[1];
-      $scope.round2 = response.rounds[2];
-      $scope.round3 = response.rounds[3];
-      $scope.noRounds = response.noRounds;
-      console.log("round1:",response.rounds[1]);
-      console.log("compRounds",$scope.competitionRounds);
-      console.log("noRounds",$scope.noRounds);
-    });
 
   })
 
   .controller('LeaguesCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
     //var so = cordova.plugins.screenorientation;
     var leaguesPromise = firebaseFact.getLeagues();
-
     leaguesPromise.then(function(response){
       console.log("response:",response);
       $scope.leagues = response;

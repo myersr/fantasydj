@@ -7,7 +7,7 @@
   "dependencies": {
     "ngCordova": "^0.1.24-alpha",
     "angular-spotify": "^1.2.1",
-    "ng-cordova-oauth": "^0.2.3",
+    "ng-cordova-oauth": "^0.2.5",
     "angular-spotify-provider": "^1.0.1"
   }
 }
