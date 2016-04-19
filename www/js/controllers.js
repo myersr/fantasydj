@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-/*
+  /*
    Author: Roy Myers
    indexController
    indexController -
@@ -89,7 +89,17 @@ angular.module('starter.controllers', [])
    loginCtrl -
    returns the url for spotify authentication
    */
-  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, authenticationFact){
+  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, $ionicLoading, $state, firebaseFact, authenticationFact){
+    $scope.showLoading = function() {
+      $ionicLoading.show({
+        template: '<i class="ion-loading-c">Fetching User Account</i>',
+        noBackdrop: false
+      });
+    }
+
+    $scope.hideLoading = function() {
+      $ionicLoading.hide();
+    }
 
     $scope.platform = ionic.Platform.platform();
     $scope.printURI = function(){
@@ -103,6 +113,49 @@ angular.module('starter.controllers', [])
     $scope.performLogin = function(){
       authenticationFact.login()
       //https://accounts.spotify.com/authorize
+    }
+
+    $scope.mobileLogin = function(){
+      var scopes_api = ['user-read-private user-read-email','playlist-read-private','playlist-modify-private','playlist-modify-public','playlist-read-collaborative']
+      var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
+
+      var oauthPromise = $cordovaOauth.spotify(client_id, scopes_api)
+      oauthPromise.then(function(response){
+        $scope.showLoading();
+        var isUser;
+        window.localStorage.setItem("access_token", response.access_token);
+        var token = response.access_token;
+        authenticationFact.setToken(token)
+        //localStorage.setItem('spotify-token', token);
+        if(!authenticationFact.isAuthorized()) {
+          var tken = authenticationFact.getToken()
+          $log.log(tken)
+          var promise = authenticationFact.queryData(token);
+          promise.then(function (response) {
+            $log.log(response)
+            //initialize promise
+            var promiseReg = firebaseFact.isRegistered();
+            //finishing the promise
+            promiseReg.then(function (response) {
+              $log.log("inside isRegistered promise: ", response)
+              isUser = response;
+              if (isUser) {
+                $scope.hideLoading();
+                $state.go("app.playlists")
+              } else { //if not a registered user, send to registry page.
+                $scope.hideLoading();
+                $state.go("confirmation")
+              }
+
+            })
+          })
+        }
+      }, function(error) {
+        $ionicPopup.alert({
+          title: 'Error',
+          content:error
+        })
+      })
     }
   })
 
@@ -214,10 +267,10 @@ angular.module('starter.controllers', [])
   })
 
   /*
-  Author: Roy Myers
-  findPlaylists
-  PlaylistsCtrl -
-  grabs and lists all playlists for a spotify user
+   Author: Roy Myers
+   findPlaylists
+   PlaylistsCtrl -
+   grabs and lists all playlists for a spotify user
    */
   .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, $stateParams,authenticationFact, playlistsFact) {
     showLoading = function() {
@@ -297,7 +350,7 @@ angular.module('starter.controllers', [])
     //   $scope.audio.src = trackInfo.track.preview_url;
     //   $scope.audio.play();
     // };
-   $scope.play = function(trackInfo) {
+    $scope.play = function(trackInfo) {
       $scope.audio.src = trackInfo.track.preview_url;
 
       if ($scope.audio.src) {
@@ -305,11 +358,11 @@ angular.module('starter.controllers', [])
       }
     }
 
-  $scope.stop = function() {
-    if ($scope.audio.src) {
-      $scope.audio.pause();
+    $scope.stop = function() {
+      if ($scope.audio.src) {
+        $scope.audio.pause();
+      }
     }
-  }
 
     $scope.load = function(){
       showLoading();
@@ -319,9 +372,9 @@ angular.module('starter.controllers', [])
         //$log.log("Response i controller: ",response)
         $scope.playlist = response;
         $state.transitionTo($state.current, $stateParams, {
-            reload: true,
-            inherit: false,
-            notify: true
+          reload: true,
+          inherit: false,
+          notify: true
         })
         //$log.log(response.tracks.items[0].track.album.images[2].url);
         hideLoading();
@@ -399,18 +452,18 @@ angular.module('starter.controllers', [])
 
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//                                                      Search Ctrl
-//                                                Written by: Thomas Brower
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  //                                                      Search Ctrl
+  //                                                Written by: Thomas Brower
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, authenticationFact, spotifyFact, playlistsFact){
     $scope.platform = ionic.Platform.platform();
-    $scope.playlistId;
+    $scope.playlistId = $stateParams.PID;
     $scope.picIndex;
     var platformPic = function(){
       if($scope.platform == 'android'){
@@ -437,27 +490,26 @@ angular.module('starter.controllers', [])
     //   $scope.audio.play();
     // }
 
-  $scope.openSpotify = function(link) {
-    window.open(link, '_blank', 'location=yes');
-  }
+    $scope.openSpotify = function(link) {
+      window.open(link, '_blank', 'location=yes');
+    }
 
-  $scope.addTo = function( uri)
-  {
-    // call add to playlist Fact
-    var addPromise = playlistsFact.addTrack($scope.playlistId, uri)
-    addPromise.then(function(response)
-    {
-      $scope.item = response;
-      $log.log(response);
-      $state.go('app.playlist',{playlistId:playlistId})
+    $scope.addTo = function(uri){
+      // call add to playlist Fact
+      var addPromise = playlistsFact.addTrack($scope.playlistId, uri)
+      addPromise.then(function(response)
+      {
+        $scope.item = response;
+        $log.log(response);
+        $state.go('app.playlist',{playlistId:$scope.playlistId})
 
-    })
+      })
 
-  }
-
+    }
 
 
-   $scope.play = function(trackInfo) {
+
+    $scope.play = function(trackInfo) {
       $scope.audio.src = trackInfo.preview_url;
 
       if ($scope.audio.src) {
@@ -465,11 +517,11 @@ angular.module('starter.controllers', [])
       }
     }
 
-   $scope.stop = function() {
-    if ($scope.audio.src) {
-      $scope.audio.pause();
+    $scope.stop = function() {
+      if ($scope.audio.src) {
+        $scope.audio.pause();
+      }
     }
-  }
 
     $scope.go = function(input, type) {
       var userData = authenticationFact.getData()
@@ -478,6 +530,7 @@ angular.module('starter.controllers', [])
     }
 
     $scope.artistload = function(){
+      $scope.playlistId = $stateParams.PID;
       //artist promise
       var artistPromise = spotifyFact.getArtistResults($stateParams.searchValue)
       artistPromise.then(function(response){
@@ -491,6 +544,7 @@ angular.module('starter.controllers', [])
 
     $scope.trackload = function(){
       //track promise
+      $scope.playlistId = $stateParams.PID;
       var trackPromise = spotifyFact.getTrackResults($stateParams.searchValue)
       trackPromise.then(function(response){
         $scope.item = response;
@@ -504,6 +558,7 @@ angular.module('starter.controllers', [])
 
     $scope.albumload = function(){
       //album promise
+      $scope.playlistId = $stateParams.PID;
       var albumPromise = spotifyFact.getAlbumResults($stateParams.searchValue)
       albumPromise.then(function(response){
         $scope.item = response;
@@ -515,6 +570,8 @@ angular.module('starter.controllers', [])
 
     $scope.inheritload = function(){
       $scope.showLoading();
+      $scope.playlistId = $stateParams.PID;
+      $scope.playlistId = $stateParams.PID;
       $log.log("type: ", $stateParams.type);
       var promise = searchFact.getInheritResults($stateParams.input, $stateParams.type);
       promise.then(function(response){
@@ -539,14 +596,14 @@ angular.module('starter.controllers', [])
 
         $log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
         $scope.hideLoading();
-        })
-   }
+      })
+    }
 
     $scope.performSearch = function(searchInput){
       platformPic();
       $scope.playlistId = $stateParams.PID;
-    // assign somehting to be displayed (promise)
-    // use ionic loading to wait while its being assigned
+      // assign somehting to be displayed (promise)
+      // use ionic loading to wait while its being assigned
       $scope.showLoading();
 
       var promise = searchFact.getSearchResults(searchInput);
@@ -581,13 +638,13 @@ angular.module('starter.controllers', [])
 
         $scope.hideLoading();
         //window.location.reload();
-        })
-   }
+      })
+    }
 
 
-   $scope.inheritSearch = function(newsearch){
-    // assign somehting to be displayed (promise)
-    // use ionic loading to wait while its being assigned
+    $scope.inheritSearch = function(newsearch){
+      // assign somehting to be displayed (promise)
+      // use ionic loading to wait while its being assigned
       $scope.showLoading();
       $log.log("type: ", $stateParams.type);
       var promise = searchFact.getInheritResults(newsearch, $stateParams.type);
@@ -598,23 +655,23 @@ angular.module('starter.controllers', [])
 
 
         $scope.hideLoading();
-        })
-   }
+      })
+    }
 
-})
+  })
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    League Controller     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    By: Thomas Brower     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    League Controller     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    By: Thomas Brower     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
-.controller('leagueCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, $ionicPopup, searchFact, addFact, authenticationFact, firebaseFact) {
+  .controller('leagueCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, $ionicPopup, searchFact, addFact, authenticationFact, firebaseFact) {
     $scope.platform = ionic.Platform.platform();
 
 
@@ -625,10 +682,10 @@ angular.module('starter.controllers', [])
     }
 
 
-  $scope.getNewName = function()
-  {
+    $scope.getNewName = function()
+    {
 
-     // Triggered on a button click, or some other target
+      // Triggered on a button click, or some other target
       $scope.showPopup = function() {
         $scope.newplaylistname = {};
         // An elaborate, custom popup
@@ -660,17 +717,17 @@ angular.module('starter.controllers', [])
 
         myPopup.then(function(res) {
           console.log('Playlist Created!', res);
-  })
+        })
 
-  }
-  $scope.showPopup();
-}
+      }
+      $scope.showPopup();
+    }
 
-  $scope.createPlaylist = function(newplaylistname)
-  {
-    $scope.showLoading();
-    var userData = authenticationFact.getData();
-    var promise = addFact.createPlaylist(newplaylistname, userData.id);
+    $scope.createPlaylist = function(newplaylistname)
+    {
+      $scope.showLoading();
+      var userData = authenticationFact.getData();
+      var promise = addFact.createPlaylist(newplaylistname, userData.id);
       promise.then(function(response)
       {
         $log.log("Created response: ", response);
@@ -678,61 +735,61 @@ angular.module('starter.controllers', [])
         $log.log($scope.returnData);
         var addPlayPromise = firebaseFact.addPlaylist($scope.returnData.data);
         addPlayPromise.then(function(response)
-         {
-           $scope.hideLoading();
-           $state.go("app.playlist", {playlistId: response} );
-         })
+        {
+          $scope.hideLoading();
+          $state.go("app.playlist", {playlistId: response} );
+        })
 
       })
 
-  }
-})
+    }
+  })
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
-.controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
-  //var so = cordova.plugins.screenorientation;
-  var compId = $stateParams.compId;
 
-  /*
-  $scope.$on('$ionicView.enter', function(ev) {
-    so.lockOrientation('landscape');
+
+  .controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
+    //var so = cordova.plugins.screenorientation;
+    var compId = $stateParams.compId;
+
+    /*
+     $scope.$on('$ionicView.enter', function(ev) {
+     so.lockOrientation('landscape');
+     });
+     $scope.$on('$ionicView.leave', function(ev) {
+     so.unlockOrientation();
+     });
+     */
+
+    var competitionPromise = firebaseFact.getLeague(compId);
+    competitionPromise.then(function(response){
+      console.log("response:",response);
+      $scope.competitionName = response.name;
+      $scope.round1 = response.rounds[1];
+      $scope.round2 = response.rounds[2];
+      $scope.round3 = response.rounds[3];
+      $scope.noRounds = response.noRounds;
+      console.log("round1:",response.rounds[1]);
+      console.log("compRounds",$scope.competitionRounds);
+      console.log("noRounds",$scope.noRounds);
+    });
+
+  })
+
+  .controller('LeaguesCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
+    //var so = cordova.plugins.screenorientation;
+    var leaguesPromise = firebaseFact.getLeagues();
+
+    leaguesPromise.then(function(response){
+      console.log("response:",response);
+      $scope.leagues = response;
+    });
+
   });
-  $scope.$on('$ionicView.leave', function(ev) {
-    so.unlockOrientation();
-  });
-  */
-
-  var competitionPromise = firebaseFact.getLeague(compId);
-  competitionPromise.then(function(response){
-    console.log("response:",response);
-    $scope.competitionName = response.name;
-    $scope.round1 = response.rounds[1];
-    $scope.round2 = response.rounds[2];
-    $scope.round3 = response.rounds[3];
-    $scope.noRounds = response.noRounds;
-    console.log("round1:",response.rounds[1]);
-    console.log("compRounds",$scope.competitionRounds);
-    console.log("noRounds",$scope.noRounds);
-  });
-
-})
-
-.controller('LeaguesCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
-  //var so = cordova.plugins.screenorientation;
-  var leaguesPromise = firebaseFact.getLeagues();
-
-  leaguesPromise.then(function(response){
-    console.log("response:",response);
-    $scope.leagues = response;
-  });
-
-});
