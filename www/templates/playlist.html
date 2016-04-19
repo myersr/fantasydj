@@ -1,5 +1,9 @@
 <ion-view view-title="{{ song.title }}" class="grad">
   <ion-content ng-init="load()">
+      <ion-refresher
+              pulling-text="Pull to refresh..."
+              on-refresh="doRefresh()">
+      </ion-refresher>
       <div class="item item-avatar">
           <img ng-src="{{ playlist.images[0].url }}">
           <h2>{{ playlist.name }}</h2>

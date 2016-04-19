@@ -11,7 +11,7 @@
  */
 var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
-var redirect_uri = 'http://localhost/callback'; // Your redirect uri
+var redirect_uri;// = 'http://localhost:8100/'; // Your redirect uri
 var scopes_api = 'user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public playlist-read-collaborative'
 var ref = new Firebase("https://fantasydj.firebaseio.com")
 var firebase_secret = 'NQcYGN8O7OUtovRdkjMgt5t75Sj8vMnkGMtKNj3C'
@@ -44,6 +44,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     SpotifyProvider.setClientId(client_id);
     SpotifyProvider.setRedirectUri(redirect_uri);
     SpotifyProvider.setScope(scopes_api);
+    if(ionic.Platform.platform() === 'android'){
+      redirect_uri = 'http://localhost/callback';
+    }else{
+      redirect_uri = 'http://localhost:8100/'
+    }
 
     // If you already have an auth token
     //SpotifyProvider.setAuthToken(client_secret);

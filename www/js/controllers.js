@@ -299,10 +299,38 @@ angular.module('starter.controllers', [])
     $scope.playlists;// = playlistsFact.getPlaylistsData();
     $scope.SPID = authenticationFact.getData().id;
 
+    $scope.doRefresh = function() {
+      if (authenticationFact.isAuthorized()) {
+        var playlistPromise = playlistsFact.getPlaylistsData();
+        playlistPromise.then(function (response) {
+          //$log.log("Promise resolved: ", response)
+          $scope.playlists = playlistsFact.getPlaylists();
+          //$log.log("playlists after call: ", $scope.playlists)
+          //$log.log("Playlists List: ", $scope.playlists[0].name);
+          hideLoading();
+          //$state.go("app.playlists", {}, {reload: true})
+        }, function(reason) {
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+          //console.log( "error message - " + err.message );
+          //console.log( "error code - " + err.statusCode );
+        }).finally(function() {
+          // Stop the ion-refresher from spinning
+          $scope.$broadcast('scroll.refreshComplete');
+        });
+      } else {
+        hideLoading();
+        $state.go("login")
+      }
+
+    };
+
     $scope.load =  function() {
       showLoading();
       //$log.log("yo", playlistsFact.areFetched())
-      if (!playlistsFact.areFetched()) {
+      if (authenticationFact.isAuthorized()) {
         var playlistPromise = playlistsFact.getPlaylistsData();
         playlistPromise.then(function (response) {
           //$log.log("Promise resolved: ", response)
@@ -359,6 +387,47 @@ angular.module('starter.controllers', [])
     }
     $scope.playlist;
 
+    $scope.doRefresh = function() {
+      if (authenticationFact.isAuthorized()) {
+        showLoading();
+        var userData = authenticationFact.getData();
+        var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, userData.id);
+        playlistPromise.then(function (response) {
+          //$log.log("Response i controller: ",response)
+          $scope.playlist = response;
+          $state.transitionTo($state.current, $stateParams, {
+            reload: true,
+            inherit: false,
+            notify: true
+          })
+          //$log.log(response.tracks.items[0].track.album.images[2].url);
+          hideLoading();
+          //$log.log("Promise resolved: ", response)
+          //$scope.playlists = playlistsFact.getPlaylist($stateParams.playlistId);
+          //$log.log("playlists after call: ", $scope.playlists)
+          //$log.log("Playlists List: ", $scope.playlists[0].name);
+          //hideLoading();
+          //$state.go("app.playlists", {}, {reload: true})
+        }, function(reason) {
+          hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+          //console.log( "error message - " + err.message );
+          //console.log( "error code - " + err.statusCode );
+        }).finally(function() {
+          // Stop the ion-refresher from spinning
+          $scope.$broadcast('scroll.refreshComplete');
+        });
+      } else {
+        hideLoading();
+        $state.go("login")
+      }
+
+    };
+
+
     // $scope.playTrack = function(trackInfo) {
     //   $scope.audio.src = trackInfo.track.preview_url;
     //   $scope.audio.play();
@@ -377,6 +446,10 @@ angular.module('starter.controllers', [])
       }
     }
 
+    $scope.$on('$ionicView.enter', function() {
+     // Code you want executed every time view is opened
+     console.log($scope.$ionicView)
+  })
     $scope.load = function(){
       showLoading();
       var userData = authenticationFact.getData();
@@ -407,7 +480,6 @@ angular.module('starter.controllers', [])
         //console.log( "error code - " + err.statusCode );
       })
     }
-
   })
 
   /*
@@ -522,7 +594,7 @@ angular.module('starter.controllers', [])
       {
         $scope.item = response;
         $log.log(response);
-        $state.go('app.playlist',{playlistId:pId})
+        $state.go('app.playlist',{playlistId:pId}, {reload:true})
       })
 
     }
@@ -769,14 +841,40 @@ angular.module('starter.controllers', [])
     }
 
 
+    $scope.doRefresh = function() {
+      if (authenticationFact.isAuthorized()) {
+        var filterPromise = firebaseFact.getFilteredLeagues();
+        $log.log("hitting filter load")
+        filterPromise.then(function (response) {
+          hideLoading();
+          $log.log(response)
+          $scope.filtered = response;
+
+        }, function (reason) {
+          hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+        }).finally(function () {
+          // Stop the ion-refresher from spinning
+          $scope.$broadcast('scroll.refreshComplete');
+        })
+      } else {
+        hideLoading();
+        $state.go("login")
+      }
+    }
+
     $scope.loadFilter = function(){
       showLoading();
       var filterPromise = firebaseFact.getFilteredLeagues();
       $log.log("hitting filter load")
       filterPromise.then(function(response){
-        hideLoading();
+
         $log.log(response)
         $scope.filtered = response;
+        hideLoading();
 
       }, function(reason) {
         hideLoading();
