@@ -459,18 +459,9 @@ angular.module('starter.controllers', [])
       window.open(link, '_blank', 'location=yes');
     }
 
-<<<<<<< HEAD
+
   $scope.addTo = function(uri)
   {
-    var pId = $stateParams.PID;
-    // call add to playlist Fact
-    $log.log("pId of: ",pId)
-    var addPromise = playlistsFact.addTrack(pId, uri)
-    addPromise.then(function(response)
-=======
-    $scope.addTo = function(uri)
->>>>>>> origin/hockeydanielClone1
-    {
       var pId = $stateParams.PID;
       // call add to playlist Fact
       var addPromise = playlistsFact.addTrack(pId, uri)
