@@ -1,34 +1,38 @@
 <!-- Written by Thomas Brower -->
 
 <ion-view view-title="My Leagues" ng-init="loadFilter()">
-  <ion-content>
-    <ion-list can-swipe="true">
+    <ion-content>
+        <ion-refresher
+                pulling-text="Pull to refresh..."
+                on-refresh="doRefresh()">
+        </ion-refresher>
+        <ion-list can-swipe="true">
 
-      <div>
+            <div>
 
-      <div class="bar bar-header">
-        <h1 class="title">Leagues</h1>
-        <button class="button button-balanced" ng-click=getNewName()>Create Playlist</button>
-        <button class="button button-balanced" ui-sref="app.join">Join Leagues </button>
-        <button class="button button-balanced" ui-sref="app.newLeague"> Add League </button>
+                <div class="bar bar-header">
+                    <h1 class="title">Leagues</h1>
+                    <button class="button button-balanced" ng-click=getNewName()>Create Playlist</button>
+                    <!--         <button class="button button-balanced" ui-sref="app.join">Join Leagues </button> -->
+                    <button class="button button-balanced" ui-sref="app.newLeague"> Add League </button>
 
-      </div>
-      <br>
-      </div>
-      <br>
-      <div>
-      <ion-list can-swipe="true">
-        <ion-item class="item-thumbnail-left" ng-repeat="item in filtered" ng-href="#/app/leagues/{{item.ID}}>
-            <h2>{{item.name}}</h2>
-            <p>{{item.ID}}</p>
-            <p>User: {{item.userName}}</p>
-            <p>Start: {{item.start}}</p>
-            <p>End: {{item.end}}</p>
+                </div>
+                <br>
+            </div>
+            <br>
+            <div>
+                <ion-list can-swipe="true">
+                    <ion-item class="item-thumbnail-left" ng-repeat="item in filtered" ng-href="#/app/leagues/{{item.ID}}">
+                        <h2>{{item.name}}</h2>
+                        <p>{{item.ID}}</p>
+                        <p>User: {{item.userName}}</p>
+                        <p>Start: {{item.start}}</p>
+                        <p>End: {{item.end}}</p>
 
-        </ion-item>
-      </ion-list>
-      </div>
+                    </ion-item>
+                </ion-list>
+            </div>
 
-    </ion-list>
-  </ion-content>
+        </ion-list>
+    </ion-content>
 </ion-view>

@@ -15,7 +15,7 @@
         <ion-header-bar class="bar-dark">
             <h1 class="title">Options</h1>
         </ion-header-bar>
-        <ion-content>
+        <ion-content class="grad">
             <ion-list>
                 <ion-item ng-repeat="menu in menuOptions" ng-class="className(menu.name)" ng-click="toggle(menu.name)" menu-close href="{{ menu.link }}">
                     {{ menu.name }}

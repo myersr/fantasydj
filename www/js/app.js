@@ -11,7 +11,7 @@
  */
 var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 var client_secret ='9b25b58435784d3cb34c048879e77aeb';
-var redirect_uri = 'http://localhost:8100/'; // Your redirect uri
+var redirect_uri;// = 'http://localhost:8100/'; // Your redirect uri
 var scopes_api = 'user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public playlist-read-collaborative'
 var ref = new Firebase("https://fantasydj.firebaseio.com")
 var firebase_secret = 'NQcYGN8O7OUtovRdkjMgt5t75Sj8vMnkGMtKNj3C'
@@ -44,6 +44,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     SpotifyProvider.setClientId(client_id);
     SpotifyProvider.setRedirectUri(redirect_uri);
     SpotifyProvider.setScope(scopes_api);
+    if(ionic.Platform.platform() === 'android'){
+      redirect_uri = 'http://localhost/callback';
+    }else{
+      redirect_uri = 'http://localhost:8100/'
+    }
 
     // If you already have an auth token
     //SpotifyProvider.setAuthToken(client_secret);
@@ -197,6 +202,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     }
 // <-------------------------------------------------- Written by Thomas Brower ------------------------------------------------------->
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! With contributions !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! from both Daniel Harper !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! and Roy Myers !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     firebaseFact.setUserData = function(){
       return $q(function(resolve, reject) {
         var spotData = authenticationFact.getData() //.email
@@ -360,7 +370,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           $log.log("league set inside of if")
         };
         $log.log("New league set: ", league);
-        resolve("SUCCESS BRUH");
+        resolve("SUCCESS");
       })
     }
 
@@ -368,6 +378,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // <----------------------------------------------------------------------------------------------------------------------------------->
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
     //Author: Daniel Harper
     //Returns a competition based on the compId if it exists
     firebaseFact.getLeague = function(compId){
@@ -409,7 +422,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Thomas Brower  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -418,6 +431,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         var spotData = authenticationFact.getData() // return the users spotify data
         var league = spotData.id
         var filtered = new Firebase("https://fantasydj.firebaseio.com/leagues");
+        // NEED TO LOOK WITHIN CHILDREN OF LEAGUES
         filtered.once("value", function (snapshot) {
           if (snapshot.exists()) {
             var theComp = snapshot.val();
@@ -427,10 +441,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             reject("Could not reach filtered leagues database ");
           }
         }, function (err) {
-  // code to handle read error
   reject(err);
 })
-      }); //end of promise
+      }); 
     }
 
     firebaseFact.addPlaylist = function(playlist){
@@ -471,7 +484,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //                                        Factory for search :: Thomas Brower
+  //                                                   Search Factory : Thomas Brower
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -536,14 +549,10 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Return Factory !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Written by:  Thomas Brower   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
   /*
    Author: Roy Myers
+   Contributions made by: Thomas Brower
    spotifyFact -
    Uses the Spotify Api to perform multiple functions.
    Also stores instances of user data.
@@ -554,7 +563,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
     spotifyFact.areFetched = function(){
       if(searchValue.length != 0){
-        //$log.log("true", playlists)
         return true;
       }else {
         return false;
@@ -637,7 +645,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Add Playlist Factory  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  By: Thomas Brower    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -650,7 +657,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
     addFact.areFetched = function(){
       if(playlists.length != 0){
-        //$log.log("true", playlists)
         return true;
       }else {
         return false;
@@ -664,7 +670,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return $q(function(resolve, reject) {
 
         $log.log("playlist name: ", newplaylistname);
-        //$log.log("userData: ", userData)
         $http({
           url: "https://api.spotify.com/v1/users/"+ userID + "/playlists" ,
           method: "POST",
@@ -678,20 +683,15 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
           }
         }).then(function successCallback(res) {
-          //$log.log("pre assign", res.data)
           playlists = res
           $log.log("playlistscreated",playlists)
           $log.log("response: ", res)
           resolve(playlists)
 
         }, function errorCallback(response) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
           $log.log("Call Error Playlist not created: ",response)
           reject(response)
         })
-        //return playlists;
-        //https://api.spotify.com/v1/users/{user_id}/playlists
       });
     }
 
@@ -767,7 +767,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return playlists;
     }
 
-//  !!!!!!!!!!!!!! Thomas Brower !!!!!!!!!!!!!!!!!!
+//  !!!!!!!!!!!!!!!!!!!!!!!!!! Thomas Brower !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     var matchingPlaylists = function(list1, array1)
     {
       if((list1 === null) || (array1.length < 1)){
@@ -792,87 +794,37 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return matches;
     }
 
-    ////Author: Daniel Harper
-    ////getPublicPlaylist returns public a spotify playlist from spotify
-    //playlistsFact.getPublicPlaylist = function(userId,playListId){
-    //  return $q(function(resolve, reject) {
-    //     userData = authenticationFact.getData();//get the current user
-    //    //$log.log("userData: ", userData)
-    //    $http({
-    //      url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playListId,
-    //      method: "Get",
-    //      headers: {
-    //        'Authorization': 'Bearer ' + token
-    //      }
-    //    }).then(function successCallback(res) {
-    //
-    //    }, function errorCallback(response) {
-    //      // called asynchronously if an error occurs
-    //      // or server returns response with an error status.
-    //      $log.log("Call Error Playlist: ",response)
-    //      reject(response);
-    //    })
-    //  });
-    //}
 
     playlistsFact.addTrack = function(playlistId, uri)
     {
       return $q(function(resolve, reject) {
-
         $log.log("playlist ID in addTrackFact: ", playlistId);
         userData = authenticationFact.getData();
-        //$log.log("userData: ", userData)
         $http({
           url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playlistId + "/tracks?uris=" + uri,
           method: "POST",
           headers: {
             'Authorization': 'Bearer ' + token,
           }
-        }).then(function successCallback(res) {
-          //$log.log("pre assign", res.data)
+        }).then(function successCallback(res)
+         {
           playlists = res
           $log.log("response: ", res)
           resolve(playlists)
 
-        }, function errorCallback(response) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
+        }, function errorCallback(response) 
+        {
           $log.log("Call Error Playlist not created: ",response)
           reject(response)
         })
-        //return playlists;
-        //https://api.spotify.com/v1/users/{user_id}/playlists
       });
     }
 
 
-    ////Author: Daniel Harper
-    ////getPublicPlaylist returns public a spotify playlist from spotify
-    //playlistsFact.getPublicPlaylist = function(userId,playListId){
-    //  return $q(function(resolve, reject) {
-    //     userData = authenticationFact.getData();//get the current user
-    //    //$log.log("userData: ", userData)
-    //    $http({
-    //      url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playListId,
-    //      method: "Get",
-    //      headers: {
-    //        'Authorization': 'Bearer ' + token
-    //      }
-    //    }).then(function successCallback(res) {
-    //
-    //    }, function errorCallback(response) {
-    //    }, function errorCallback(response) {
-    //      // called asynchronously if an error occurs
-    //      // or server returns response with an error status.
-    //      $log.log("Call Error Playlist: ",response)
-    //      reject(response);
-    //    })
-    //  });
-    //}
-
-
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
     playlistsFact.getPlaylistsData = function(){
       return $q(function(resolve, reject) {

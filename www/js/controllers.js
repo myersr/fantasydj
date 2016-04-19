@@ -1,12 +1,12 @@
 angular.module('starter.controllers', [])
 
-  /*
-   Author: Roy Myers
-   indexController
-   indexController -
-   The index app/ is the callback uri from spotify. on that page we parse the auth token and store all the user data.
-   If the user is in our database, we continue to playlists, if now we go to confirmation.
-   */
+/*
+ Author: Roy Myers
+ indexController
+ indexController -
+ The index app/ is the callback uri from spotify. on that page we parse the auth token and store all the user data.
+ If the user is in our database, we continue to playlists, if now we go to confirmation.
+ */
 
   .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, firebaseFact){
     //$log.log(window.location.origin)
@@ -96,8 +96,19 @@ angular.module('starter.controllers', [])
    loginCtrl
    loginCtrl -
    returns the url for spotify authentication
+   on Mobile it uses ngOauth for spotify authentication
    */
-  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, authenticationFact){
+  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, $ionicLoading, $state, firebaseFact, authenticationFact){
+    $scope.showLoading = function() {
+      $ionicLoading.show({
+        template: '<i class="ion-loading-c">Fetching User Account</i>',
+        noBackdrop: false
+      });
+    }
+
+    $scope.hideLoading = function() {
+      $ionicLoading.hide();
+    }
 
     $scope.platform = ionic.Platform.platform();
     $scope.printURI = function(){
@@ -111,6 +122,49 @@ angular.module('starter.controllers', [])
     $scope.performLogin = function(){
       authenticationFact.login()
       //https://accounts.spotify.com/authorize
+    }
+
+    $scope.mobileLogin = function(){
+      var scopes_api = ['user-read-private user-read-email','playlist-read-private','playlist-modify-private','playlist-modify-public','playlist-read-collaborative']
+      var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
+
+      var oauthPromise = $cordovaOauth.spotify(client_id, scopes_api)
+      oauthPromise.then(function(response){
+        $scope.showLoading();
+        var isUser;
+        window.localStorage.setItem("access_token", response.access_token);
+        var token = response.access_token;
+        authenticationFact.setToken(token)
+        //localStorage.setItem('spotify-token', token);
+        if(!authenticationFact.isAuthorized()) {
+          var tken = authenticationFact.getToken()
+          $log.log(tken)
+          var promise = authenticationFact.queryData(token);
+          promise.then(function (response) {
+            $log.log(response)
+            //initialize promise
+            var promiseReg = firebaseFact.isRegistered();
+            //finishing the promise
+            promiseReg.then(function (response) {
+              $log.log("inside isRegistered promise: ", response)
+              isUser = response;
+              if (isUser) {
+                $scope.hideLoading();
+                $state.go("app.playlists")
+              } else { //if not a registered user, send to registry page.
+                $scope.hideLoading();
+                $state.go("confirmation")
+              }
+
+            })
+          })
+        }
+      }, function(error) {
+        $ionicPopup.alert({
+          title: 'Error',
+          content:error
+        })
+      })
     }
   })
 
@@ -172,8 +226,7 @@ angular.module('starter.controllers', [])
   /*
    Author: Roy Myers
    AppCtrl
-   PlaylistCtrl -
-   grabs and lists all songs in a playlist
+   controlls the side menu
    */
   .controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location,$state, authenticationFact) {
 
@@ -231,6 +284,7 @@ angular.module('starter.controllers', [])
    findPlaylists
    PlaylistsCtrl -
    grabs and lists all playlists for a spotify user
+   pull to refresh
    */
   .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, $stateParams,authenticationFact, playlistsFact) {
     showLoading = function() {
@@ -246,10 +300,38 @@ angular.module('starter.controllers', [])
     $scope.playlists;// = playlistsFact.getPlaylistsData();
     $scope.SPID = authenticationFact.getData().id;
 
+    $scope.doRefresh = function() {
+      if (authenticationFact.isAuthorized()) {
+        var playlistPromise = playlistsFact.getPlaylistsData();
+        playlistPromise.then(function (response) {
+          //$log.log("Promise resolved: ", response)
+          $scope.playlists = playlistsFact.getPlaylists();
+          //$log.log("playlists after call: ", $scope.playlists)
+          //$log.log("Playlists List: ", $scope.playlists[0].name);
+          hideLoading();
+          //$state.go("app.playlists", {}, {reload: true})
+        }, function(reason) {
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+          //console.log( "error message - " + err.message );
+          //console.log( "error code - " + err.statusCode );
+        }).finally(function() {
+          // Stop the ion-refresher from spinning
+          $scope.$broadcast('scroll.refreshComplete');
+        });
+      } else {
+        hideLoading();
+        $state.go("login")
+      }
+
+    };
+
     $scope.load =  function() {
       showLoading();
       //$log.log("yo", playlistsFact.areFetched())
-      if (!playlistsFact.areFetched()) {
+      if (authenticationFact.isAuthorized()) {
         var playlistPromise = playlistsFact.getPlaylistsData();
         playlistPromise.then(function (response) {
           //$log.log("Promise resolved: ", response)
@@ -284,6 +366,7 @@ angular.module('starter.controllers', [])
    findPlaylist
    PlaylistCtrl -
    grabs and lists all songs in a playlist
+   includes pull to reload
    */
 
   .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, authenticationFact, playlistsFact) {
@@ -306,6 +389,47 @@ angular.module('starter.controllers', [])
     }
     $scope.playlist;
 
+    $scope.doRefresh = function() {
+      if (authenticationFact.isAuthorized()) {
+        showLoading();
+        var userData = authenticationFact.getData();
+        var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, userData.id);
+        playlistPromise.then(function (response) {
+          //$log.log("Response i controller: ",response)
+          $scope.playlist = response;
+          $state.transitionTo($state.current, $stateParams, {
+            reload: true,
+            inherit: false,
+            notify: true
+          })
+          //$log.log(response.tracks.items[0].track.album.images[2].url);
+          hideLoading();
+          //$log.log("Promise resolved: ", response)
+          //$scope.playlists = playlistsFact.getPlaylist($stateParams.playlistId);
+          //$log.log("playlists after call: ", $scope.playlists)
+          //$log.log("Playlists List: ", $scope.playlists[0].name);
+          //hideLoading();
+          //$state.go("app.playlists", {}, {reload: true})
+        }, function(reason) {
+          hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+          //console.log( "error message - " + err.message );
+          //console.log( "error code - " + err.statusCode );
+        }).finally(function() {
+          // Stop the ion-refresher from spinning
+          $scope.$broadcast('scroll.refreshComplete');
+        });
+      } else {
+        hideLoading();
+        $state.go("login")
+      }
+
+    };
+
+
     // $scope.playTrack = function(trackInfo) {
     //   $scope.audio.src = trackInfo.track.preview_url;
     //   $scope.audio.play();
@@ -324,6 +448,10 @@ angular.module('starter.controllers', [])
       }
     }
 
+    $scope.$on('$ionicView.enter', function() {
+     // Code you want executed every time view is opened
+     console.log($scope.$ionicView)
+  })
     $scope.load = function(){
       showLoading();
       var userData = authenticationFact.getData();
@@ -354,14 +482,13 @@ angular.module('starter.controllers', [])
         //console.log( "error code - " + err.statusCode );
       })
     }
-
   })
 
   /*
    Author: Daniel Harper
    findPlaylist
    AccountCtrl -
-   grabs and lists all songs in a playlist
+   Pulls firbase data as well as spotify data
    */
   .controller('AccountCtrl', function($scope,$log, authenticationFact, firebaseFact) {
     if(authenticationFact.isAuthorized())
@@ -380,7 +507,12 @@ angular.module('starter.controllers', [])
   })
 
 
-
+/*
+   Author: Roy Myers
+   findPlaylist
+   AccountCtrl -
+   Pulls firbase data as well as spotify data
+   */
   .controller('joinCtrl', function ($scope, $log, $ionicLoading, spotifyFact, firebaseFact) {
     showLoading = function() {
       $ionicLoading.show({
@@ -428,7 +560,8 @@ angular.module('starter.controllers', [])
 
   .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, authenticationFact, spotifyFact, playlistsFact){
     $scope.platform = ionic.Platform.platform();
-    $scope.playlistId;
+
+    $scope.pId = $stateParams.PID;
     $scope.picIndex;
     var platformPic = function(){
       if($scope.platform == 'android'){
@@ -449,11 +582,6 @@ angular.module('starter.controllers', [])
 
     $scope.audio = new Audio();
 
-    // $scope.playTrack = function(trackInfo) {
-    //   $log.log("bruh: ", trackInfo);
-    //   $scope.audio.src = trackInfo.preview_url;
-    //   $scope.audio.play();
-    // }
 
     $scope.openSpotify = function(link) {
       window.open(link, '_blank', 'location=yes');
@@ -468,8 +596,7 @@ angular.module('starter.controllers', [])
       {
         $scope.item = response;
         $log.log(response);
-        $state.go('app.playlist',{playlistId:pId})
-
+        $state.go('app.playlist',{playlistId:pId}, {reload:true})
       })
 
     }
@@ -492,24 +619,28 @@ angular.module('starter.controllers', [])
 
     $scope.go = function(input, type) {
       var userData = authenticationFact.getData()
-      $state.go('app.more', {PID: userData.id ,type: type, input: input})
+      var pId = $stateParams.PID;
+      $state.go('app.more', {PID: pId ,type: type, input: input})
 
     }
 
     $scope.artistload = function(){
+      $scope.playlistId = $stateParams.PID;
       //artist promise
+      var pId = $stateParams.PID;
       var artistPromise = spotifyFact.getArtistResults($stateParams.searchValue)
       artistPromise.then(function(response){
         $scope.item = response;
         $log.log($scope.item);
       })
-      $log.log("PID passed from search-artist: ", $scope.playlistId);
+      $log.log("PID passed from search-artist: ", $stateParams.PID);
 
     }
 
 
     $scope.trackload = function(){
       //track promise
+      var pId = $stateParams.PID;
       var trackPromise = spotifyFact.getTrackResults($stateParams.searchValue)
       trackPromise.then(function(response){
         $scope.item = response;
@@ -517,12 +648,13 @@ angular.module('starter.controllers', [])
         $scope.trackImg = $scope.item.album.images[$scope.picIndex].url
         $log.log($scope.item);
       })
-      $log.log("PID passed from search-track: ", $scope.playlistId);
+      $log.log("PID passed from search-track: ", $stateParams.PID);
 
     }
 
     $scope.albumload = function(){
       //album promise
+      var pId = $stateParams.PID;
       var albumPromise = spotifyFact.getAlbumResults($stateParams.searchValue)
       albumPromise.then(function(response){
         $scope.item = response;
@@ -534,12 +666,13 @@ angular.module('starter.controllers', [])
 
     $scope.inheritload = function(){
       $scope.showLoading();
+      $scope.playlistId = $stateParams.PID;
       $log.log("type: ", $stateParams.type);
       var promise = searchFact.getInheritResults($stateParams.input, $stateParams.type);
       promise.then(function(response){
-        $log.log(response);
+        //$log.log(response);
         $scope.returnData = response;
-        $log.log($scope.returnData);
+        //$log.log($scope.returnData);
 
         if($stateParams.type === "artist")
         {
@@ -556,7 +689,7 @@ angular.module('starter.controllers', [])
           $scope.isAlbum = true;
         }
 
-        $log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
+        //$log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
         $scope.hideLoading();
       })
     }
@@ -599,7 +732,6 @@ angular.module('starter.controllers', [])
         }
 
         $scope.hideLoading();
-        //window.location.reload();
       })
     }
 
@@ -627,6 +759,8 @@ angular.module('starter.controllers', [])
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    League Controller     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    By: Thomas Brower     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    Contributions by:     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!        Roy Myers         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -647,10 +781,8 @@ angular.module('starter.controllers', [])
     $scope.getNewName = function()
     {
 
-      // Triggered on a button click, or some other target
       $scope.showPopup = function() {
         $scope.newplaylistname = {};
-        // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
           template: '<input type="text" placeholder="New Playlist Name" ng-model="newplaylistname.name">',
           title: 'Enter Playlist Name',
@@ -663,7 +795,7 @@ angular.module('starter.controllers', [])
               type: 'button-positive',
               onTap: function(e) {
                 if (!$scope.newplaylistname.name) {
-                  //don't allow the user to close unless he enters name
+                  //don't allow the user to close unless he enters something (name)
                   $log.log("Input failed: ", $scope.newplaylistname);
 
                   e.preventDefault();
@@ -703,20 +835,46 @@ angular.module('starter.controllers', [])
           title: 'reason',
           content: reason.message
         })
-        // console.log( "error message - " + err.message );
-        // console.log( "error code - " + err.statusCode );
       })
     }
 
+// Contributed by Roy Myers
+    $scope.doRefresh = function() {
+      if (authenticationFact.isAuthorized()) {
+        var filterPromise = firebaseFact.getFilteredLeagues();
+        $log.log("hitting filter load")
+        filterPromise.then(function (response) {
+          hideLoading();
+          $log.log(response)
+          $scope.filtered = response;
+
+        }, function (reason) {
+          hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+        }).finally(function () {
+          // Stop the ion-refresher from spinning
+          $scope.$broadcast('scroll.refreshComplete');
+        })
+      } else {
+        hideLoading();
+        $state.go("login")
+      }
+    }
 
     $scope.loadFilter = function(){
       showLoading();
       var filterPromise = firebaseFact.getFilteredLeagues();
       $log.log("hitting filter load")
       filterPromise.then(function(response){
-        hideLoading();
+
         $log.log(response)
         $scope.filtered = response;
+        hideLoading();
+        setTimeout(function(){ hideLoading(); }, 2000);
+
 
       }, function(reason) {
         hideLoading();
@@ -782,10 +940,9 @@ angular.module('starter.controllers', [])
 
 
 
-
+// Author: Daniel Harper
   .controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
     //var so = cordova.plugins.screenorientation;
-
     $scope.load = function(){
       $log.log("BracketCtrl.load called");
       var compId = $stateParams.compId;
@@ -818,10 +975,11 @@ angular.module('starter.controllers', [])
 
   })
 
+
+  //Author: Daniel Harper
   .controller('LeaguesCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
     //var so = cordova.plugins.screenorientation;
     var leaguesPromise = firebaseFact.getLeagues();
-
     leaguesPromise.then(function(response){
       console.log("response:",response);
       $scope.leagues = response;

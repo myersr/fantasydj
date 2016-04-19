@@ -1,16 +1,16 @@
 <ion-view view-title="Login" ng-class="{'loginAndroid' : platform == 'android', 'loginBrowser' : platform != 'android'}">
   <ion-content>
-      <a ng-class="{ 'bar bar-footer bar-balanced' : platform == 'android', 'button button-large button-balanced' : platform != 'android' }" type="submit" ng-click="performLogin()" >
-        <div class="title">Login With Spotify</div>
-        </a>
-    </div>
-      <!--<button class="button button-energized" ng-click="testLogin()">
-  login with cordova Oauth
-</button>
-       <button class="button button-energized" ng-click="printURI()">
+      <a ng-class="{ 'hidden' : platform == 'android', 'button button-large button-balanced' : platform != 'android' }" type="submit" ng-click="performLogin()" >
+          <div class="title">Login With Spotify</div>
+      </a>
+      </div>
+      <button ng-class="{ 'bar bar-footer bar-balanced' : platform == 'android', 'hidden': platform != 'android' }" ng-click="mobileLogin()">
+          login with cordova Oauth
+      </button>
+      <!--<button class="button button-energized" ng-click="printURI()">
   First Token: {{ token }}
-</button> -->
-     <!-- </button>
+</button>-->
+      <!-- </button>
        <button class="button button-energized">
   Second Token: {{ secToken }}
 </button>-->
