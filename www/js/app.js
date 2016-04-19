@@ -441,14 +441,30 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         filtered.once("value", function (snapshot) {
           if (snapshot.exists()) {
             var theComp = snapshot.val();
-            resolve(theComp);
+            var theFilteredComp = [];
+            //accountInfo = authenticationFact.getData();
+            firebaseInfo = firebaseFact.getUser();
+            //$log.log("accountInfo:",accountInfo);
+            var mySUID = firebaseInfo.SUID;
+            for (var key in theComp) {
+              //$log.log("theComp loop:",theComp[key].competitorList);
+              for (var ckey in theComp[key].competitorList) {
+                if (theComp[key].competitorList[ckey].SUID === mySUID){
+                  theFilteredComp.push(theComp[key]);
+                }
+              }
+              //if theComp[key].competitorList
+              // Use `key` and `value`
+            }
+            $log.log("filtered theComp:", theFilteredComp);
+            resolve(theFilteredComp);
           }
           else {
             reject("Could not reach filtered leagues database ");
           }
         }, function (err) {
-  reject(err);
-})
+          reject(err);
+        })
       });
     }
 
