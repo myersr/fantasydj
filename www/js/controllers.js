@@ -975,6 +975,8 @@ angular.module('starter.controllers', [])
 
   })
 
+
+  //Author: Daniel Harper
   .controller('LeaguesCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
     //var so = cordova.plugins.screenorientation;
     var leaguesPromise = firebaseFact.getLeagues();
