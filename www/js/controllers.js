@@ -7,6 +7,7 @@ angular.module('starter.controllers', [])
    The index app/ is the callback uri from spotify. on that page we parse the auth token and store all the user data.
    If the user is in our database, we continue to playlists, if now we go to confirmation.
    */
+
   .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, firebaseFact){
     //$log.log(window.location.origin)
     $scope.showLoading = function() {
@@ -404,9 +405,11 @@ angular.module('starter.controllers', [])
         $scope.leagues = response;
         $log.log("leagues:",$scope.leagues);
         hideLoading();
+      },function(res){
+        $log.log("RES:",res);
+        hideLoading();
       })
     }
-
 
 
   })
@@ -795,11 +798,11 @@ angular.module('starter.controllers', [])
         $scope.round2 = response.rounds[1];
         $scope.round3 = response.rounds[2];
         $scope.noRounds = response.noRounds;
-        console.log("round1:",response.rounds[0]);
-        console.log("round2:",response.rounds[1]);
-        console.log("round3:",response.rounds[2]);
-        console.log("compRounds",$scope.competitionRounds);
-        console.log("noRounds",$scope.noRounds);
+        //console.log("round1:",response.rounds[0]);
+        //console.log("round2:",response.rounds[1]);
+        //console.log("round3:",response.rounds[2]);
+        //console.log("compRounds",$scope.competitionRounds);
+        //console.log("noRounds",$scope.noRounds);
       });
     }
 
