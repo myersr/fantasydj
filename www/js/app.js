@@ -404,6 +404,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         var spotData = authenticationFact.getData() // return the users spotify data 
         var league = spotData.id
         var filtered = new Firebase("https://fantasydj.firebaseio.com/leagues");
+        // NEED TO LOOK WITHIN CHILDREN OF LEAGUES
         filtered.once("value", function (snapshot) {
           if (snapshot.exists()) {
             var theComp = snapshot.val();
