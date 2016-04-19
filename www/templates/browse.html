@@ -2,7 +2,7 @@
 <ion-view view-title="Ongoing Leagues" class="grad">
     <ion-content ng-init="load()">
         <ion-list can-swipe="true">
-            <ion-item class="item-thumbnail-left" ng-repeat="item in leagues" ui-sref="app.bracket">
+            <ion-item class="item-thumbnail-left" ng-repeat="item in leagues" ng-href="#/app/leagues/{{item.ID}}">
                 <h2>{{item.name}}</h2>
                 <p>User: {{item.userName}}</p>
                 <p>Start: {{item.start}}</p>

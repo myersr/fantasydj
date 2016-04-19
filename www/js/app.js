@@ -230,7 +230,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         var spotData = authenticationFact.getData();
         var compId = Math.floor((Math.random() * 10000000) + 1);
         var date = new Date();
-        var startWeek = new Date(date.getTime())        
+        var startWeek = new Date(date.getTime())
         var endWeek = new Date(date.getTime() + (60*60*24*7*1000));
         var endTime = endWeek.toString("MM-dd-yyyy").slice(0,15);
         var startTime = startWeek.toString("MM-dd-yyyy").slice(0,15);
@@ -251,16 +251,20 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           $log.log("IF WAS TRUE");
           var player1 = {
             SUID: spotData.id,
-            name: spotData.display_name};
+            name: spotData.display_name,
+            playlistId: ""};
           var player2 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var player3 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var player4 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var tempList = {
             player1,
             player2,
@@ -274,10 +278,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           //Set round 2 to two blank players (set to winners of round 1)
           var player5 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var player6 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var tempList  = {
             player5,
             player6
@@ -287,7 +293,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           //Set round 3 (winner) to blank player7 (winner from round 2)
           var player7 = {
             SUID: "",
-            name: ""
+            name: "",
+            playlistId: ""
           };
           roundsArray.push(player7);
 
@@ -302,16 +309,20 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           $log.log("Reaches inside if")
           var player1 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var player2 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var player3 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var player4 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var tempList = {
             player1,
             player2,
@@ -325,10 +336,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           //Set round 2 to two blank players (set to winners of round 1)
           var player5 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var player6 = {
             SUID: "",
-            name: ""};
+            name: "",
+            playlistId: ""};
           var tempList  = {
             player5,
             player6
@@ -338,7 +351,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           //Set round 3 (winner) to blank player7 (winner from round 2)
           var player7 = {
             SUID: "",
-            name: ""
+            name: "",
+            playlistId: ""
           };
           roundsArray.push(player7);
 
@@ -401,7 +415,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
     firebaseFact.getFilteredLeagues = function() {
       return $q(function (resolve, reject) {
-        var spotData = authenticationFact.getData() // return the users spotify data 
+        var spotData = authenticationFact.getData() // return the users spotify data
         var league = spotData.id
         var filtered = new Firebase("https://fantasydj.firebaseio.com/leagues");
         // NEED TO LOOK WITHIN CHILDREN OF LEAGUES
@@ -779,28 +793,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
       return matches;
     }
 
-    ////Author: Daniel Harper
-    ////getPublicPlaylist returns public a spotify playlist from spotify
-    //playlistsFact.getPublicPlaylist = function(userId,playListId){
-    //  return $q(function(resolve, reject) {
-    //     userData = authenticationFact.getData();//get the current user
-    //    //$log.log("userData: ", userData)
-    //    $http({
-    //      url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playListId,
-    //      method: "Get",
-    //      headers: {
-    //        'Authorization': 'Bearer ' + token
-    //      }
-    //    }).then(function successCallback(res) {
-    //
-    //    }, function errorCallback(response) {
-    //      // called asynchronously if an error occurs
-    //      // or server returns response with an error status.
-    //      $log.log("Call Error Playlist: ",response)
-    //      reject(response);
-    //    })
-    //  });
-    //}
 
     playlistsFact.addTrack = function(playlistId, uri)
     {
@@ -830,31 +822,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         //https://api.spotify.com/v1/users/{user_id}/playlists
       });
     }
-
-
-    ////Author: Daniel Harper
-    ////getPublicPlaylist returns public a spotify playlist from spotify
-    //playlistsFact.getPublicPlaylist = function(userId,playListId){
-    //  return $q(function(resolve, reject) {
-    //     userData = authenticationFact.getData();//get the current user
-    //    //$log.log("userData: ", userData)
-    //    $http({
-    //      url: "https://api.spotify.com/v1/users/"+ userData.id + "/playlists/" + playListId,
-    //      method: "Get",
-    //      headers: {
-    //        'Authorization': 'Bearer ' + token
-    //      }
-    //    }).then(function successCallback(res) {
-    //
-    //    }, function errorCallback(response) {
-    //    }, function errorCallback(response) {
-    //      // called asynchronously if an error occurs
-    //      // or server returns response with an error status.
-    //      $log.log("Call Error Playlist: ",response)
-    //      reject(response);
-    //    })
-    //  });
-    //}
 
 
 
