@@ -29,7 +29,7 @@
 
 <ion-list can-swipe="true">
 
-  <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataTracks|limitTo:3" ng-href="#/app/{{ playlistId }}/search/info/{{item.id}}">
+  <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataTracks|limitTo:3" ng-href="#/app/{{ pId }}/search/info/{{item.id}}">
       <img ng-src="{{item.album.images[picIndex].url}}">
 
 
@@ -58,7 +58,7 @@
 
 <ion-list can-swipe="true">
 
-      <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataArtists|limitTo:3" ng-href="#/app/{{playlistId}}/search/artistCard/{{item.id}}">
+      <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataArtists|limitTo:3" ng-href="#/app/{{pId}}/search/artistCard/{{item.id}}">
 
           <img ng-src="{{item.images[picIndex].url}}" >
 
@@ -87,7 +87,7 @@
 <ion-list can-swipe="true">
 
 
-      <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataAlbum|limitTo:3" ng-href="#/app/{{playlistId}}/search/albumCard/{{item.id}}">
+      <ion-item class="item-thumbnail-left" ng-repeat="item in returnDataAlbum|limitTo:3" ng-href="#/app/{{pId}}/search/albumCard/{{item.id}}">
 
           <img ng-src="{{item.images[picIndex].url}}">
 

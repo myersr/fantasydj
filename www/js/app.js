@@ -804,7 +804,6 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
     playlistsFact.addTrack = function(playlistId, uri)
     {
       return $q(function(resolve, reject) {
-
         $log.log("playlist ID in addTrackFact: ", playlistId);
         userData = authenticationFact.getData();
         //$log.log("userData: ", userData)

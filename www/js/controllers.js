@@ -425,7 +425,7 @@ angular.module('starter.controllers', [])
 
   .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, authenticationFact, spotifyFact, playlistsFact){
     $scope.platform = ionic.Platform.platform();
-    $scope.playlistId;
+    $scope.pId = $stateParams.PID;
     $scope.picIndex;
     var platformPic = function(){
       if($scope.platform == 'android'){
@@ -456,10 +456,11 @@ angular.module('starter.controllers', [])
     window.open(link, '_blank', 'location=yes');
   }
 
-  $scope.addTo = function( uri)
+  $scope.addTo = function(uri)
   {
     var pId = $stateParams.PID;
     // call add to playlist Fact
+    $log.log("pId of: ",pId)
     var addPromise = playlistsFact.addTrack(pId, uri)
     addPromise.then(function(response)
     {
@@ -489,24 +490,27 @@ angular.module('starter.controllers', [])
 
     $scope.go = function(input, type) {
       var userData = authenticationFact.getData()
-      $state.go('app.more', {PID: userData.id ,type: type, input: input})
+      var pId = $stateParams.PID;
+      $state.go('app.more', {PID: pId ,type: type, input: input})
 
     }
 
     $scope.artistload = function(){
       //artist promise
+      var pId = $stateParams.PID;
       var artistPromise = spotifyFact.getArtistResults($stateParams.searchValue)
       artistPromise.then(function(response){
         $scope.item = response;
         $log.log($scope.item);
       })
-      $log.log("PID passed from search-artist: ", $scope.playlistId);
+      $log.log("PID passed from search-artist: ", $stateParams.PID);
 
     }
 
 
     $scope.trackload = function(){
       //track promise
+      var pId = $stateParams.PID;
       var trackPromise = spotifyFact.getTrackResults($stateParams.searchValue)
       trackPromise.then(function(response){
         $scope.item = response;
@@ -514,12 +518,13 @@ angular.module('starter.controllers', [])
         $scope.trackImg = $scope.item.album.images[$scope.picIndex].url
         $log.log($scope.item);
       })
-      $log.log("PID passed from search-track: ", $scope.playlistId);
+      $log.log("PID passed from search-track: ", $stateParams.PID);
 
     }
 
     $scope.albumload = function(){
       //album promise
+      var pId = $stateParams.PID;      
       var albumPromise = spotifyFact.getAlbumResults($stateParams.searchValue)
       albumPromise.then(function(response){
         $scope.item = response;

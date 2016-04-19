@@ -19,7 +19,7 @@
 
 <div class="list">
         <ion-list can-swipe="true">
-            <ion-item ng-repeat="thing in item.tracks" class="list card" ng-href="#/app/{{playlistId}}/search/info/{{thing.id}}">
+            <ion-item ng-repeat="thing in item.tracks" class="list card" ng-href="#/app/{{pId}}/search/info/{{thing.id}}">
                 <div class="item item-avatar" >
                     <img ng-src="{{thing.album.images[0].url}}">
                     <h2> {{thing.name}} </h2>
