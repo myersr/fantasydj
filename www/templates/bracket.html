@@ -2,14 +2,14 @@
 Author: Daniel Harper
 View: Bracket view with 4 initial players
 -->
-<ion-view view-title="{{ competitionName}}">
-  <ion-content ng-init="load()" class="grad">
+<ion-view view-title="{{ competitionName}}" class="grad">
+  <ion-content ng-init="load()" >
       <div class="width">
-          <h3>{{ competitionName }} - Bracket</h3>
+          <h3 style="color:#ffffff">{{ competitionName }} - Bracket</h3>
 
           <!-- Semi-finals Round -->
           <section id="semiFinals">
-              <div ng-repeat="competitor in round1" ng-href="#/app/playlist/{{playlist.id}}">{{ competitor.name }}"</div>
+              <div ng-repeat="competitor in round1" ng-href="#/app/playlist/{{playlist.id}}">{{ competitor.name }}</div>
           </section>
           <!-- Connector lines from semi-finals to finals -->
           <div class="connecter" id="conn2">
@@ -35,7 +35,8 @@ View: Bracket view with 4 initial players
 
           <!-- Final Winner -->
           <section id="winner" >
-              <div ng-repeat="competitor in round3">{{ competitor.name }}</div>
+              <!--<div ng-repeat="competitor in round3">{{ competitor.name }}</div>-->
+              <div>{{ round3.name }}</div>
           </section>
       </div>
   </ion-content>
