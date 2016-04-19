@@ -1,4 +1,7 @@
 /* Empty. Add your own CSS if you like */
+.fantDJ{
+  text-align: center;
+}
 .accountInfo{
   color:#ffffff;
   padding-left:5px;
@@ -139,4 +142,9 @@ section > div:nth-child(2n) {
 
 .hidden{
   display: none;
+}
+#futter{
+  bottom: 0;
+  left: 0;
+  bottom: 0;
 }

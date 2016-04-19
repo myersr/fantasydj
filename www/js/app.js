@@ -21,6 +21,9 @@ var set = false;
 
 angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify','ngCordovaOauth','firebase'])
 
+  /*
+  Run configs
+   */
   .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -38,17 +41,20 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
   })
 
   /*
+  Author: Roy Myers
+  sets redirect_uri depending upon device
    sets the spotify client codes
    */
   .config(function (SpotifyProvider) {
     SpotifyProvider.setClientId(client_id);
-    SpotifyProvider.setRedirectUri(redirect_uri);
-    SpotifyProvider.setScope(scopes_api);
     if(ionic.Platform.platform() === 'android'){
       redirect_uri = 'http://localhost/callback';
     }else{
       redirect_uri = 'http://localhost:8100/'
     }
+    SpotifyProvider.setRedirectUri(redirect_uri);
+    SpotifyProvider.setScope(scopes_api);
+
 
     // If you already have an auth token
     //SpotifyProvider.setAuthToken(client_secret);
@@ -167,7 +173,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
 
 
   /*
-   Author: Roy Myers
+   Author: Roy Myers, Thomas Bower, Daniel Harper
    firebaseFact
    performs multiple functions using firebaseio backend
    */
@@ -443,7 +449,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
         }, function (err) {
   reject(err);
 })
-      }); 
+      });
     }
 
     firebaseFact.addPlaylist = function(playlist){
@@ -812,7 +818,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
           $log.log("response: ", res)
           resolve(playlists)
 
-        }, function errorCallback(response) 
+        }, function errorCallback(response)
         {
           $log.log("Call Error Playlist not created: ",response)
           reject(response)

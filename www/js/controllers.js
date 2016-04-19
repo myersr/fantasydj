@@ -111,6 +111,13 @@ angular.module('starter.controllers', [])
     }
 
     $scope.platform = ionic.Platform.platform();
+    $scope.isAndroid = ionic.Platform.isAndroid();
+    $scope.isIos = ionic.Platform.isIOS();
+    if(($scope.platform != 'android') && ($scope.platform != 'ios')){
+      $log.log("match")
+    }
+    $log.log("isIOS: ", $scope.isIos, " isAndroid: ", $scope.isAndroid, " platform: ", $scope.platform)
+    //$scope.isOther = ionic.Platform.platform();
     $scope.printURI = function(){
       var ure = window.location.origin;
       $ionicPopup.alert({
@@ -844,9 +851,10 @@ angular.module('starter.controllers', [])
         var filterPromise = firebaseFact.getFilteredLeagues();
         $log.log("hitting filter load")
         filterPromise.then(function (response) {
-          hideLoading();
           $log.log(response)
           $scope.filtered = response;
+          hideLoading();
+          setTimeout(function(){ hideLoading(); }, 2000);
 
         }, function (reason) {
           hideLoading();

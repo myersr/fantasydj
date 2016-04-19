@@ -1,21 +1,26 @@
-<ion-view view-title="Login" ng-class="{'loginAndroid' : platform == 'android', 'loginBrowser' : platform != 'android'}">
-  <ion-content>
-      <a ng-class="{ 'hidden' : platform == 'android', 'button button-large button-balanced' : platform != 'android' }" type="submit" ng-click="performLogin()" >
-          <div class="title">Login With Spotify</div>
-      </a>
-      </div>
-      <button ng-class="{ 'bar bar-footer bar-balanced' : platform == 'android', 'hidden': platform != 'android' }" ng-click="mobileLogin()">
-          login with cordova Oauth
-      </button>
-      <!--<button class="button button-energized" ng-click="printURI()">
+<ion-view view-title="Login" ng-class="{'loginAndroid' : isAndroid == true || isIos == true, 'loginBrowser' : platform != 'android' && platform != 'ios'}">
+    <ion-header-bar class="bar bar-header bar-royal">
+        <h4 class="title">FantasyDJ</h4>
+    </ion-header-bar>
+    <ion-content>
+
+        <button ng-class="{ 'button button-block button-balanced': platform != 'android' && platform != 'ios', 'hidden': isAndroid == true || isIos == true }" ng-click="performLogin()" >
+            <div class="title">
+                Login With Spotify
+            </div>
+        </button>
+        <button ng-class="{ 'button button-block button-balanced': isAndroid == true || isIos == true, 'hidden': platform != 'android' && platform != 'ios' }" ng-click="mobileLogin()">
+            <div class="title">
+                Login With Spotify
+            </div>
+        </button>
+        <!--<button class="button button-energized" ng-click="printURI()">
   First Token: {{ token }}
 </button>-->
-      <!-- </button>
+        <!-- </button>
        <button class="button button-energized">
   Second Token: {{ secToken }}
 </button>-->
 
-      <div><p>playlists</p></div>
-
-  </ion-content>
+    </ion-content>
 </ion-view>
