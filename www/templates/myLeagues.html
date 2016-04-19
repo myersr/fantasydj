@@ -1,6 +1,6 @@
 <!-- Written by Thomas Brower -->
 
-<ion-view view-title="My Leagues" ng-init="loadFilter()">
+<ion-view view-title="My Leagues" ng-init="loadFilter()" class="grad">
     <ion-content>
         <ion-refresher
                 pulling-text="Pull to refresh..."
@@ -24,8 +24,7 @@
                 <ion-list can-swipe="true">
                     <ion-item class="item-thumbnail-left" ng-repeat="item in filtered" ng-href="#/app/leagues/{{item.ID}}">
                         <h2>{{item.name}}</h2>
-                        <p>{{item.ID}}</p>
-                        <p>User: {{item.userName}}</p>
+                        <p>Admin: {{item.userName}}</p>
                         <p>Start: {{item.start}}</p>
                         <p>End: {{item.end}}</p>
 
