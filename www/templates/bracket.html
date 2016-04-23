@@ -9,7 +9,7 @@ View: Bracket view with 4 initial players
 
           <!-- Semi-finals Round -->
           <section id="semiFinals">
-              <div ng-repeat="competitor in round1" ng-href="#/app/playlist/{{playlist.id}}">{{ competitor.name }}</div>
+              <div ng-repeat="competitor in round1" ng-href="#/app/playlist/{{competitor.playlistId}}">{{ competitor.name }}</div>
           </section>
           <!-- Connector lines from semi-finals to finals -->
           <div class="connecter" id="conn2">
@@ -23,7 +23,7 @@ View: Bracket view with 4 initial players
 
           <!-- Final Round -->
           <section id="final" >
-              <div ng-repeat="competitor in round2" ng-href="#/app/playlist/{{playlist.id}}">{{ competitor.name }}</div>
+              <div ng-repeat="competitor in round2" ng-href="#/app/playlist/{{competitor.playlistId}}">{{ competitor.name }}</div>
           </section>
           <!-- Connector lines from finals to winner -->
           <div class="connecter" id="conn3">

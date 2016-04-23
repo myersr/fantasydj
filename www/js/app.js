@@ -449,14 +449,14 @@ angular.module('starter', ['ionic', 'starter.controllers','ngCordova','spotify',
             for (var key in theComp) {
               //$log.log("theComp loop:",theComp[key].competitorList);
               for (var ckey in theComp[key].competitorList) {
-                if (theComp[key].competitorList[ckey].SUID === mySUID){
+                if (theComp[key].competitorList[ckey].SUID === league){
                   theFilteredComp.push(theComp[key]);
                 }
               }
               //if theComp[key].competitorList
               // Use `key` and `value`
             }
-            $log.log("filtered theComp:", theFilteredComp);
+            //$log.log("filtered theComp:", theFilteredComp);
             resolve(theFilteredComp);
           }
           else {

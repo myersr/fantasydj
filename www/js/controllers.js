@@ -776,6 +776,46 @@ angular.module('starter.controllers', [])
 
   .controller('leagueCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, $ionicPopup, searchFact, addFact, authenticationFact, firebaseFact) {
     $scope.platform = ionic.Platform.platform();
+    $scope.filtered;
+
+    showLoading = function() {
+      $ionicLoading.show({
+        template: '<i class="ion-loading-c"> Loading your Leagues </i>',
+        noBackdrop: false
+      });
+    }
+
+    hideLoading = function() {
+      $ionicLoading.hide();
+    }
+
+
+    $scope.loadFilter = function(){
+      showLoading();
+      var filterPromise = firebaseFact.getFilteredLeagues();
+      $log.log("hitting filter load")
+      setTimeout(function() {
+        filterPromise.then(function (response) {
+
+          $scope.filtered = response;
+          setTimeout(function () {
+            hideLoading();
+          }, 5000);
+          hideLoading();
+
+        }, function (reason) {
+          // hideLoading();
+          $ionicPopup.alert({
+            title: 'reason',
+            content: reason
+          })
+          // console.log( "error message - " + err.message );
+          // console.log( "error code - " + err.statusCode );
+        })
+      })
+    }
+
+
 
 
 
@@ -870,29 +910,6 @@ angular.module('starter.controllers', [])
         hideLoading();
         $state.go("login")
       }
-    }
-
-    $scope.loadFilter = function(){
-      showLoading();
-      var filterPromise = firebaseFact.getFilteredLeagues();
-      $log.log("hitting filter load")
-      filterPromise.then(function(response){
-
-        $log.log(response)
-        $scope.filtered = response;
-        hideLoading();
-        setTimeout(function(){ hideLoading(); }, 2000);
-
-
-      }, function(reason) {
-        hideLoading();
-        $ionicPopup.alert({
-          title: 'reason',
-          content: reason
-        })
-        // console.log( "error message - " + err.message );
-        // console.log( "error code - " + err.statusCode );
-      })
     }
 
 
