@@ -1,12 +1,12 @@
 angular.module('starter.controllers', [])
 
-/*
- Author: Roy Myers
- indexController
- indexController -
- The index app/ is the callback uri from spotify. on that page we parse the auth token and store all the user data.
- If the user is in our database, we continue to playlists, if now we go to confirmation.
- */
+  /*
+   Author: Roy Myers
+   indexController
+   indexController -
+   The index app/ is the callback uri from spotify. on that page we parse the auth token and store all the user data.
+   If the user is in our database, we continue to playlists, if now we go to confirmation.
+   */
 
   .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, firebaseFact){
     //$log.log(window.location.origin)
@@ -135,7 +135,7 @@ angular.module('starter.controllers', [])
       var scopes_api = ['user-read-private user-read-email','playlist-read-private','playlist-modify-private','playlist-modify-public','playlist-read-collaborative']
       var client_id = 'be9a8fc1e71c45edb1cbf4d69759d6d3';
 
-      var oauthPromise = $cordovaOauth.spotify(client_id, scopes_api)
+      var oauthPromise = $cordovaOauth.spotify(client_id, scopes_api);
       oauthPromise.then(function(response){
         $scope.showLoading();
         var isUser;
@@ -456,9 +456,9 @@ angular.module('starter.controllers', [])
     }
 
     $scope.$on('$ionicView.enter', function() {
-     // Code you want executed every time view is opened
-     console.log($scope.$ionicView)
-  })
+      // Code you want executed every time view is opened
+      console.log($scope.$ionicView)
+    })
     $scope.load = function(){
       showLoading();
       var userData = authenticationFact.getData();
@@ -514,7 +514,7 @@ angular.module('starter.controllers', [])
   })
 
 
-/*
+  /*
    Author: Roy Myers
    findPlaylist
    AccountCtrl -
@@ -965,7 +965,7 @@ angular.module('starter.controllers', [])
 
 
 
-// Author: Daniel Harper
+  // Author: Daniel Harper
   .controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
     //var so = cordova.plugins.screenorientation;
     $scope.load = function(){

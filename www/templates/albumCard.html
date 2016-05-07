@@ -1,55 +1,55 @@
 <!-- Written by Thomas Brower -->
 
 <ion-view view-title="Details" class="grad" ng-init="albumload()">
-<ion-content>
+  <ion-content>
 
-<div class="list card">
+    <div class="list card">
 
-  <div class="item item-avatar">
-    <img ng-src="{{item.images[0].url}}" ng-show="platform != 'android'">
-    <img ng-src="{{item.images[2].url}}" ng-show="platform == 'android'">
-    <h1> {{item.name}} </h1>
-    <h2> {{item.artists[0].name}} </h2>
+      <div class="item item-avatar">
+        <img ng-src="{{item.images[0].url}}" ng-show="platform != 'android'">
+        <img ng-src="{{item.images[2].url}}" ng-show="platform == 'android'">
+        <h1> {{item.name}} </h1>
+        <h2> {{item.artists[0].name}} </h2>
 
-  </div>
+      </div>
 
-  <div class="item item-image">
-    <img ng-src="{{item.images[0].url}}" ng-show="platform != 'android'">
-    <img ng-src="{{item.images[2].url}}" ng-show="platform == 'android'">
-  </div>
-</div>
+      <div class="item item-image">
+        <img ng-src="{{item.images[0].url}}" ng-show="platform != 'android'">
+        <img ng-src="{{item.images[2].url}}" ng-show="platform == 'android'">
+      </div>
+    </div>
 
-<div>
-        <ion-list>
-            <ion-item ng-repeat="thing in item.tracks.items" class="list card" ng-href="#/app/{{pId}}/search/info/{{thing.id}}">
-                <div class="item item-avatar">
-                    <img ng-src="{{item.images[0].url}}">
-                    <h2> {{thing.name}} </h2>
+    <div>
+      <ion-list>
+        <ion-item ng-repeat="thing in item.tracks.items" class="list card" ng-href="#/app/{{pId}}/search/info/{{thing.id}}">
+          <div class="item item-avatar">
+            <img ng-src="{{item.images[0].url}}">
+            <h2> {{thing.name}} </h2>
 
-                </div>
-                <div class="item tabs tabs-secondary tabs-icon-left">
+          </div>
+          <div class="item tabs tabs-secondary tabs-icon-left">
 
-                    <a class="tab-item" ng-click="play(thing)">
-                        <i class="icon ion-music-note"></i>
-                        Play Song
-                    </a>
-                    <a class="tab-item" ng-click="stop()">
-                        <i class="icon ion-pause"></i>
-                        Pause
-                    </a>
+            <a class="tab-item" ng-click="play(thing)">
+              <i class="icon ion-music-note"></i>
+              Play Song
+            </a>
+            <a class="tab-item" ng-click="stop()">
+              <i class="icon ion-pause"></i>
+              Pause
+            </a>
 
-                    <a class="tab-item" ng-click="openSpotify(thing.external_urls.spotify)">
-                        <i class="icon ion-share"></i>
-                        Open in Spotify
-                    </a>
-                </div>
-            </ion-item>
-        </ion-list>
-
-
-</div>
+            <a class="tab-item" ng-click="openSpotify(thing.external_urls.spotify)">
+              <i class="icon ion-share"></i>
+              Open in Spotify
+            </a>
+          </div>
+        </ion-item>
+      </ion-list>
 
 
+    </div>
 
-</ion-content>
+
+
+  </ion-content>
 </ion-view>
