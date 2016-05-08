@@ -8,18 +8,9 @@ angular.module('starter.controllers', [])
    If the user is in our database, we continue to playlists, if now we go to confirmation.
    */
 
-  .controller('indexController', function($scope, $log, $q, $state, $ionicLoading, authenticationFact, firebaseFact){
+  .controller('indexController', function($scope, $log, $q, $state, Utils, authenticationFact, firebaseFact){
     //$log.log(window.location.origin)
-    $scope.showLoading = function() {
-      $ionicLoading.show({
-        template: '<i class="ion-loading-c">Fetching User Account</i>',
-        noBackdrop: false
-      });
-    }
 
-    $scope.hideLoading = function() {
-      $ionicLoading.hide();
-    }
     $scope.load = function () {
       //alert(window.location.hash);
 
@@ -30,7 +21,7 @@ angular.module('starter.controllers', [])
         if(!hash){
           $state.go('app.playlists')
         }else if (hash.includes("access_token")) {
-          $scope.showLoading();
+          Utils.show("Fetching User Account");
           var isUser;
           // login success
           //$log.log("Login Success")
@@ -55,13 +46,13 @@ angular.module('starter.controllers', [])
 
                   fireUserPromise.then(function(response)
                   {
-                    $scope.hideLoading();
+                    Utils.hide();
                     $state.go("app.playlists")
                   })
 
 
                 } else{ //if not a registered user, send to registry page.
-                  $scope.hideLoading();
+                  Utils.hide();
                   $state.go("confirmation")
                 }
 
@@ -98,17 +89,7 @@ angular.module('starter.controllers', [])
    returns the url for spotify authentication
    on Mobile it uses ngOauth for spotify authentication
    */
-  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $ionicPopup, $ionicLoading, $state, firebaseFact, authenticationFact){
-    $scope.showLoading = function() {
-      $ionicLoading.show({
-        template: '<i class="ion-loading-c">Fetching User Account</i>',
-        noBackdrop: false
-      });
-    }
-
-    $scope.hideLoading = function() {
-      $ionicLoading.hide();
-    }
+  .controller('loginCtrl', function($scope, $cordovaOauth, $stateParams, $log, $ionicPlatform, $state, Utils, firebaseFact, authenticationFact){
 
     $scope.platform = ionic.Platform.platform();
     $scope.isAndroid = ionic.Platform.isAndroid();
@@ -120,10 +101,7 @@ angular.module('starter.controllers', [])
     //$scope.isOther = ionic.Platform.platform();
     $scope.printURI = function(){
       var ure = window.location.origin;
-      $ionicPopup.alert({
-        title: 'uri',
-        content:ure.toString()
-      })
+      Utils.alertshow('Uri',ure.toString());
     }
 
     $scope.performLogin = function(){
@@ -137,7 +115,7 @@ angular.module('starter.controllers', [])
 
       var oauthPromise = $cordovaOauth.spotify(client_id, scopes_api);
       oauthPromise.then(function(response){
-        $scope.showLoading();
+        Utils.show("Loading Playlists");
         var isUser;
         window.localStorage.setItem("access_token", response.access_token);
         var token = response.access_token;
@@ -156,10 +134,10 @@ angular.module('starter.controllers', [])
               $log.log("inside isRegistered promise: ", response)
               isUser = response;
               if (isUser) {
-                $scope.hideLoading();
+                Utils.hide();
                 $state.go("app.playlists")
               } else { //if not a registered user, send to registry page.
-                $scope.hideLoading();
+                Utils.hide();
                 $state.go("confirmation")
               }
 
@@ -167,10 +145,7 @@ angular.module('starter.controllers', [])
           })
         }
       }, function(error) {
-        $ionicPopup.alert({
-          title: 'Error',
-          content:error
-        })
+        Utils.alertshow("Error", error);
       })
     }
   })
@@ -185,16 +160,7 @@ angular.module('starter.controllers', [])
    */
   .controller('confirmationCtrl', function($scope,$log,$state, $ionicLoading, authenticationFact, firebaseFact) {
     $scope.platform = ionic.Platform.platform();
-    showLoading = function() {
-      $ionicLoading.show({
-        template: '<i class="ion-loading-c"> Registering User </i>',
-        noBackdrop: false
-      });
-    }
 
-    hideLoading = function() {
-      $ionicLoading.hide();
-    }
     $scope.load = function () {
       if (authenticationFact.isAuthorized()) {
         //var defer = $q.defer();
@@ -208,7 +174,7 @@ angular.module('starter.controllers', [])
       }
     }
     $scope.confirm = function(){
-      showLoading();
+      Utils.show("Registering User");
       var regPromise = firebaseFact.registerUser()
       regPromise.then(function(response){
         $log.log("Registered User")
@@ -216,7 +182,7 @@ angular.module('starter.controllers', [])
 
         fireUserPromise.then(function(response)
         {
-          hideLoading();
+          Utils.hide();
           $state.go("app.playlists")
         })
       })
@@ -235,21 +201,7 @@ angular.module('starter.controllers', [])
    AppCtrl
    controlls the side menu
    */
-  .controller('AppCtrl', function($scope, $rootScope, $ionicModal, $timeout,$log, $ionicLoading, $q, $http, $location,$state, authenticationFact) {
-
-    // With the new view caching in Ionic, Controllers are only called
-    // when they are recreated or on app start, instead of every page change.
-    // To listen for when this page is active (for example, to refresh data),
-    // listen for the $ionicView.enter event:
-    $scope.showLoading = function() {
-      $ionicLoading.show({
-        template: '<i class="ion-loading-c"></i>',
-        noBackdrop: true
-      });
-    }
-    $scope.hideLoading = function() {
-      $ionicLoading.hide();
-    }
+  .controller('AppCtrl', function($scope, $rootScope) {
 
     var currentState = 'Playlists';// = $state.current.data.link;;
     //$log.log("current State: ",currentState);
@@ -258,6 +210,11 @@ angular.module('starter.controllers', [])
     // transitionTo() promise will be rejected with
     // a 'transition prevented' error
     //$rootScope.$on('$stateChangeSuccess',
+
+    // With the new view caching in Ionic, Controllers are only called
+    // when they are recreated or on app start, instead of every page change.
+    // To listen for when this page is active (for example, to refresh data),
+    // listen for the $ionicView.enter event:
     $rootScope.$on('$stateChangeSuccess',
       function(event, toState, toParams, fromState, fromParams, options){
         currentState = toState.data['link'];
@@ -293,35 +250,21 @@ angular.module('starter.controllers', [])
    grabs and lists all playlists for a spotify user
    pull to refresh
    */
-  .controller('PlaylistsCtrl', function($scope, $state, $log, $ionicLoading, $ionicPopup, $stateParams,authenticationFact, playlistsFact) {
-    showLoading = function() {
-      $ionicLoading.show({
-        template: '<i class="ion-loading-c"> Loading Playlists </i>',
-        noBackdrop: false
-      });
-    }
+  .controller('PlaylistsCtrl', function($scope, $state, $log, $stateParams, Utils, authenticationFact, playlistsFact) {
 
-    hideLoading = function() {
-      $ionicLoading.hide();
-    }
     $scope.playlists;// = playlistsFact.getPlaylistsData();
     $scope.SPID = authenticationFact.getData().id;
 
     $scope.doRefresh = function() {
+      //Utils.show("Loading...")
       if (authenticationFact.isAuthorized()) {
         var playlistPromise = playlistsFact.getPlaylistsData();
         playlistPromise.then(function (response) {
-          //$log.log("Promise resolved: ", response)
           $scope.playlists = playlistsFact.getPlaylists();
-          //$log.log("playlists after call: ", $scope.playlists)
-          //$log.log("Playlists List: ", $scope.playlists[0].name);
-          hideLoading();
+          Utils.hide();
           //$state.go("app.playlists", {}, {reload: true})
         }, function(reason) {
-          $ionicPopup.alert({
-            title: 'reason',
-            content: reason
-          })
+          Utils.alertshow("Reason", reason.message);
           //console.log( "error message - " + err.message );
           //console.log( "error code - " + err.statusCode );
         }).finally(function() {
@@ -329,14 +272,14 @@ angular.module('starter.controllers', [])
           $scope.$broadcast('scroll.refreshComplete');
         });
       } else {
-        hideLoading();
+        Utils.hide();
         $state.go("login")
       }
 
     };
 
     $scope.load =  function() {
-      showLoading();
+      Utils.show("Loading Playlists");
       //$log.log("yo", playlistsFact.areFetched())
       if (authenticationFact.isAuthorized()) {
         var playlistPromise = playlistsFact.getPlaylistsData();
@@ -345,24 +288,21 @@ angular.module('starter.controllers', [])
           $scope.playlists = playlistsFact.getPlaylists();
           //$log.log("playlists after call: ", $scope.playlists)
           //$log.log("Playlists List: ", $scope.playlists[0].name);
-          hideLoading();
+          Utils.hide();
           //$state.go("app.playlists", {}, {reload: true})
         }, function(reason) {
-          $ionicPopup.alert({
-            title: 'reason',
-            content: reason
-          })
+          Utils.alertshow("Reason", reason.message);
           //console.log( "error message - " + err.message );
           //console.log( "error code - " + err.statusCode );
         })
       } else {
-        hideLoading();
+        Utils.hide();
         $state.go("login")
       }
     }
 
     $scope.choosePlaylist = function(playlistId){
-      $log.log(playlistId);
+      $log.log("Chose Playlists: ",playlistId);
     }
 
   })
@@ -376,61 +316,38 @@ angular.module('starter.controllers', [])
    includes pull to reload
    */
 
-  .controller('PlaylistCtrl', function($scope, $stateParams, $log,$ionicLoading, $state, $ionicPopup, authenticationFact, playlistsFact) {
+  .controller('PlaylistCtrl', function($scope, $stateParams, $log, $state, Utils, authenticationFact, playlistsFact) {
     $scope.audio = new Audio();
-
-    showLoading = function() {
-      $ionicLoading.show({
-        template: '<i class="ion-loading-c"> Grabbing Playlist </i>',
-        noBackdrop: false
-      });
-    }
 
     $scope.goTo = function(playlistId)
     {
       $state.go('app.search', {PID:playlistId})
     }
 
-    hideLoading = function() {
-      $ionicLoading.hide();
-    }
     $scope.playlist;
-
     $scope.doRefresh = function() {
       if (authenticationFact.isAuthorized()) {
-        showLoading();
+        Utils.show("Grabbing Playlist");
         var userData = authenticationFact.getData();
         var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, userData.id);
         playlistPromise.then(function (response) {
           //$log.log("Response i controller: ",response)
           $scope.playlist = response;
+          Utils.hide();
           $state.transitionTo($state.current, $stateParams, {
             reload: true,
             inherit: false,
             notify: true
           })
-          //$log.log(response.tracks.items[0].track.album.images[2].url);
-          hideLoading();
-          //$log.log("Promise resolved: ", response)
-          //$scope.playlists = playlistsFact.getPlaylist($stateParams.playlistId);
-          //$log.log("playlists after call: ", $scope.playlists)
-          //$log.log("Playlists List: ", $scope.playlists[0].name);
-          //hideLoading();
-          //$state.go("app.playlists", {}, {reload: true})
         }, function(reason) {
           hideLoading();
-          $ionicPopup.alert({
-            title: 'reason',
-            content: reason
-          })
-          //console.log( "error message - " + err.message );
-          //console.log( "error code - " + err.statusCode );
+          Utils.alertshow("Reason", reason.message);
         }).finally(function() {
           // Stop the ion-refresher from spinning
           $scope.$broadcast('scroll.refreshComplete');
         });
       } else {
-        hideLoading();
+        Utils.hide();
         $state.go("login")
       }
 
@@ -460,31 +377,21 @@ angular.module('starter.controllers', [])
       console.log($scope.$ionicView)
     })
     $scope.load = function(){
-      showLoading();
+      Utils.show("Grabbing Playlist");
       var userData = authenticationFact.getData();
       var playlistPromise = playlistsFact.getPlaylistData($stateParams.playlistId, userData.id);
       playlistPromise.then(function (response) {
         //$log.log("Response i controller: ",response)
         $scope.playlist = response;
+        Utils.hide();
         $state.transitionTo($state.current, $stateParams, {
           reload: true,
           inherit: false,
           notify: true
         })
-        //$log.log(response.tracks.items[0].track.album.images[2].url);
-        hideLoading();
-        //$log.log("Promise resolved: ", response)
-        //$scope.playlists = playlistsFact.getPlaylist($stateParams.playlistId);
-        //$log.log("playlists after call: ", $scope.playlists)
-        //$log.log("Playlists List: ", $scope.playlists[0].name);
-        //hideLoading();
-        //$state.go("app.playlists", {}, {reload: true})
       }, function(reason) {
-        hideLoading();
-        $ionicPopup.alert({
-          title: 'reason',
-          content: reason
-        })
+        Utils.hide();
+        Utils.alertshow("Reason", reason.message);
         //console.log( "error message - " + err.message );
         //console.log( "error code - " + err.statusCode );
       })
@@ -520,33 +427,23 @@ angular.module('starter.controllers', [])
    AccountCtrl -
    Pulls firbase data as well as spotify data
    */
-  .controller('joinCtrl', function ($scope, $log, $ionicLoading, spotifyFact, firebaseFact) {
-    showLoading = function() {
-      $ionicLoading.show({
-        template: '<i class="ion-loading-c"> Loading open Leagues </i>',
-        noBackdrop: false
-      });
-    }
-
-    hideLoading = function() {
-      $ionicLoading.hide();
-    }
+  .controller('joinCtrl', function ($scope, $log, Utils, spotifyFact, firebaseFact) {
 
     $log.log("hitting Ctrl")
     $scope.leagues;
 
     $scope.load = function(){
-      showLoading();
+      Utils.show("Loading open Leagues");
       $log.log("hitting load")
       var leaguePromise = firebaseFact.getLeagues();
       leaguePromise.then(function(response){
         //$log.log(response);
         $scope.leagues = response;
         $log.log("leagues:",$scope.leagues);
-        hideLoading();
+        Utils.hide();
       },function(res){
         $log.log("RES:",res);
-        hideLoading();
+        Utils.hide();
       })
     }
 
@@ -565,7 +462,7 @@ angular.module('starter.controllers', [])
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, searchFact, authenticationFact, spotifyFact, playlistsFact){
+  .controller('searchCtrl', function($scope, $log, $stateParams, $ionicPlatform, $q, $state, Utils, searchFact, authenticationFact, spotifyFact, playlistsFact){
     $scope.platform = ionic.Platform.platform();
 
     $scope.pId = $stateParams.PID;
@@ -672,7 +569,7 @@ angular.module('starter.controllers', [])
     }
 
     $scope.inheritload = function(){
-      $scope.showLoading();
+      Utils.show("One Moment");
       $scope.playlistId = $stateParams.PID;
       $log.log("type: ", $stateParams.type);
       var promise = searchFact.getInheritResults($stateParams.input, $stateParams.type);
@@ -697,7 +594,7 @@ angular.module('starter.controllers', [])
         }
 
         //$log.log($scope.isArtist, $scope.isTrack, $scope.isAlbum);
-        $scope.hideLoading();
+        Utils.hide();
       })
     }
 
@@ -706,7 +603,7 @@ angular.module('starter.controllers', [])
       $scope.playlistId = $stateParams.PID;
       // assign somehting to be displayed (promise)
       // use ionic loading to wait while its being assigned
-      $scope.showLoading();
+      Utils.show("Getting Results...");
 
       var promise = searchFact.getSearchResults(searchInput);
       promise.then(function(response){
@@ -738,7 +635,7 @@ angular.module('starter.controllers', [])
           //$log.log($scope.returnDataAlbum);
         }
 
-        $scope.hideLoading();
+        Utils.hide();
       })
     }
 
@@ -746,7 +643,7 @@ angular.module('starter.controllers', [])
     $scope.inheritSearch = function(newsearch){
       // assign somehting to be displayed (promise)
       // use ionic loading to wait while its being assigned
-      $scope.showLoading();
+      Utils.show("Loading...");
       $log.log("type: ", $stateParams.type);
       var promise = searchFact.getInheritResults(newsearch, $stateParams.type);
       promise.then(function(response){
@@ -755,7 +652,7 @@ angular.module('starter.controllers', [])
         $log.log($scope.returnData);
 
 
-        $scope.hideLoading();
+        Utils.hide();
       })
     }
 
@@ -774,24 +671,12 @@ angular.module('starter.controllers', [])
 
 
 
-  .controller('leagueCtrl', function($scope, $log, $stateParams, $ionicLoading, $ionicPlatform, $q, $state, $ionicPopup, searchFact, addFact, authenticationFact, firebaseFact) {
+  .controller('leagueCtrl', function($scope, $log, $stateParams, $ionicPlatform, $q, $state, Utils, searchFact, addFact, authenticationFact, firebaseFact) {
     $scope.platform = ionic.Platform.platform();
     $scope.filtered;
 
-    showLoading = function() {
-      $ionicLoading.show({
-        template: '<i class="ion-loading-c"> Loading your Leagues </i>',
-        noBackdrop: false
-      });
-    }
-
-    hideLoading = function() {
-      $ionicLoading.hide();
-    }
-
-
     $scope.loadFilter = function(){
-      showLoading();
+      Utils.show("Loading your Leagues");
       var filterPromise = firebaseFact.getFilteredLeagues();
       $log.log("hitting filter load")
       setTimeout(function() {
@@ -799,16 +684,14 @@ angular.module('starter.controllers', [])
 
           $scope.filtered = response;
           setTimeout(function () {
-            hideLoading();
+            //MEssage here
+            Utils.hide();
           }, 5000);
-          hideLoading();
+          Utils.hide();
 
         }, function (reason) {
-          // hideLoading();
-          $ionicPopup.alert({
-            title: 'reason',
-            content: reason
-          })
+          Utils.hide();
+          Utils.alertshow("Reason", reason.message);
           // console.log( "error message - " + err.message );
           // console.log( "error code - " + err.statusCode );
         })
@@ -866,22 +749,19 @@ angular.module('starter.controllers', [])
 
     $scope.addLeague = function(newLeague)
     {
-      $scope.showLoading();
+      Utils.show("Adding League");
       var userData = authenticationFact.getData();
       var addPromise = firebaseFact.addLeague(newLeague);
       addPromise.then(function(response)
       {
         $log.log("SUCCESS on add")
-        $scope.hideLoading();
+        Utils.hide();
         $state.go("app.myLeagues")
 
         //$scope.returnData = response;
       }, function(reason) {
-        hideLoading();
-        $ionicPopup.alert({
-          title: 'reason',
-          content: reason.message
-        })
+        Utils.hide();
+        Utils.alertshow("Reason", reason.message);
       })
     }
 
@@ -893,42 +773,36 @@ angular.module('starter.controllers', [])
         filterPromise.then(function (response) {
           $log.log(response)
           $scope.filtered = response;
-          hideLoading();
+          Utils.hide();
           setTimeout(function(){ hideLoading(); }, 2000);
 
         }, function (reason) {
-          hideLoading();
-          $ionicPopup.alert({
-            title: 'reason',
-            content: reason
-          })
+          Utils.hide();
+          Utils.alertshow("Reason", reason.message)
         }).finally(function () {
           // Stop the ion-refresher from spinning
           $scope.$broadcast('scroll.refreshComplete');
         })
       } else {
-        hideLoading();
+        Utils.hide();
         $state.go("login")
       }
     }
 
 
     $scope.load = function(){
-      showLoading();
+      Utils.show("Grabbing Leagues");
       $log.log("hitting league load")
       var leaguePromise = firebaseFact.getLeagues();
       leaguePromise.then(function(response){
-        hideLoading();
+        Utils.hide();
         $log.log(response)
         $scope.leagues = response;
         $log.log("leagues",$scope.leagues);
 
       }, function(reason) {
-        hideLoading();
-        $ionicPopup.alert({
-          title: 'reason',
-          content: reason
-        })
+        Utils.hide();
+        Utils.alertshow("Reason", reason.message);
         // console.log( "error message - " + err.message );
         // console.log( "error code - " + err.statusCode );
       })
@@ -936,7 +810,7 @@ angular.module('starter.controllers', [])
 
     $scope.createPlaylist = function(newplaylistname)
     {
-      $scope.showLoading();
+      Utils.show("Creating Playlist");
       var userData = authenticationFact.getData();
       var promise = addFact.createPlaylist(newplaylistname, userData.id);
       promise.then(function(response)
@@ -947,7 +821,7 @@ angular.module('starter.controllers', [])
         var addPlayPromise = firebaseFact.addPlaylist($scope.returnData.data);
         addPlayPromise.then(function(response)
         {
-          $scope.hideLoading();
+          Utils.hide();
           $state.go("app.playlist", {playlistId: response} );
         })
 
@@ -966,10 +840,11 @@ angular.module('starter.controllers', [])
 
 
   // Author: Daniel Harper
-  .controller('BracketCtrl', function($scope,$log,$state,$stateParams,firebaseFact) {
+  .controller('BracketCtrl', function($scope, $log, $state, $stateParams, Utils, firebaseFact) {
     //var so = cordova.plugins.screenorientation;
     $scope.load = function(){
       $log.log("BracketCtrl.load called");
+      Utils.show("Loading Bracket")
       var compId = $stateParams.compId;
       var competitionPromise = firebaseFact.getLeague(compId);
       $log.log("Competition Promise:",competitionPromise);
@@ -980,6 +855,7 @@ angular.module('starter.controllers', [])
         $scope.round2 = response.rounds[1];
         $scope.round3 = response.rounds[2];
         $scope.noRounds = response.noRounds;
+        Utils.hide();
         //console.log("round1:",response.rounds[0]);
         //console.log("round2:",response.rounds[1]);
         //console.log("round3:",response.rounds[2]);

@@ -19,7 +19,7 @@ var token;
 var set = false;
 
 
-angular.module('starter', ['ionic', 'starter.services', 'starter.controllers','ngCordova','spotify','ngCordovaOauth','firebase'])
+angular.module('starter', ['ionic', 'starter.services', 'starter.controllers','starter.utils','ngCordova','spotify','ngCordovaOauth','firebase'])
 
   /*
   Run configs
