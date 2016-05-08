@@ -25,3 +25,6 @@ Welcome to fantasyDJ
 * Roy Myers: roymyers@protonmail.com
 * Tom Brower: tomtombrower555@gmail.com
 * Daniel Harper: harperdm@email.sc.edu
+* Steve Rubin: KonstantinRubin@engineer.com
+* Trey Gordner: trey@koios.co
+* John Dixon: johnryandixon@gmail.com
